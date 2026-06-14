@@ -775,10 +775,11 @@
         </select>
         <select id="filter-set">
           <option value="">All Sets</option>
-          <option value="alpha">Alpha</option>
-          <option value="beta">Beta</option>
-          <option value="arthurian_legends">Arthurian Legends</option>
-          <option value="gothic">Gothic</option>
+          <option value="Alpha">Alpha</option>
+          <option value="Beta">Beta</option>
+          <option value="Arthurian Legends">Arthurian Legends</option>
+          <option value="Gothic">Gothic</option>
+          <option value="Promotional">Promotional</option>
         </select>
       </div>
     </div>
@@ -854,31 +855,55 @@ const IMAGE_BASE = 'https://sorcerytcg.com/images/cards/';
 async function loadCards() {
   try {
     const res = await fetch('cards.json');
-    if (!res.ok) throw new Error('Could not load cards.json - make sure it is uploaded to your GitHub repo');
+    if (!res.ok) throw new Error('Could not load cards.json');
     const data = await res.json();
-    // API may return array or object with .data
-    allCards = Array.isArray(data) ? data : (data.data || data.cards || []);
+    const raw = Array.isArray(data) ? data : (data.data || data.cards || []);
+    // Normalize cards to a flat structure
+    allCards = raw.map(card => {
+      const g = card.guardian || {};
+      // Get the first available set's first standard booster variant slug for image
+      const firstSet = (card.sets || [])[0];
+      const firstVariant = firstSet ? (firstSet.variants || []).find(v => v.finish === 'Standard' && v.product === 'Booster') || firstSet.variants[0] : null;
+      return {
+        id: card.name, // use name as unique id
+        name: card.name,
+        type: g.type || '',
+        rarity: g.rarity || '',
+        cost: g.cost,
+        attack: g.attack,
+        defence: g.defence,
+        life: g.life,
+        thresholds: g.thresholds || {},
+        rules_text: g.rulesText || '',
+        element: card.elements || '',
+        subTypes: card.subTypes || '',
+        set: firstSet ? firstSet.name : '',
+        slug: firstVariant ? firstVariant.slug : null,
+        artist: firstVariant ? firstVariant.artist : '',
+        flavorText: firstVariant ? firstVariant.flavorText : '',
+        typeText: firstVariant ? firstVariant.typeText : '',
+      };
+    });
     renderCards(allCards);
     document.getElementById('result-count').textContent = allCards.length + ' cards found';
   } catch (e) {
     document.getElementById('card-grid').innerHTML = `
       <div class="status">
         <span class="loading-rune" style="animation:none;opacity:0.5">✦</span>
-        Could not reach the API.<br>
+        Could not load cards.json.<br>
         <small style="font-size:0.8rem;margin-top:8px;display:block">
-          The API may be unavailable or require CORS headers.<br>
-          Try opening your site from a local server or GitHub Pages.
+          Make sure cards.json is uploaded to your GitHub repo alongside index.html.
         </small>
       </div>`;
   }
 }
 
 // ── IMAGE URL ──
+// Slug format: alp-apprentice_wizard-b-s → https://sorcerytcg.com/images/cards/alp-apprentice_wizard-b-s.png
 function getImageUrl(card) {
-  // Try to build from slug; fall back to name-based slug
-  const slug = card.slug || (card.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
-  // Standard: slug.png (booster/standard defaults omitted per API docs)
-  return `${IMAGE_BASE}${slug}.png`;
+  if (card.slug) return `${IMAGE_BASE}${card.slug}.png`;
+  const namePart = (card.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+  return `${IMAGE_BASE}${namePart}.png`;
 }
 
 // ── RENDER CARDS ──
@@ -1018,13 +1043,18 @@ function openModal(id) {
 
   // Build stats
   const stats = [];
-  if (card.threshold) stats.push({ label: 'Threshold', val: card.threshold });
-  if (card.cost !== undefined) stats.push({ label: 'Cost', val: card.cost });
-  if (card.power !== undefined) stats.push({ label: 'Power', val: card.power });
-  if (card.life !== undefined) stats.push({ label: 'Life', val: card.life });
-  if (card.defense !== undefined) stats.push({ label: 'Defense', val: card.defense });
+  if (card.cost != null) stats.push({ label: 'Cost', val: card.cost });
+  if (card.attack != null) stats.push({ label: 'Attack', val: card.attack });
+  if (card.defence != null) stats.push({ label: 'Defence', val: card.defence });
+  if (card.life != null) stats.push({ label: 'Life', val: card.life });
   if (card.rarity) stats.push({ label: 'Rarity', val: card.rarity });
   if (card.element) stats.push({ label: 'Element', val: card.element });
+  if (card.subTypes) stats.push({ label: 'Subtype', val: card.subTypes });
+  if (card.thresholds) {
+    const t = card.thresholds;
+    const tStr = Object.entries(t).filter(([,v]) => v > 0).map(([k,v]) => `${v} ${k}`).join(', ');
+    if (tStr) stats.push({ label: 'Threshold', val: tStr });
+  }
   document.getElementById('modal-stats').innerHTML = stats.map(s => `<div class="modal-stat"><b>${s.label}:</b> ${s.val}</div>`).join('');
 
   document.getElementById('modal-overlay').classList.add('open');
