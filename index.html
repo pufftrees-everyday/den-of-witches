@@ -36,7 +36,7 @@
     min-height: 100vh;
   }
 
-  /* ── HEADER ── */
+  /* HEADER */
   header {
     background: linear-gradient(180deg, #0d0b14 0%, var(--void) 100%);
     border-bottom: 1px solid var(--border);
@@ -51,47 +51,22 @@
     backdrop-filter: blur(8px);
   }
 
-  .logo {
-    font-family: 'Cinzel', serif;
-    font-size: 1.3rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    color: var(--gold);
-    text-shadow: 0 0 20px rgba(200, 169, 110, 0.4);
-  }
-
+  .logo { font-family: 'Cinzel', serif; font-size: 1.3rem; font-weight: 700; letter-spacing: 0.08em; color: var(--gold); text-shadow: 0 0 20px rgba(200,169,110,0.4); }
   .logo span { color: var(--arcane); font-weight: 400; }
+  .header-nav { display: flex; gap: 10px; }
 
-  .header-nav { display: flex; gap: 10px; align-items: center; }
-
-  /* ── BUTTONS ── */
-  .btn {
-    padding: 7px 16px;
-    font-family: 'Cinzel', serif;
-    font-size: 0.72rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    border-radius: 4px;
-    cursor: pointer;
-    border: 1px solid transparent;
-    transition: background 0.2s, border-color 0.2s, color 0.2s;
-  }
-
+  /* BUTTONS */
+  .btn { padding: 7px 16px; font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; border-radius: 4px; cursor: pointer; border: 1px solid transparent; transition: background 0.2s, border-color 0.2s, color 0.2s; }
   .btn-primary { background: var(--rune); border-color: var(--arcane); color: #fff; }
   .btn-primary:hover { background: var(--arcane); }
-  .btn-primary.active { background: var(--arcane); }
-
   .btn-ghost { background: transparent; border-color: var(--border-strong); color: var(--rune); }
   .btn-ghost:hover { border-color: var(--arcane); color: var(--arcane); }
-
   .btn-danger { background: transparent; border-color: rgba(196,97,74,0.3); color: var(--ember); }
   .btn-danger:hover { background: rgba(196,97,74,0.12); }
+  .btn-sm { padding: 5px 10px; font-size: 0.65rem; }
 
-  /* ── PAGE SECTIONS ── */
-  .page-section {
-    padding: 28px 28px 0;
-  }
+  /* PAGE */
+  .page { padding: 24px; }
 
   .section-title {
     font-family: 'Cinzel', serif;
@@ -105,483 +80,160 @@
     align-items: center;
     gap: 12px;
   }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-  .section-title::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
+  /* MY DECKS */
+  #my-decks-section { margin-bottom: 32px; display: none; }
 
-  /* ── MY DECKS ── */
-  #my-decks-section { padding-bottom: 28px; border-bottom: 1px solid var(--border); }
+  .decks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
 
-  .decks-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 14px;
-  }
-
-  .deck-card {
+  .deck-tile {
     background: var(--dusk);
     border: 1px solid var(--border);
     border-radius: 6px;
-    padding: 16px;
+    padding: 14px;
     cursor: pointer;
     transition: border-color 0.2s, box-shadow 0.2s;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
     position: relative;
   }
+  .deck-tile:hover { border-color: var(--arcane); box-shadow: var(--glow); }
+  .deck-tile-name { font-family: 'Cinzel', serif; font-size: 0.9rem; font-weight: 600; color: var(--gold); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
+  .deck-tile-meta { font-size: 0.78rem; color: var(--rune); font-style: italic; }
+  .deck-tile-del { position: absolute; top: 8px; right: 8px; background: none; border: none; color: var(--mist); cursor: pointer; font-size: 0.85rem; padding: 2px 5px; transition: color 0.15s; }
+  .deck-tile-del:hover { color: var(--ember); }
 
-  .deck-card:hover { border-color: var(--arcane); box-shadow: var(--glow); }
-
-  .deck-card-name {
-    font-family: 'Cinzel', serif;
-    font-size: 0.92rem;
-    font-weight: 600;
-    color: var(--gold);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .deck-card-meta { font-size: 0.8rem; color: var(--rune); font-style: italic; }
-
-  .deck-card-del {
-    position: absolute;
-    top: 8px; right: 8px;
-    background: none;
-    border: none;
-    color: var(--mist);
-    cursor: pointer;
-    font-size: 0.85rem;
-    transition: color 0.15s;
-    padding: 2px 4px;
-  }
-
-  .deck-card-del:hover { color: var(--ember); }
-
-  .new-deck-card {
+  .new-deck-tile {
     background: transparent;
     border: 1px dashed var(--border-strong);
     border-radius: 6px;
-    padding: 16px;
+    padding: 14px;
     cursor: pointer;
-    transition: border-color 0.2s, color 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+    display: flex; align-items: center; justify-content: center;
     color: var(--rune);
-    font-family: 'Cinzel', serif;
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    min-height: 80px;
+    font-family: 'Cinzel', serif; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    min-height: 72px;
+    transition: border-color 0.2s, color 0.2s;
   }
+  .new-deck-tile:hover { border-color: var(--arcane); color: var(--arcane); }
 
-  .new-deck-card:hover { border-color: var(--arcane); color: var(--arcane); }
+  /* DECK BUILDER */
+  #deck-builder-section { margin-bottom: 32px; display: none; }
 
-  .decks-empty {
-    color: var(--mist);
-    font-style: italic;
-    font-size: 0.9rem;
-    padding: 8px 0;
-  }
-
-  /* ── DECK BUILDER ── */
-  #deck-builder-section {
-    display: none;
-    padding-bottom: 28px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  #deck-builder-section.open { display: block; }
-
-  .deck-builder-header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
+  .deck-builder-bar {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    margin-bottom: 14px;
   }
 
   #deck-name-input {
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid var(--border);
-    border-radius: 0;
-    color: var(--gold);
-    font-family: 'Cinzel', serif;
-    font-size: 1.1rem;
-    font-weight: 600;
-    padding: 4px 0 6px;
-    letter-spacing: 0.04em;
-    width: 260px;
-    outline: none;
+    background: transparent; border: none; border-bottom: 1px solid var(--border); border-radius: 0;
+    color: var(--gold); font-family: 'Cinzel', serif; font-size: 1.05rem; font-weight: 600;
+    padding: 4px 0 6px; letter-spacing: 0.04em; width: 240px; outline: none;
   }
-
   #deck-name-input:focus { border-bottom-color: var(--gold); }
   #deck-name-input::placeholder { color: var(--mist); font-style: italic; font-family: 'Crimson Pro', serif; font-size: 0.95rem; font-weight: 400; letter-spacing: 0; }
 
   .deck-builder-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-left: auto; }
 
-  .deck-stats-row { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
-
-  .stat-pill {
-    font-size: 0.75rem;
-    color: var(--rune);
-    background: rgba(155, 135, 212, 0.06);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    padding: 2px 8px;
-  }
-
+  .deck-stats-row { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+  .stat-pill { font-size: 0.75rem; color: var(--rune); background: rgba(155,135,212,0.06); border: 1px solid var(--border); border-radius: 3px; padding: 2px 8px; }
   .stat-pill b { color: var(--shimmer); }
 
-  /* ── DECK VISUAL GRID ── */
-  .deck-visual-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 10px;
-  }
+  /* DECK VISUAL GRID */
+  .deck-visual-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
 
-  .deck-visual-section-header {
+  .dvg-header {
     grid-column: 1 / -1;
-    font-family: 'Cinzel', serif;
-    font-size: 0.68rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--mist);
-    padding: 10px 0 4px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
+    font-family: 'Cinzel', serif; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--mist); padding: 10px 0 4px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between;
   }
+  .dvg-header span { color: var(--arcane); font-family: 'Crimson Pro', serif; font-style: normal; letter-spacing: 0; }
 
-  .deck-visual-section-header span { color: var(--arcane); font-family: 'Crimson Pro', serif; font-style: normal; letter-spacing: 0; }
+  .dvg-card { position: relative; border-radius: 6px; overflow: hidden; border: 1px solid var(--border); background: var(--dusk); cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; }
+  .dvg-card:hover { border-color: var(--arcane); box-shadow: var(--glow); }
+  .dvg-card img { width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block; }
 
-  .deck-card-thumb {
-    position: relative;
-    border-radius: 6px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-    background: var(--dusk);
-    cursor: pointer;
-    transition: border-color 0.2s, box-shadow 0.2s;
-  }
+  .dvg-qty { position: absolute; top: 5px; left: 5px; background: rgba(11,10,15,0.88); border: 1px solid var(--border-strong); border-radius: 3px; color: var(--shimmer); font-family: 'Cinzel', serif; font-size: 0.82rem; font-weight: 700; padding: 1px 6px; pointer-events: none; }
 
-  .deck-card-thumb:hover { border-color: var(--arcane); box-shadow: var(--glow); }
+  .dvg-controls { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(0deg, rgba(11,10,15,0.95) 60%, transparent); padding: 18px 5px 5px; display: flex; gap: 3px; opacity: 0; transition: opacity 0.15s; justify-content: center; }
+  .dvg-card:hover .dvg-controls { opacity: 1; }
 
-  .deck-card-thumb img {
-    width: 100%;
-    aspect-ratio: 3/4;
-    object-fit: cover;
-    display: block;
-  }
-
-  .deck-card-qty-overlay {
-    position: absolute;
-    top: 6px; left: 6px;
-    background: rgba(11,10,15,0.88);
-    border: 1px solid var(--border-strong);
-    border-radius: 4px;
-    color: var(--shimmer);
-    font-family: 'Cinzel', serif;
-    font-size: 0.85rem;
-    font-weight: 700;
-    padding: 2px 7px;
-    pointer-events: none;
-  }
-
-  .deck-card-controls {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    background: linear-gradient(0deg, rgba(11,10,15,0.95) 60%, transparent);
-    padding: 20px 6px 6px;
-    display: flex;
-    gap: 4px;
-    opacity: 0;
-    transition: opacity 0.15s;
-    justify-content: center;
-  }
-
-  .deck-card-thumb:hover .deck-card-controls { opacity: 1; }
-
-  .qty-btn {
-    width: 26px; height: 26px;
-    background: var(--dusk);
-    border: 1px solid var(--border-strong);
-    color: var(--arcane);
-    font-size: 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.15s;
-  }
-
+  .qty-btn { width: 26px; height: 26px; background: var(--dusk); border: 1px solid var(--border-strong); color: var(--arcane); font-size: 1rem; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
   .qty-btn:hover { background: var(--rune); color: #fff; }
+  .del-btn { width: 26px; height: 26px; background: rgba(196,97,74,0.15); border: 1px solid rgba(196,97,74,0.4); color: var(--ember); font-size: 0.8rem; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+  .del-btn:hover { background: rgba(196,97,74,0.35); }
 
-  .remove-deck-card {
-    width: 26px; height: 26px;
-    background: rgba(196,97,74,0.15);
-    border: 1px solid rgba(196,97,74,0.4);
-    color: var(--ember);
-    font-size: 0.85rem;
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.15s;
-  }
+  .deck-empty { color: var(--mist); font-style: italic; padding: 24px 0; font-size: 0.9rem; }
 
-  .remove-deck-card:hover { background: rgba(196,97,74,0.35); }
-
-  .deck-empty {
-    color: var(--mist);
-    font-style: italic;
-    padding: 30px 0;
-    font-size: 0.9rem;
-    text-align: center;
-  }
-
-  /* ── CARD EXPLORER ── */
-  #card-explorer-section { padding-bottom: 28px; }
-
+  /* CARD EXPLORER */
   .search-bar {
-    background: var(--abyss);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 18px;
+    background: var(--abyss); border: 1px solid var(--border); border-radius: 6px;
+    padding: 14px 16px; margin-bottom: 16px;
+    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
   }
 
-  .filters { display: flex; flex-direction: column; gap: 10px; }
+  .search-input-wrap { position: relative; flex: 1; min-width: 180px; }
+  .search-input-wrap svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; opacity: 0.4; fill: var(--arcane); }
 
-  .filter-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-
-  .filter-label {
-    font-family: 'Cinzel', serif;
-    font-size: 0.65rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--mist);
-    width: 60px;
-    flex-shrink: 0;
-  }
-
-  .filter-toggles { display: flex; gap: 6px; flex-wrap: wrap; }
-
-  .filter-toggle {
-    padding: 4px 12px;
-    font-family: 'Crimson Pro', serif;
-    font-size: 0.85rem;
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    background: transparent;
-    color: var(--rune);
-    cursor: pointer;
-    transition: background 0.15s, border-color 0.15s, color 0.15s;
-    white-space: nowrap;
-  }
-
-  .filter-toggle:hover { border-color: var(--arcane); color: var(--arcane); }
-
-  .filter-toggle.active {
-    background: var(--rune);
-    border-color: var(--arcane);
-    color: #fff;
-  }
-
-  .filter-clear {
-    font-size: 0.75rem;
-    color: var(--mist);
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 4px 6px;
-    transition: color 0.15s;
-    font-family: 'Crimson Pro', serif;
-    font-style: italic;
-    margin-left: 4px;
-  }
-
-  .filter-clear:hover { color: var(--ember); }
-
-  .search-input-wrap { position: relative; }
-
-  .search-input-wrap svg {
-    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
-    width: 15px; height: 15px; opacity: 0.4; fill: var(--arcane);
-  }
-
-  input[type="text"], select {
-    width: 100%;
-    background: var(--dusk);
-    border: 1px solid var(--border);
-    color: var(--parchment);
-    font-family: 'Crimson Pro', serif;
-    font-size: 1rem;
-    padding: 8px 12px;
-    border-radius: 4px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  input[type="text"] { padding-left: 36px; }
+  input[type="text"] { width: 100%; background: var(--dusk); border: 1px solid var(--border); color: var(--parchment); font-family: 'Crimson Pro', serif; font-size: 1rem; padding: 7px 12px 7px 34px; border-radius: 4px; outline: none; transition: border-color 0.2s; }
   input[type="text"]:focus { border-color: var(--rune); box-shadow: var(--glow); }
   input[type="text"]::placeholder { color: var(--mist); font-style: italic; }
 
+  select {
+    background: var(--dusk); border: 1px solid var(--border); color: var(--parchment);
+    font-family: 'Crimson Pro', serif; font-size: 0.95rem; padding: 7px 30px 7px 10px;
+    border-radius: 4px; outline: none; cursor: pointer; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b5fa0'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 10px center;
+    transition: border-color 0.2s;
+  }
+  select:focus { border-color: var(--rune); }
+  select option { background: var(--dusk); }
+
   .result-count { font-size: 0.8rem; color: var(--rune); font-style: italic; margin-bottom: 14px; }
 
-  .card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 14px;
-  }
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
 
-  .card-thumb {
-    cursor: pointer;
-    border-radius: 6px;
-    border: 1px solid var(--border);
-    overflow: hidden;
-    background: var(--dusk);
-    transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
-    position: relative;
-  }
-
+  .card-thumb { cursor: pointer; border-radius: 6px; border: 1px solid var(--border); overflow: hidden; background: var(--dusk); transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s; position: relative; }
   .card-thumb:hover { border-color: var(--arcane); transform: translateY(-2px); box-shadow: var(--glow-strong); }
-
-  .card-thumb img {
-    width: 100%;
-    aspect-ratio: 3/4;
-    object-fit: cover;
-    display: block;
-    background: var(--twilight);
-  }
-
+  .card-thumb img { width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block; background: var(--twilight); }
   .card-thumb-name { padding: 6px 8px; font-size: 0.82rem; color: var(--shimmer); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .card-thumb-meta { padding: 0 8px 6px; font-size: 0.72rem; color: var(--rune); font-style: italic; }
 
-  .add-btn {
-    position: absolute; top: 6px; right: 6px;
-    width: 28px; height: 28px;
-    background: rgba(11,10,15,0.85);
-    border: 1px solid var(--border-strong);
-    border-radius: 50%;
-    color: var(--arcane);
-    font-size: 1.2rem;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    opacity: 0;
-    transition: opacity 0.15s, background 0.15s;
-  }
-
+  .add-btn { position: absolute; top: 6px; right: 6px; width: 28px; height: 28px; background: rgba(11,10,15,0.85); border: 1px solid var(--border-strong); border-radius: 50%; color: var(--arcane); font-size: 1.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: opacity 0.15s, background 0.15s; }
   .card-thumb:hover .add-btn { opacity: 1; }
   .add-btn:hover { background: var(--rune); color: #fff; }
 
-  /* ── STATUS ── */
   .status { padding: 60px 24px; text-align: center; color: var(--mist); font-style: italic; }
   .status .loading-rune { font-size: 2.5rem; display: block; margin-bottom: 16px; animation: pulse 2s infinite; }
-  @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+  @keyframes pulse { 0%,100%{opacity:0.3} 50%{opacity:1} }
 
-  /* ── MODAL ── */
-  .modal-overlay {
-    display: none;
-    position: fixed; inset: 0;
-    background: rgba(11,10,15,0.85);
-    z-index: 200;
-    align-items: center; justify-content: center;
-    backdrop-filter: blur(4px);
-  }
-
+  /* MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(11,10,15,0.85); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
   .modal-overlay.open { display: flex; }
-
-  .modal {
-    background: var(--dusk);
-    border: 1px solid var(--border-strong);
-    border-radius: 8px;
-    box-shadow: 0 0 60px rgba(155,135,212,0.2);
-    max-width: 600px; width: 90vw;
-    display: grid;
-    grid-template-columns: 180px 1fr;
-    overflow: hidden;
-    position: relative;
-  }
-
-  .modal-img { background: var(--twilight); }
-  .modal-img img { width: 180px; height: 240px; object-fit: cover; display: block; }
-
+  .modal { background: var(--dusk); border: 1px solid var(--border-strong); border-radius: 8px; box-shadow: 0 0 60px rgba(155,135,212,0.2); max-width: 600px; width: 90vw; display: grid; grid-template-columns: 180px 1fr; overflow: hidden; position: relative; }
+  .modal-img img { width: 180px; height: 240px; object-fit: cover; display: block; background: var(--twilight); }
   .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-
-  .modal-name { font-family: 'Cinzel', serif; font-size: 1.15rem; font-weight: 600; color: var(--gold); }
+  .modal-name { font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 600; color: var(--gold); }
   .modal-type { font-size: 0.85rem; color: var(--arcane); font-style: italic; }
-
-  .modal-text {
-    font-size: 0.92rem; color: var(--parchment); line-height: 1.6; flex: 1;
-    border-top: 1px solid var(--border); padding-top: 10px;
-    border-bottom: 1px solid var(--border); padding-bottom: 10px;
-  }
-
-  .modal-stats { display: flex; flex-wrap: wrap; gap: 8px; }
-
-  .modal-stat {
-    font-size: 0.78rem;
-    background: rgba(155,135,212,0.08);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    padding: 2px 8px;
-    color: var(--shimmer);
-  }
-
+  .modal-text { font-size: 0.9rem; color: var(--parchment); line-height: 1.6; flex: 1; border-top: 1px solid var(--border); padding-top: 10px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+  .modal-stats { display: flex; flex-wrap: wrap; gap: 6px; }
+  .modal-stat { font-size: 0.78rem; background: rgba(155,135,212,0.08); border: 1px solid var(--border); border-radius: 3px; padding: 2px 8px; color: var(--shimmer); }
   .modal-stat b { color: var(--arcane); }
-
-  .modal-add {
-    padding: 8px 16px;
-    font-family: 'Cinzel', serif; font-size: 0.75rem; font-weight: 600;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    background: var(--rune); border: 1px solid var(--arcane); color: #fff;
-    border-radius: 4px; cursor: pointer; transition: background 0.2s;
-  }
-
+  .modal-add { padding: 8px 16px; font-family: 'Cinzel', serif; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; background: var(--rune); border: 1px solid var(--arcane); color: #fff; border-radius: 4px; cursor: pointer; transition: background 0.2s; }
   .modal-add:hover { background: var(--arcane); }
-
-  .modal-close {
-    position: absolute; top: 10px; right: 12px;
-    background: none; border: none; color: var(--mist);
-    font-size: 1.4rem; cursor: pointer; transition: color 0.15s;
-  }
-
+  .modal-close { position: absolute; top: 10px; right: 12px; background: none; border: none; color: var(--mist); font-size: 1.4rem; cursor: pointer; transition: color 0.15s; }
   .modal-close:hover { color: var(--parchment); }
 
-  /* ── TOAST ── */
-  .toast {
-    position: fixed; bottom: 24px; right: 24px;
-    background: var(--dusk); border: 1px solid var(--border-strong);
-    color: var(--shimmer); font-size: 0.9rem; padding: 10px 18px;
-    border-radius: 6px; box-shadow: var(--glow);
-    z-index: 999; opacity: 0; transform: translateY(8px);
-    transition: opacity 0.2s, transform 0.2s; pointer-events: none; font-style: italic;
-  }
-
+  /* TOAST */
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--dusk); border: 1px solid var(--border-strong); color: var(--shimmer); font-size: 0.9rem; padding: 10px 18px; border-radius: 6px; box-shadow: var(--glow); z-index: 999; opacity: 0; transform: translateY(8px); transition: opacity 0.2s, transform 0.2s; pointer-events: none; font-style: italic; }
   .toast.show { opacity: 1; transform: translateY(0); }
 
   @media (max-width: 700px) {
-    .filters { grid-template-columns: 1fr 1fr; }
     .modal { grid-template-columns: 1fr; }
     .modal-img img { width: 100%; height: 180px; }
-    .deck-visual-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+    .deck-visual-grid { grid-template-columns: repeat(auto-fill, minmax(120px,1fr)); }
+    .search-bar { flex-direction: column; align-items: stretch; }
   }
 </style>
 </head>
@@ -590,99 +242,84 @@
 <header>
   <div class="logo">Grimoire <span>· Sorcery TCG</span></div>
   <div class="header-nav">
-    <button class="btn btn-ghost" onclick="const s=document.getElementById('my-decks-section');s.style.display=s.style.display==='none'?'block':'none';s.scrollIntoView({behavior:'smooth'})">My Decks</button>
+    <button class="btn btn-ghost" onclick="toggleMyDecks()">My Decks</button>
     <button class="btn btn-primary" onclick="newDeck()">✦ New Deck</button>
   </div>
 </header>
 
-<!-- MY DECKS -->
-<div class="page-section" id="my-decks-section">
-  <div class="section-title">My Decks <button class="filter-clear" onclick="document.getElementById('my-decks-section').style.display='none'" style="font-style:normal;letter-spacing:0.05em;">hide ✕</button></div>
-  <div class="decks-grid" id="decks-grid">
-    <div class="decks-empty">No saved decks yet. Click "New Deck" to get started.</div>
-  </div>
-</div>
+<div class="page">
 
-<!-- DECK BUILDER -->
-<div class="page-section" id="deck-builder-section">
-  <div class="section-title" id="deck-builder-title">Building: <span id="deck-builder-label" style="color:var(--gold);margin-left:6px;font-style:italic;">New Deck</span></div>
-  <div class="deck-builder-header">
-    <input type="text" id="deck-name-input" placeholder="Name your deck…" oninput="updateDeckLabel()">
-    <div class="deck-builder-actions">
-      <button class="btn btn-primary" onclick="saveDeck()">Save</button>
-      <button class="btn btn-ghost" onclick="openImport()">Import</button>
-      <button class="btn btn-ghost" onclick="exportDeck()">Export</button>
-      <button class="btn btn-danger" onclick="clearDeck()">Clear</button>
-      <button class="btn btn-ghost" onclick="closeDeckBuilder()">✕ Close</button>
-    </div>
+  <!-- MY DECKS -->
+  <div id="my-decks-section">
+    <div class="section-title">My Decks</div>
+    <div class="decks-grid" id="decks-grid"></div>
   </div>
-  <div class="deck-stats-row" id="deck-stats"></div>
-  <div class="deck-visual-grid" id="deck-visual-grid">
-    <div class="deck-empty">Your deck is empty — search for cards below and click + to add them.</div>
-  </div>
-</div>
 
-<!-- CARD EXPLORER -->
-<div class="page-section" id="card-explorer-section">
-  <div class="section-title">Card Explorer</div>
-  <div class="search-bar">
-    <div class="search-input-wrap">
-      <svg viewBox="0 0 20 20"><path d="M12.9 14.32a8 8 0 111.41-1.41l4.42 4.41-1.41 1.42-4.42-4.42zM8 14A6 6 0 108 2a6 6 0 000 12z"/></svg>
-      <input type="text" id="search-input" placeholder="Search cards…" autocomplete="off">
+  <!-- DECK BUILDER -->
+  <div id="deck-builder-section">
+    <div class="section-title">Deck Builder</div>
+    <div class="deck-builder-bar">
+      <input type="text" id="deck-name-input" placeholder="Name your deck…" oninput="updateDeckLabel()">
+      <div class="deck-builder-actions">
+        <button class="btn btn-primary btn-sm" onclick="saveDeck()">Save</button>
+        <button class="btn btn-ghost btn-sm" onclick="openImport()">Import</button>
+        <button class="btn btn-ghost btn-sm" onclick="exportDeck()">Export</button>
+        <button class="btn btn-danger btn-sm" onclick="clearDeck()">Clear</button>
+        <button class="btn btn-ghost btn-sm" onclick="closeDeckBuilder()">✕ Close</button>
+      </div>
     </div>
-    <div class="filters">
-      <div class="filter-row">
-        <span class="filter-label">Type</span>
-        <div class="filter-toggles" id="filter-type">
-          <button class="filter-toggle" data-value="Avatar" onclick="toggleFilter('type','Avatar')">Avatar</button>
-          <button class="filter-toggle" data-value="Minion" onclick="toggleFilter('type','Minion')">Minion</button>
-          <button class="filter-toggle" data-value="Magic" onclick="toggleFilter('type','Magic')">Magic</button>
-          <button class="filter-toggle" data-value="Artifact" onclick="toggleFilter('type','Artifact')">Artifact</button>
-          <button class="filter-toggle" data-value="Aura" onclick="toggleFilter('type','Aura')">Aura</button>
-          <button class="filter-toggle" data-value="Site" onclick="toggleFilter('type','Site')">Site</button>
-        </div>
-        <button class="filter-clear" onclick="clearFilter('type')">clear</button>
-      </div>
-      <div class="filter-row">
-        <span class="filter-label">Set</span>
-        <div class="filter-toggles" id="filter-set">
-          <button class="filter-toggle" data-value="Alpha" onclick="toggleFilter('set','Alpha')">Alpha</button>
-          <button class="filter-toggle" data-value="Beta" onclick="toggleFilter('set','Beta')">Beta</button>
-          <button class="filter-toggle" data-value="Arthurian Legends" onclick="toggleFilter('set','Arthurian Legends')">Arthurian Legends</button>
-          <button class="filter-toggle" data-value="Gothic" onclick="toggleFilter('set','Gothic')">Gothic</button>
-          <button class="filter-toggle" data-value="Promotional" onclick="toggleFilter('set','Promotional')">Promotional</button>
-        </div>
-        <button class="filter-clear" onclick="clearFilter('set')">clear</button>
-      </div>
-      <div class="filter-row">
-        <span class="filter-label">Rarity</span>
-        <div class="filter-toggles" id="filter-rarity">
-          <button class="filter-toggle" data-value="Ordinary" onclick="toggleFilter('rarity','Ordinary')">Ordinary</button>
-          <button class="filter-toggle" data-value="Exceptional" onclick="toggleFilter('rarity','Exceptional')">Exceptional</button>
-          <button class="filter-toggle" data-value="Elite" onclick="toggleFilter('rarity','Elite')">Elite</button>
-          <button class="filter-toggle" data-value="Unique" onclick="toggleFilter('rarity','Unique')">Unique</button>
-        </div>
-        <button class="filter-clear" onclick="clearFilter('rarity')">clear</button>
-      </div>
-      <div class="filter-row">
-        <span class="filter-label">Element</span>
-        <div class="filter-toggles" id="filter-element">
-          <button class="filter-toggle" data-value="Air" onclick="toggleFilter('element','Air')">Air</button>
-          <button class="filter-toggle" data-value="Earth" onclick="toggleFilter('element','Earth')">Earth</button>
-          <button class="filter-toggle" data-value="Fire" onclick="toggleFilter('element','Fire')">Fire</button>
-          <button class="filter-toggle" data-value="Water" onclick="toggleFilter('element','Water')">Water</button>
-        </div>
-        <button class="filter-clear" onclick="clearFilter('element')">clear</button>
-      </div>
+    <div class="deck-stats-row" id="deck-stats"></div>
+    <div class="deck-visual-grid" id="deck-visual-grid">
+      <div class="deck-empty">Search for cards below and click + to add them to your deck.</div>
     </div>
   </div>
-  <div id="result-count" class="result-count"></div>
-  <div id="card-grid" class="card-grid">
-    <div class="status">
-      <span class="loading-rune">⧫</span>
-      Consulting the arcane archives…
+
+  <!-- CARD EXPLORER -->
+  <div id="card-explorer-section">
+    <div class="section-title">Card Explorer</div>
+    <div class="search-bar">
+      <div class="search-input-wrap">
+        <svg viewBox="0 0 20 20"><path d="M12.9 14.32a8 8 0 111.41-1.41l4.42 4.41-1.41 1.42-4.42-4.42zM8 14A6 6 0 108 2a6 6 0 000 12z"/></svg>
+        <input type="text" id="search-input" placeholder="Search cards…" autocomplete="off">
+      </div>
+      <select id="filter-type" onchange="filterCards()">
+        <option value="">All Types</option>
+        <option value="Avatar">Avatar</option>
+        <option value="Minion">Minion</option>
+        <option value="Magic">Magic</option>
+        <option value="Artifact">Artifact</option>
+        <option value="Aura">Aura</option>
+        <option value="Site">Site</option>
+      </select>
+      <select id="filter-set" onchange="filterCards()">
+        <option value="">All Sets</option>
+        <option value="Alpha">Alpha</option>
+        <option value="Beta">Beta</option>
+        <option value="Arthurian Legends">Arthurian Legends</option>
+        <option value="Gothic">Gothic</option>
+        <option value="Promotional">Promotional</option>
+      </select>
+      <select id="filter-rarity" onchange="filterCards()">
+        <option value="">All Rarities</option>
+        <option value="Ordinary">Ordinary</option>
+        <option value="Exceptional">Exceptional</option>
+        <option value="Elite">Elite</option>
+        <option value="Unique">Unique</option>
+      </select>
+      <select id="filter-element" onchange="filterCards()">
+        <option value="">All Elements</option>
+        <option value="Air">Air</option>
+        <option value="Earth">Earth</option>
+        <option value="Fire">Fire</option>
+        <option value="Water">Water</option>
+      </select>
+    </div>
+    <div id="result-count" class="result-count"></div>
+    <div id="card-grid" class="card-grid">
+      <div class="status"><span class="loading-rune">⧫</span>Consulting the arcane archives…</div>
     </div>
   </div>
+
 </div>
 
 <!-- CARD MODAL -->
@@ -690,10 +327,7 @@
   <div class="modal">
     <div class="modal-img"><img id="modal-img" src="" alt=""></div>
     <div class="modal-body">
-      <div>
-        <div class="modal-name" id="modal-name"></div>
-        <div class="modal-type" id="modal-type"></div>
-      </div>
+      <div><div class="modal-name" id="modal-name"></div><div class="modal-type" id="modal-type"></div></div>
       <div class="modal-text" id="modal-text"></div>
       <div class="modal-stats" id="modal-stats"></div>
       <button class="modal-add" id="modal-add-btn">+ Add to Deck</button>
@@ -704,13 +338,13 @@
 
 <!-- IMPORT MODAL -->
 <div class="modal-overlay" id="import-overlay" onclick="closeImport(event)">
-  <div class="modal" style="grid-template-columns:1fr; max-width:500px;">
+  <div class="modal" style="grid-template-columns:1fr;max-width:480px;">
     <div class="modal-body" style="padding:24px;">
       <div class="modal-name" style="margin-bottom:6px;">Import from Curiosa</div>
-      <div class="modal-type" style="margin-bottom:14px;">Paste your decklist from curiosa.io below.</div>
-      <textarea id="import-text" placeholder="1Archimago&#10;Artifact (4)&#10;1Ring of Morrigan&#10;1&#10;..." style="width:100%;height:220px;background:var(--dusk);border:1px solid var(--border);color:var(--parchment);font-family:'Crimson Pro',serif;font-size:0.9rem;padding:10px;border-radius:4px;resize:vertical;outline:none;line-height:1.6;"></textarea>
+      <div class="modal-type" style="margin-bottom:12px;">Paste your decklist from curiosa.io</div>
+      <textarea id="import-text" placeholder="1Archimago&#10;Artifact (4)&#10;1Ring of Morrigan&#10;1&#10;..." style="width:100%;height:200px;background:var(--dusk);border:1px solid var(--border);color:var(--parchment);font-family:'Crimson Pro',serif;font-size:0.9rem;padding:10px;border-radius:4px;resize:vertical;outline:none;line-height:1.6;"></textarea>
       <div style="display:flex;gap:8px;margin-top:12px;">
-        <button class="modal-add" style="flex:1" onclick="runImport()">Import Deck</button>
+        <button class="modal-add" style="flex:1" onclick="runImport()">Import</button>
         <button class="modal-add" style="flex:1;background:transparent;border-color:var(--border-strong);color:var(--rune);" onclick="closeImport()">Cancel</button>
       </div>
     </div>
@@ -721,222 +355,244 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ── STATE ──
 let allCards = [];
 let deck = {};
 let currentModalCard = null;
-let activeDeckId = null; // id of deck being edited (null = new)
+let activeDeckId = null;
 const IMAGE_BASE = 'https://pub-5999238092ad418ca60e7a9ad641cf57.r2.dev/';
 
-// ── FETCH CARDS ──
+// LOAD CARDS
 async function loadCards() {
-  const paths = ['cards.json', './cards.json', '/cards.json'];
-  let data = null;
-  for (const path of paths) {
-    try {
-      const res = await fetch(path);
-      if (res.ok) { data = await res.json(); break; }
-    } catch(e) {}
+  try {
+    let res = await fetch('cards.json');
+    if (!res.ok) res = await fetch('./cards.json');
+    if (!res.ok) throw new Error('not found');
+    const data = await res.json();
+    const raw = Array.isArray(data) ? data : (data.data || data.cards || []);
+    allCards = raw.map(card => {
+      const g = card.guardian || {};
+      const firstSet = (card.sets || [])[0];
+      const firstVariant = firstSet
+        ? (firstSet.variants || []).find(v => v.finish === 'Standard' && v.product === 'Booster') || firstSet.variants[0]
+        : null;
+      return {
+        id: card.name,
+        name: card.name,
+        type: g.type || '',
+        rarity: g.rarity || '',
+        cost: g.cost,
+        attack: g.attack,
+        defence: g.defence,
+        life: g.life,
+        thresholds: g.thresholds || {},
+        rules_text: g.rulesText || '',
+        element: (card.elements || []).join(', '),
+        subTypes: card.subTypes || '',
+        set: firstSet ? firstSet.name : '',
+        slug: firstVariant ? firstVariant.slug : null,
+      };
+    });
+    filterCards();
+  } catch(e) {
+    document.getElementById('card-grid').innerHTML = `<div class="status"><span class="loading-rune" style="animation:none;opacity:0.5">✦</span>Could not load cards.json.<br><small style="font-size:0.8rem;margin-top:8px;display:block">Make sure cards.json is uploaded to your GitHub repo alongside index.html.</small></div>`;
   }
-  if (!data) {
-    document.getElementById('card-grid').innerHTML = `<div class="status"><span class="loading-rune" style="animation:none;opacity:0.5">✦</span>Could not load cards.json.<br><small>Make sure cards.json is uploaded to your GitHub repo alongside index.html.</small></div>`;
-    return;
-  }
-  const raw = Array.isArray(data) ? data : (data.data || data.cards || []);
-  allCards = raw.map(card => {
-    const g = card.guardian || {};
-    const firstSet = (card.sets || [])[0];
-    const firstVariant = firstSet ? (firstSet.variants || []).find(v => v.finish === 'Standard' && v.product === 'Booster') || firstSet.variants[0] : null;
-    return {
-      id: card.name,
-      name: card.name,
-      type: g.type || '',
-      rarity: g.rarity || '',
-      cost: g.cost,
-      attack: g.attack,
-      defence: g.defence,
-      life: g.life,
-      thresholds: g.thresholds || {},
-      rules_text: g.rulesText || '',
-      element: (card.elements || []).join(', '),
-      subTypes: card.subTypes || '',
-      set: firstSet ? firstSet.name : '',
-      slug: firstVariant ? firstVariant.slug : null,
-      artist: firstVariant ? firstVariant.artist : '',
-      flavorText: firstVariant ? firstVariant.flavorText : '',
-    };
-  });
-  // Apply default filters: Alpha + Avatar
-  toggleFilter('set', 'Alpha');
-  toggleFilter('type', 'Avatar');
 }
 
-// ── IMAGE ──
 function getImageUrl(card) {
   if (card.slug) return `${IMAGE_BASE}${card.slug}.png`;
-  const namePart = (card.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
-  return `${IMAGE_BASE}${namePart}.png`;
+  return `${IMAGE_BASE}${(card.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'')}.png`;
 }
 
-// ── RENDER CARDS ──
+function escId(id) { return String(id).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+
+// RENDER CARDS
 function renderCards(cards) {
+  const deckOpen = document.getElementById('deck-builder-section').style.display !== 'none';
   const grid = document.getElementById('card-grid');
-  const deckOpen = document.getElementById('deck-builder-section').classList.contains('open');
   if (!cards.length) { grid.innerHTML = '<div class="status" style="padding:40px 0">No cards match your search.</div>'; return; }
-  grid.innerHTML = cards.slice(0, 200).map(card => {
-    const imgUrl = getImageUrl(card);
-    return `<div class="card-thumb" onclick="openModal('${escId(card.id)}')">
-      <img src="${imgUrl}" alt="${card.name}" loading="lazy" onerror="this.style.opacity='0'">
+  const shown = cards.slice(0, 200);
+  grid.innerHTML = shown.map(card => `
+    <div class="card-thumb" onclick="openModal('${escId(card.id)}')">
+      <img src="${getImageUrl(card)}" alt="${card.name}" loading="lazy" onerror="this.style.opacity='0'">
       ${deckOpen ? `<div class="add-btn" onclick="event.stopPropagation();addCard('${escId(card.id)}')">+</div>` : ''}
       <div class="card-thumb-name">${card.name}</div>
       <div class="card-thumb-meta">${[card.type, card.rarity, card.set].filter(Boolean).join(' · ')}</div>
-    </div>`;
-  }).join('');
-  document.getElementById('result-count').textContent = cards.length + (cards.length > 200 ? ' (showing 200)' : '') + ' cards';
+    </div>`).join('');
+  document.getElementById('result-count').textContent = `${cards.length}${cards.length > 200 ? ' (showing 200)' : ''} cards`;
 }
 
-function escId(id) { return String(id).replace(/'/g, "\\'"); }
-
-// ── FILTERS ──
-const activeFilters = { type: new Set(), set: new Set(), rarity: new Set(), element: new Set() };
-
-function toggleFilter(group, value) {
-  if (activeFilters[group].has(value)) {
-    activeFilters[group].delete(value);
-  } else {
-    activeFilters[group].add(value);
-  }
-  // Update button states
-  document.querySelectorAll(`#filter-${group} .filter-toggle`).forEach(btn => {
-    btn.classList.toggle('active', activeFilters[group].has(btn.dataset.value));
-  });
-  filterCards();
-}
-
-function clearFilter(group) {
-  activeFilters[group].clear();
-  document.querySelectorAll(`#filter-${group} .filter-toggle`).forEach(btn => btn.classList.remove('active'));
-  filterCards();
-}
-
-
-
+// FILTER
 function filterCards() {
   const q = document.getElementById('search-input').value.toLowerCase();
+  const type = document.getElementById('filter-type').value;
+  const set = document.getElementById('filter-set').value;
+  const rarity = document.getElementById('filter-rarity').value;
+  const element = document.getElementById('filter-element').value;
   const filtered = allCards.filter(c =>
-    (!q || (c.name || '').toLowerCase().includes(q)) &&
-    (!activeFilters.type.size || activeFilters.type.has(c.type)) &&
-    (!activeFilters.set.size || activeFilters.set.has(c.set)) &&
-    (!activeFilters.rarity.size || activeFilters.rarity.has(c.rarity)) &&
-    (!activeFilters.element.size || [...activeFilters.element].some(el => (c.element || '').includes(el)))
+    (!q || c.name.toLowerCase().includes(q)) &&
+    (!type || c.type === type) &&
+    (!set || c.set === set) &&
+    (!rarity || c.rarity === rarity) &&
+    (!element || (c.element || '').includes(element))
   );
   renderCards(filtered);
-  document.getElementById('result-count').textContent = filtered.length + (filtered.length > 200 ? ' (showing 200)' : '') + ' cards';
+  document.getElementById('result-count').textContent = `${filtered.length}${filtered.length > 200 ? ' (showing 200)' : ''} cards`;
 }
 
 document.getElementById('search-input').addEventListener('input', filterCards);
 
-
+// ADD TO DECK
 function getCard(id) { return allCards.find(c => c.id === id || c.name === id); }
 
-// ── ADD TO DECK ──
 function addCard(id) {
   const card = getCard(id);
   if (!card) return;
-  // Open deck builder if not open
-  if (!document.getElementById('deck-builder-section').classList.contains('open')) {
-    openDeckBuilder();
-  }
+  if (document.getElementById('deck-builder-section').style.display === 'none') openDeckBuilder();
   const key = String(id);
-  if (deck[key]) { deck[key].qty++; } else { deck[key] = { card, qty: 1 }; }
+  deck[key] = deck[key] ? { ...deck[key], qty: deck[key].qty + 1 } : { card, qty: 1 };
   renderDeck();
   toast(`${card.name} added`);
 }
 
-// ── DECK BUILDER OPEN/CLOSE ──
+// DECK BUILDER
 function newDeck() {
   deck = {};
   activeDeckId = null;
   document.getElementById('deck-name-input').value = '';
-  updateDeckLabel();
   openDeckBuilder();
 }
 
 function openDeckBuilder() {
-  document.getElementById('deck-builder-section').classList.add('open');
+  document.getElementById('deck-builder-section').style.display = 'block';
   renderDeck();
-  renderCards(allCards); // re-render to show + buttons
+  renderCards(getFilteredCards());
   document.getElementById('deck-builder-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function closeDeckBuilder() {
-  document.getElementById('deck-builder-section').classList.remove('open');
-  renderCards(allCards); // re-render to hide + buttons
+  document.getElementById('deck-builder-section').style.display = 'none';
+  renderCards(getFilteredCards());
 }
 
-function scrollToDecks() {
-  document.getElementById('my-decks-section').scrollIntoView({ behavior: 'smooth' });
+function getFilteredCards() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  const type = document.getElementById('filter-type').value;
+  const set = document.getElementById('filter-set').value;
+  const rarity = document.getElementById('filter-rarity').value;
+  const element = document.getElementById('filter-element').value;
+  return allCards.filter(c =>
+    (!q || c.name.toLowerCase().includes(q)) &&
+    (!type || c.type === type) &&
+    (!set || c.set === set) &&
+    (!rarity || c.rarity === rarity) &&
+    (!element || (c.element || '').includes(element))
+  );
 }
 
-function updateDeckLabel() {
-  const name = document.getElementById('deck-name-input').value.trim() || 'New Deck';
-  document.getElementById('deck-builder-label').textContent = name;
-}
+function updateDeckLabel() {}
 
-// ── QTY CONTROLS ──
+// QTY
 function changeQty(key, delta) {
   if (!deck[key]) return;
   deck[key].qty += delta;
   if (deck[key].qty <= 0) delete deck[key];
   renderDeck();
 }
-
 function removeCard(key) { delete deck[key]; renderDeck(); }
 
-// ── RENDER DECK (visual) ──
+// RENDER DECK
 function renderDeck() {
   const entries = Object.entries(deck);
-  const totalQty = entries.reduce((s, [, v]) => s + v.qty, 0);
-  const uniqueCards = entries.length;
-
-  document.getElementById('deck-stats').innerHTML = totalQty
-    ? `<div class="stat-pill"><b>${totalQty}</b> cards</div><div class="stat-pill"><b>${uniqueCards}</b> unique</div>`
-    : '';
+  const total = entries.reduce((s,[,v]) => s+v.qty, 0);
+  document.getElementById('deck-stats').innerHTML = total
+    ? `<div class="stat-pill"><b>${total}</b> cards</div><div class="stat-pill"><b>${entries.length}</b> unique</div>` : '';
 
   const grid = document.getElementById('deck-visual-grid');
-  if (!entries.length) {
-    grid.innerHTML = '<div class="deck-empty">Your deck is empty — search for cards below and click + to add them.</div>';
-    return;
-  }
+  if (!entries.length) { grid.innerHTML = '<div class="deck-empty">Search for cards below and click + to add them to your deck.</div>'; return; }
 
   const groups = {};
-  entries.forEach(([key, { card, qty }]) => {
-    const type = card.type || 'Other';
-    if (!groups[type]) groups[type] = [];
-    groups[type].push({ key, card, qty });
+  entries.forEach(([key,{card,qty}]) => {
+    const t = card.type || 'Other';
+    (groups[t] = groups[t]||[]).push({key,card,qty});
   });
+  const order = ['Avatar','Site','Minion','Magic','Artifact','Aura','Other'];
+  const types = [...new Set([...order.filter(t=>groups[t]),...Object.keys(groups).filter(t=>!order.includes(t))])];
 
-  const typeOrder = ['Avatar', 'Site', 'Minion', 'Magic', 'Artifact', 'Aura', 'Other'];
-  const sortedTypes = [...new Set([...typeOrder.filter(t => groups[t]), ...Object.keys(groups).filter(t => !typeOrder.includes(t))])];
-
-  grid.innerHTML = sortedTypes.map(type => {
-    const group = groups[type];
-    const groupQty = group.reduce((s, e) => s + e.qty, 0);
-    const cards = group.map(({ key, card, qty }) => `
-      <div class="deck-card-thumb" onclick="openModal('${escId(card.id)}')">
-        <img src="${getImageUrl(card)}" alt="${card.name}" loading="lazy" onerror="this.style.opacity='0'">
-        ${qty > 1 ? `<div class="deck-card-qty-overlay">×${qty}</div>` : ''}
-        <div class="deck-card-controls">
-          <button class="qty-btn" onclick="event.stopPropagation();changeQty('${key}', -1)">−</button>
-          <button class="qty-btn" onclick="event.stopPropagation();changeQty('${key}', 1)">+</button>
-          <button class="remove-deck-card" onclick="event.stopPropagation();removeCard('${key}')">✕</button>
-        </div>
-      </div>`).join('');
-    return `<div class="deck-visual-section-header">${type} <span>${groupQty}</span></div>${cards}`;
+  grid.innerHTML = types.map(type => {
+    const grp = groups[type];
+    const grpQty = grp.reduce((s,e)=>s+e.qty,0);
+    return `<div class="dvg-header">${type}<span>${grpQty}</span></div>` +
+      grp.map(({key,card,qty}) => `
+        <div class="dvg-card" onclick="openModal('${escId(card.id)}')">
+          <img src="${getImageUrl(card)}" alt="${card.name}" loading="lazy" onerror="this.style.opacity='0'">
+          ${qty>1?`<div class="dvg-qty">×${qty}</div>`:''}
+          <div class="dvg-controls">
+            <button class="qty-btn" onclick="event.stopPropagation();changeQty('${key}',-1)">−</button>
+            <button class="qty-btn" onclick="event.stopPropagation();changeQty('${key}',1)">+</button>
+            <button class="del-btn" onclick="event.stopPropagation();removeCard('${key}')">✕</button>
+          </div>
+        </div>`).join('');
   }).join('');
 }
 
-// ── MODAL ──
+// MY DECKS
+function toggleMyDecks() {
+  const s = document.getElementById('my-decks-section');
+  s.style.display = s.style.display === 'none' ? 'block' : 'none';
+}
+
+function getSavedDecks() { try { return JSON.parse(localStorage.getItem('grimoire_decks')||'{}'); } catch { return {}; } }
+
+function renderMyDecks() {
+  const saved = getSavedDecks();
+  const keys = Object.keys(saved);
+  const grid = document.getElementById('decks-grid');
+  grid.innerHTML = keys.map(id => {
+    const {name, deck:d, savedAt} = saved[id];
+    const qty = Object.values(d).reduce((s,v)=>s+v.qty,0);
+    const date = savedAt ? new Date(savedAt).toLocaleDateString() : '';
+    return `<div class="deck-tile" onclick="loadDeck('${id}')">
+      <button class="deck-tile-del" onclick="event.stopPropagation();deleteDeck('${id}')">✕</button>
+      <div class="deck-tile-name">${name}</div>
+      <div class="deck-tile-meta">${qty} cards${date?' · '+date:''}</div>
+    </div>`;
+  }).join('') + `<div class="new-deck-tile" onclick="newDeck()">✦ New Deck</div>`;
+}
+
+function saveDeck() {
+  const name = document.getElementById('deck-name-input').value.trim() || 'Unnamed Deck';
+  const saved = getSavedDecks();
+  const id = activeDeckId || ('deck_'+Date.now());
+  activeDeckId = id;
+  saved[id] = { name, deck: JSON.parse(JSON.stringify(deck)), savedAt: new Date().toISOString() };
+  localStorage.setItem('grimoire_decks', JSON.stringify(saved));
+  toast(`"${name}" saved`);
+  renderMyDecks();
+}
+
+function loadDeck(id) {
+  const saved = getSavedDecks();
+  if (!saved[id]) return;
+  const {name, deck:d} = saved[id];
+  deck = {};
+  Object.entries(d).forEach(([k,v]) => deck[k]=v);
+  activeDeckId = id;
+  document.getElementById('deck-name-input').value = name;
+  openDeckBuilder();
+  toast(`"${name}" loaded`);
+}
+
+function deleteDeck(id) {
+  const saved = getSavedDecks();
+  const name = saved[id]?.name||'Deck';
+  delete saved[id];
+  localStorage.setItem('grimoire_decks', JSON.stringify(saved));
+  if (activeDeckId===id) closeDeckBuilder();
+  renderMyDecks();
+  toast(`"${name}" deleted`);
+}
+
+// MODAL
 function openModal(id) {
   const card = getCard(id);
   if (!card) return;
@@ -946,186 +602,87 @@ function openModal(id) {
   document.getElementById('modal-type').textContent = [card.type, card.set].filter(Boolean).join(' · ');
   document.getElementById('modal-text').textContent = card.rules_text || '';
   const stats = [];
-  if (card.cost != null) stats.push({ label: 'Cost', val: card.cost });
-  if (card.attack != null) stats.push({ label: 'Attack', val: card.attack });
-  if (card.defence != null) stats.push({ label: 'Defence', val: card.defence });
-  if (card.life != null) stats.push({ label: 'Life', val: card.life });
-  if (card.rarity) stats.push({ label: 'Rarity', val: card.rarity });
-  if (card.element) stats.push({ label: 'Element', val: card.element });
-  if (card.subTypes) stats.push({ label: 'Subtype', val: card.subTypes });
+  if (card.cost!=null) stats.push({l:'Cost',v:card.cost});
+  if (card.attack!=null) stats.push({l:'Attack',v:card.attack});
+  if (card.defence!=null) stats.push({l:'Defence',v:card.defence});
+  if (card.life!=null) stats.push({l:'Life',v:card.life});
+  if (card.rarity) stats.push({l:'Rarity',v:card.rarity});
+  if (card.element) stats.push({l:'Element',v:card.element});
+  if (card.subTypes) stats.push({l:'Subtype',v:card.subTypes});
   if (card.thresholds) {
-    const tStr = Object.entries(card.thresholds).filter(([,v]) => v > 0).map(([k,v]) => `${v} ${k}`).join(', ');
-    if (tStr) stats.push({ label: 'Threshold', val: tStr });
+    const t = Object.entries(card.thresholds).filter(([,v])=>v>0).map(([k,v])=>`${v} ${k}`).join(', ');
+    if (t) stats.push({l:'Threshold',v:t});
   }
-  document.getElementById('modal-stats').innerHTML = stats.map(s => `<div class="modal-stat"><b>${s.label}:</b> ${s.val}</div>`).join('');
-  // Show/hide add button based on whether deck builder is open
-  const addBtn = document.getElementById('modal-add-btn');
-  addBtn.style.display = document.getElementById('deck-builder-section').classList.contains('open') ? 'block' : 'none';
+  document.getElementById('modal-stats').innerHTML = stats.map(s=>`<div class="modal-stat"><b>${s.l}:</b> ${s.v}</div>`).join('');
+  const deckOpen = document.getElementById('deck-builder-section').style.display !== 'none';
+  document.getElementById('modal-add-btn').style.display = deckOpen ? 'block' : 'none';
   document.getElementById('modal-overlay').classList.add('open');
 }
 
-document.getElementById('modal-add-btn').addEventListener('click', () => {
-  if (currentModalCard !== null) { addCard(currentModalCard); closeModal(); }
-});
+document.getElementById('modal-add-btn').onclick = () => { if (currentModalCard) { addCard(currentModalCard); closeModal(); } };
 
 function closeModal(e) {
-  if (!e || e.target === document.getElementById('modal-overlay')) {
-    document.getElementById('modal-overlay').classList.remove('open');
-  }
+  if (!e || e.target===document.getElementById('modal-overlay')) document.getElementById('modal-overlay').classList.remove('open');
 }
 
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal({}); closeImport({}); } });
-
-// ── SAVE DECK ──
-function saveDeck() {
-  const name = document.getElementById('deck-name-input').value.trim() || 'Unnamed Deck';
-  const saved = getSavedDecks();
-  const id = activeDeckId || ('deck_' + Date.now());
-  activeDeckId = id;
-  saved[id] = { name, deck: JSON.parse(JSON.stringify(deck)), savedAt: new Date().toISOString() };
-  localStorage.setItem('grimoire_decks', JSON.stringify(saved));
-  toast(`"${name}" saved`);
-  renderMyDecks();
-}
-
-function getSavedDecks() {
-  try { return JSON.parse(localStorage.getItem('grimoire_decks') || '{}'); } catch { return {}; }
-}
-
-function loadSavedDeck(id) {
-  const saved = getSavedDecks();
-  if (!saved[id]) return;
-  const { name, deck: savedDeck } = saved[id];
-  deck = {};
-  Object.entries(savedDeck).forEach(([key, val]) => { deck[key] = val; });
-  activeDeckId = id;
-  document.getElementById('deck-name-input').value = name;
-  updateDeckLabel();
-  openDeckBuilder();
-  toast(`"${name}" loaded`);
-}
-
-function deleteSavedDeck(id) {
-  const saved = getSavedDecks();
-  const name = saved[id]?.name || 'Deck';
-  delete saved[id];
-  localStorage.setItem('grimoire_decks', JSON.stringify(saved));
-  if (activeDeckId === id) closeDeckBuilder();
-  renderMyDecks();
-  toast(`"${name}" deleted`);
-}
-
-function renderMyDecks() {
-  const saved = getSavedDecks();
-  const keys = Object.keys(saved);
-  const grid = document.getElementById('decks-grid');
-  const newBtn = `<div class="new-deck-card" onclick="newDeck()">✦ New Deck</div>`;
-  if (!keys.length) {
-    grid.innerHTML = `<div class="decks-empty">No saved decks yet.</div>${newBtn}`;
-    return;
-  }
-  grid.innerHTML = keys.map(id => {
-    const { name, deck: d, savedAt } = saved[id];
-    const qty = Object.values(d).reduce((s, v) => s + v.qty, 0);
-    const date = savedAt ? new Date(savedAt).toLocaleDateString() : '';
-    return `<div class="deck-card" onclick="loadSavedDeck('${id}')">
-      <button class="deck-card-del" onclick="event.stopPropagation();deleteSavedDeck('${id}')">✕</button>
-      <div class="deck-card-name">${name}</div>
-      <div class="deck-card-meta">${qty} cards${date ? ' · ' + date : ''}</div>
-    </div>`;
-  }).join('') + newBtn;
-}
-
-// ── EXPORT ──
+// EXPORT
 function exportDeck() {
   const entries = Object.values(deck);
   if (!entries.length) { toast('Your deck is empty'); return; }
-  const name = document.getElementById('deck-name-input').value.trim() || 'My Deck';
-  const lines = [`// ${name}`, ''];
+  const name = document.getElementById('deck-name-input').value.trim()||'My Deck';
   const groups = {};
-  entries.forEach(({ card, qty }) => {
-    const type = card.type || 'Other';
-    if (!groups[type]) groups[type] = [];
-    groups[type].push(`${qty}x ${card.name}`);
-  });
-  Object.entries(groups).forEach(([type, cards]) => {
-    lines.push(`// ${type}`);
-    cards.forEach(c => lines.push(c));
-    lines.push('');
-  });
-  const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+  entries.forEach(({card,qty}) => { const t=card.type||'Other'; (groups[t]=groups[t]||[]).push(`${qty}x ${card.name}`); });
+  const lines = [`// ${name}`,'',...Object.entries(groups).flatMap(([t,c])=>[`// ${t}`,...c,''])];
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = name.replace(/\s+/g, '_') + '.txt';
+  a.href = URL.createObjectURL(new Blob([lines.join('\n')],{type:'text/plain'}));
+  a.download = name.replace(/\s+/g,'_')+'.txt';
   a.click();
   toast('Deck exported');
 }
 
-// ── CLEAR DECK ──
-function clearDeck() {
-  if (!Object.keys(deck).length) return;
-  deck = {};
-  renderDeck();
-  toast('Deck cleared');
-}
+function clearDeck() { if (!Object.keys(deck).length) return; deck={}; renderDeck(); toast('Deck cleared'); }
 
-// ── IMPORT ──
-function openImport() {
-  document.getElementById('import-text').value = '';
-  document.getElementById('import-overlay').classList.add('open');
-}
-
-function closeImport(e) {
-  if (!e || e.target === document.getElementById('import-overlay')) {
-    document.getElementById('import-overlay').classList.remove('open');
-  }
-}
+// IMPORT
+function openImport() { document.getElementById('import-text').value=''; document.getElementById('import-overlay').classList.add('open'); }
+function closeImport(e) { if (!e||e.target===document.getElementById('import-overlay')) document.getElementById('import-overlay').classList.remove('open'); }
 
 function runImport() {
   const text = document.getElementById('import-text').value.trim();
   if (!text) return;
-  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-  const newDeck = {};
-  let matched = 0, skipped = 0, isFirst = true;
-  const sectionHeader = /^(Avatar|Artifact|Minion|Magic|Aura|Site|Spell)\s*\(\d+\)/i;
+  const lines = text.split('\n').map(l=>l.trim()).filter(Boolean);
+  const newDeck={}, sectionRe=/^(Avatar|Artifact|Minion|Magic|Aura|Site|Spell)\s*\(\d+\)/i;
+  let matched=0, skipped=0, isFirst=true;
   for (const line of lines) {
-    if (sectionHeader.test(line)) continue;
-    const match = line.match(/^(\d+)(.+)/);
-    if (!match) continue;
-    const qty = parseInt(match[1]);
-    const name = match[2].trim();
+    if (sectionRe.test(line)) continue;
+    const m = line.match(/^(\d+)(.+)/);
+    if (!m) continue;
+    const qty=parseInt(m[1]), name=m[2].trim();
     if (/^\d+$/.test(name)) continue;
-    if (isFirst) {
-      isFirst = false;
-      const card = allCards.find(c => c.name.toLowerCase() === name.toLowerCase());
-      if (card) { newDeck[String(card.id)] = { card, qty: 1 }; matched++; } else { skipped++; }
-      continue;
-    }
-    const card = allCards.find(c => c.name.toLowerCase() === name.toLowerCase());
+    const card = allCards.find(c=>c.name.toLowerCase()===name.toLowerCase());
     if (card) {
-      const key = String(card.id);
-      if (newDeck[key]) { newDeck[key].qty += qty; } else { newDeck[key] = { card, qty }; }
+      const key=String(card.id);
+      if (newDeck[key]) { newDeck[key].qty += isFirst?0:qty; } else { newDeck[key]={card,qty:isFirst?1:qty}; }
       matched++;
     } else { skipped++; }
+    isFirst=false;
   }
-  if (matched === 0) { toast('No cards matched — check the format'); return; }
-  deck = newDeck;
+  if (matched===0) { toast('No cards matched — check the format'); return; }
+  deck=newDeck;
   openDeckBuilder();
-  renderDeck();
   closeImport();
-  toast(`Imported ${matched} cards${skipped ? ` (${skipped} not found)` : ''}`);
+  toast(`Imported ${matched} cards${skipped?` (${skipped} not found)`:''}`);
 }
 
-// ── TOAST ──
+// TOAST
 function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(el._t);
-  el._t = setTimeout(() => el.classList.remove('show'), 2200);
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),2200);
 }
 
-// ── INIT ──
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeModal({});closeImport({});} });
+
+// INIT
 renderMyDecks();
 loadCards();
 </script>
