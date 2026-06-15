@@ -165,92 +165,138 @@
 
   .deck-empty { color: var(--mist); font-style: italic; padding: 24px 0; font-size: 0.9rem; }
 
-  /* CARD EXPLORER */
+  /* CARD EXPLORER — STONEWORK FILTER WALL */
   .search-bar {
-    background: var(--abyss);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 18px 20px;
     margin-bottom: 16px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 0;
   }
 
-  .search-row { display: flex; gap: 10px; align-items: center; }
+  /* Top lintel — search row */
+  .search-row {
+    display: flex; gap: 10px; align-items: center;
+    background: #252338;
+    border: 3px solid #2a2640;
+    border-bottom: 5px solid #0b0a0f;
+    box-shadow: inset 3px 3px 0 rgba(255,255,255,0.05), inset -3px -3px 0 rgba(0,0,0,0.4);
+    padding: 12px 16px;
+  }
 
-  /* RUNE STONE FILTER GROUPS */
-  .filter-stones { display: flex; gap: 12px; flex-wrap: wrap; }
+  /* Stone blocks row */
+  .filter-stones { display: flex; gap: 0; flex-wrap: nowrap; }
 
   .filter-stone {
-    background: var(--void);
-    border: 1px solid var(--border);
-    border-top: 3px solid var(--mist);
-    border-radius: 2px;
-    padding: 10px 14px;
-    min-width: 110px;
     flex: 1;
+    background: #1a1826;
+    padding: 14px 16px 18px;
+    border: 3px solid #2a2640;
+    border-right: none;
+    border-top: none;
+    position: relative;
+    box-shadow: inset 3px 3px 0 rgba(255,255,255,0.04), inset -3px -3px 0 rgba(0,0,0,0.35);
+    min-width: 120px;
+  }
+  .filter-stone:last-child { border-right: 3px solid #2a2640; }
+
+  /* mortar gap between stones */
+  .filter-stone + .filter-stone::before {
+    content: '';
+    position: absolute;
+    left: -5px; top: 0; bottom: 0;
+    width: 5px;
+    background: #0b0a0f;
+    z-index: 2;
+  }
+
+  /* Bottom foundation — summary row */
+  .stone-foundation {
+    background: #13111e;
+    border: 3px solid #2a2640;
+    border-top: 5px solid #0b0a0f;
+    padding: 8px 16px;
+    box-shadow: inset 3px 3px 0 rgba(255,255,255,0.02), inset -3px -3px 0 rgba(0,0,0,0.5);
+    min-height: 34px;
   }
 
   .stone-label {
     font-family: 'Cinzel', serif;
-    font-size: 0.6rem;
+    font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--mist);
-    margin-bottom: 10px;
+    color: var(--gold);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #0b0a0f;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.04);
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
 
   .stone-clear {
-    background: none; border: none; color: var(--mist);
-    font-size: 0.7rem; cursor: pointer; padding: 0;
+    background: none; border: none; color: var(--rune);
+    font-size: 0.72rem; cursor: pointer; padding: 0;
     font-family: 'Crimson Pro', serif; font-style: italic;
-    transition: color 0.15s; line-height: 1;
+    transition: color 0.15s;
   }
   .stone-clear:hover { color: var(--ember); }
 
-  .stone-options { display: flex; flex-direction: column; gap: 4px; }
+  .clear-all-btn {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: #13111e;
+    border: 2px solid #2a2640;
+    color: var(--rune);
+    padding: 6px 14px;
+    cursor: pointer;
+    flex-shrink: 0;
+    box-shadow: inset 2px 2px 0 rgba(255,255,255,0.03), inset -2px -2px 0 rgba(0,0,0,0.4);
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .clear-all-btn:hover { color: var(--ember); border-color: var(--ember); }
+
+  .stone-options { display: flex; flex-direction: column; gap: 2px; }
 
   .stone-option {
-    display: flex; align-items: center; gap: 8px;
-    font-family: 'Crimson Pro', serif; font-size: 0.95rem;
-    color: var(--mist); cursor: pointer;
-    padding: 3px 0;
-    transition: color 0.15s;
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Crimson Pro', serif; font-size: 1.2rem;
+    color: #c9bfee; cursor: pointer;
+    padding: 5px 6px;
+    transition: color 0.15s, background 0.15s;
     border: none; background: none; text-align: left; width: 100%;
+    letter-spacing: 0.02em;
   }
-
-  .stone-option:hover { color: var(--shimmer); }
-
-  .stone-option.active { color: var(--shimmer); }
+  .stone-option:hover { color: #fff; background: rgba(155,135,212,0.1); }
+  .stone-option.active { color: #fff; }
 
   .rune-mark {
-    width: 14px; height: 14px; flex-shrink: 0;
-    border: 1px solid var(--mist);
-    border-radius: 1px;
+    width: 17px; height: 17px; flex-shrink: 0;
+    border: 2px solid #3a3658;
+    background: #0b0a0f;
     display: flex; align-items: center; justify-content: center;
+    font-size: 0.68rem; color: transparent;
     transition: background 0.15s, border-color 0.15s;
-    font-size: 0.6rem; color: transparent;
   }
-
   .stone-option.active .rune-mark {
     background: var(--rune);
     border-color: var(--arcane);
-    color: var(--shimmer);
+    color: #fff;
   }
 
-  .active-summary {
-    font-size: 0.8rem; color: var(--rune); font-style: italic; padding: 2px 0 0;
-  }
-  .active-summary span { color: var(--arcane); }
+  .active-summary { font-size: 1rem; color: #9b87d4; font-style: italic; }
+  .active-summary span { color: var(--gold); }
 
-  input[type="text"] { width: 100%; background: var(--dusk); border: 1px solid var(--border); color: var(--parchment); font-family: 'Crimson Pro', serif; font-size: 1rem; padding: 7px 12px 7px 34px; border-radius: 4px; outline: none; transition: border-color 0.2s; }
-  input[type="text"]:focus { border-color: var(--rune); box-shadow: var(--glow); }
-  input[type="text"]::placeholder { color: var(--mist); font-style: italic; }
+  .search-input-wrap { position: relative; flex: 1; }
+  .search-input-wrap svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; opacity: 0.35; fill: var(--arcane); pointer-events: none; }
+
+  input[type="text"] { width: 100%; background: #0b0a0f; border: 2px solid #2a2640; color: var(--parchment); font-family: 'Crimson Pro', serif; font-size: 1.05rem; padding: 7px 12px 7px 34px; outline: none; box-shadow: inset 2px 2px 4px rgba(0,0,0,0.5); border-radius: 0; transition: border-color 0.2s; }
+  input[type="text"]:focus { border-color: var(--rune); }
+  input[type="text"]::placeholder { color: #3a3658; font-style: italic; }
 
   select {
     background: var(--dusk); border: 1px solid var(--border); color: var(--parchment);
@@ -346,7 +392,7 @@
           <svg viewBox="0 0 20 20"><path d="M12.9 14.32a8 8 0 111.41-1.41l4.42 4.41-1.41 1.42-4.42-4.42zM8 14A6 6 0 108 2a6 6 0 000 12z"/></svg>
           <input type="text" id="search-input" placeholder="Search cards…" autocomplete="off">
         </div>
-        <button class="stone-clear" onclick="clearAllFilters()" style="font-size:0.8rem;padding:6px 12px;border:1px solid var(--border);border-radius:3px;">✕ Clear all</button>
+        <button class="clear-all-btn" onclick="clearAllFilters()">✕ Clear all</button>
       </div>
       <div class="filter-stones">
         <div class="filter-stone">
@@ -389,7 +435,9 @@
           </div>
         </div>
       </div>
-      <div class="active-summary" id="active-summary"></div>
+      <div class="stone-foundation">
+        <div class="active-summary" id="active-summary"></div>
+      </div>
     </div>
     <div id="result-count" class="result-count"></div>
     <div id="card-grid" class="card-grid">
