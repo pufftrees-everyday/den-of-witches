@@ -211,20 +211,22 @@
   /* MODAL */
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(11,10,15,0.85); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
   .modal-overlay.open { display: flex; }
-  .modal { background: var(--dusk); border: 1px solid var(--border-strong); border-radius: 8px; box-shadow: 0 0 60px rgba(155,135,212,0.2); max-width: 1200px; width: 96vw; display: grid; grid-template-columns: 520px 1fr; overflow: visible; position: relative; }
-  .modal-img { background: var(--twilight); display: flex; align-items: center; justify-content: center; width: 520px; min-height: 520px; overflow: hidden; border-radius: 8px 0 0 8px; }
-  .modal-img img { width: 460px; height: 613px; object-fit: cover; display: block; flex-shrink: 0; }
-  .modal-img img.rotated { transform: rotate(90deg); width: 500px; height: 375px; }
-  .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 10px; }
-  .modal-name { font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 600; color: var(--gold); }
-  .modal-type { font-size: 0.85rem; color: var(--arcane); font-style: italic; }
-  .modal-text { font-size: 0.9rem; color: var(--parchment); line-height: 1.6; flex: 1; border-top: 1px solid var(--border); padding-top: 10px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-  .modal-stats { display: flex; flex-wrap: wrap; gap: 6px; }
-  .modal-stat { font-size: 0.78rem; background: rgba(155,135,212,0.08); border: 1px solid var(--border); border-radius: 3px; padding: 2px 8px; color: var(--shimmer); }
+  .modal { background: var(--dusk); border: 1px solid var(--border-strong); border-radius: 8px; box-shadow: 0 0 60px rgba(155,135,212,0.2); max-width: 1200px; width: 96vw; display: grid; grid-template-columns: 520px 1fr; position: relative; overflow: hidden; }
+  .modal-img { background: var(--twilight); display: flex; align-items: center; justify-content: center; width: 520px; min-height: 520px; }
+  .modal-img img { width: 460px; height: 613px; object-fit: cover; display: block; }
+  /* Site cards: rotate and resize so full landscape card is visible */
+  .modal-img.site-img { min-height: 380px; }
+  .modal-img.site-img img { width: 560px; height: 420px; transform: rotate(90deg); object-fit: contain; }
+  .modal-body { padding: 28px; display: flex; flex-direction: column; gap: 14px; }
+  .modal-name { font-family: 'Cinzel', serif; font-size: 3rem; font-weight: 600; color: var(--gold); }
+  .modal-type { font-size: 2.6rem; color: var(--arcane); font-style: italic; }
+  .modal-text { font-size: 2.5rem; color: var(--parchment); line-height: 1.7; flex: 1; border-top: 1px solid var(--border); padding-top: 14px; border-bottom: 1px solid var(--border); padding-bottom: 14px; }
+  .modal-stats { display: flex; flex-wrap: wrap; gap: 8px; }
+  .modal-stat { font-size: 2.4rem; background: rgba(155,135,212,0.08); border: 1px solid var(--border); border-radius: 3px; padding: 4px 12px; color: var(--shimmer); }
   .modal-stat b { color: var(--arcane); }
-  .modal-add { padding: 8px 16px; font-family: 'Cinzel', serif; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; background: var(--rune); border: 1px solid var(--arcane); color: #fff; border-radius: 4px; cursor: pointer; transition: background 0.2s; }
+  .modal-add { padding: 10px 20px; font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; background: var(--rune); border: 1px solid var(--arcane); color: #fff; border-radius: 4px; cursor: pointer; transition: background 0.2s; }
   .modal-add:hover { background: var(--arcane); }
-  .modal-close { position: absolute; top: 10px; right: 12px; background: none; border: none; color: var(--mist); font-size: 1.4rem; cursor: pointer; transition: color 0.15s; }
+  .modal-close { position: absolute; top: 12px; right: 16px; background: none; border: none; color: var(--mist); font-size: 1.6rem; cursor: pointer; transition: color 0.15s; }
   .modal-close:hover { color: var(--parchment); }
 
   /* TOAST */
@@ -620,8 +622,15 @@ function openModal(id) {
   const card = getCard(id);
   if (!card) return;
   currentModalCard = id;
-  document.getElementById('modal-img').src = getImageUrl(card);
-  document.getElementById('modal-img').className = card.type === 'Site' ? 'rotated' : '';
+  const imgEl = document.getElementById('modal-img');
+  const imgContainer = imgEl.parentElement;
+  imgEl.src = getImageUrl(card);
+  imgEl.className = '';
+  if (card.type === 'Site') {
+    imgContainer.className = 'modal-img site-img';
+  } else {
+    imgContainer.className = 'modal-img';
+  }
   document.getElementById('modal-name').textContent = card.name;
   document.getElementById('modal-type').textContent = [card.type, card.set].filter(Boolean).join(' · ');
   document.getElementById('modal-text').textContent = card.rules_text || '';
