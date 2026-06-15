@@ -590,14 +590,14 @@
 <header>
   <div class="logo">Grimoire <span>· Sorcery TCG</span></div>
   <div class="header-nav">
-    <button class="btn btn-ghost" onclick="scrollToDecks()">My Decks</button>
+    <button class="btn btn-ghost" onclick="const s=document.getElementById('my-decks-section');s.style.display=s.style.display==='none'?'block':'none';s.scrollIntoView({behavior:'smooth'})">My Decks</button>
     <button class="btn btn-primary" onclick="newDeck()">✦ New Deck</button>
   </div>
 </header>
 
 <!-- MY DECKS -->
 <div class="page-section" id="my-decks-section">
-  <div class="section-title">My Decks</div>
+  <div class="section-title">My Decks <button class="filter-clear" onclick="document.getElementById('my-decks-section').style.display='none'" style="font-style:normal;letter-spacing:0.05em;">hide ✕</button></div>
   <div class="decks-grid" id="decks-grid">
     <div class="decks-empty">No saved decks yet. Click "New Deck" to get started.</div>
   </div>
@@ -730,39 +730,45 @@ const IMAGE_BASE = 'https://pub-5999238092ad418ca60e7a9ad641cf57.r2.dev/';
 
 // ── FETCH CARDS ──
 async function loadCards() {
-  try {
-    const res = await fetch('cards.json');
-    if (!res.ok) throw new Error('Could not load cards.json');
-    const data = await res.json();
-    const raw = Array.isArray(data) ? data : (data.data || data.cards || []);
-    allCards = raw.map(card => {
-      const g = card.guardian || {};
-      const firstSet = (card.sets || [])[0];
-      const firstVariant = firstSet ? (firstSet.variants || []).find(v => v.finish === 'Standard' && v.product === 'Booster') || firstSet.variants[0] : null;
-      return {
-        id: card.name,
-        name: card.name,
-        type: g.type || '',
-        rarity: g.rarity || '',
-        cost: g.cost,
-        attack: g.attack,
-        defence: g.defence,
-        life: g.life,
-        thresholds: g.thresholds || {},
-        rules_text: g.rulesText || '',
-        element: (card.elements || []).join(', '),
-        subTypes: card.subTypes || '',
-        set: firstSet ? firstSet.name : '',
-        slug: firstVariant ? firstVariant.slug : null,
-        artist: firstVariant ? firstVariant.artist : '',
-        flavorText: firstVariant ? firstVariant.flavorText : '',
-      };
-    });
-    renderCards(allCards);
-    document.getElementById('result-count').textContent = allCards.length + ' cards found';
-  } catch (e) {
-    document.getElementById('card-grid').innerHTML = `<div class="status"><span class="loading-rune" style="animation:none;opacity:0.5">✦</span>Could not load cards.json.<br><small>Make sure cards.json is in your GitHub repo.</small></div>`;
+  const paths = ['cards.json', './cards.json', '/cards.json'];
+  let data = null;
+  for (const path of paths) {
+    try {
+      const res = await fetch(path);
+      if (res.ok) { data = await res.json(); break; }
+    } catch(e) {}
   }
+  if (!data) {
+    document.getElementById('card-grid').innerHTML = `<div class="status"><span class="loading-rune" style="animation:none;opacity:0.5">✦</span>Could not load cards.json.<br><small>Make sure cards.json is uploaded to your GitHub repo alongside index.html.</small></div>`;
+    return;
+  }
+  const raw = Array.isArray(data) ? data : (data.data || data.cards || []);
+  allCards = raw.map(card => {
+    const g = card.guardian || {};
+    const firstSet = (card.sets || [])[0];
+    const firstVariant = firstSet ? (firstSet.variants || []).find(v => v.finish === 'Standard' && v.product === 'Booster') || firstSet.variants[0] : null;
+    return {
+      id: card.name,
+      name: card.name,
+      type: g.type || '',
+      rarity: g.rarity || '',
+      cost: g.cost,
+      attack: g.attack,
+      defence: g.defence,
+      life: g.life,
+      thresholds: g.thresholds || {},
+      rules_text: g.rulesText || '',
+      element: (card.elements || []).join(', '),
+      subTypes: card.subTypes || '',
+      set: firstSet ? firstSet.name : '',
+      slug: firstVariant ? firstVariant.slug : null,
+      artist: firstVariant ? firstVariant.artist : '',
+      flavorText: firstVariant ? firstVariant.flavorText : '',
+    };
+  });
+  // Apply default filters: Alpha + Avatar
+  toggleFilter('set', 'Alpha');
+  toggleFilter('type', 'Avatar');
 }
 
 // ── IMAGE ──
@@ -825,6 +831,7 @@ function filterCards() {
     (!activeFilters.element.size || [...activeFilters.element].some(el => (c.element || '').includes(el)))
   );
   renderCards(filtered);
+  document.getElementById('result-count').textContent = filtered.length + (filtered.length > 200 ? ' (showing 200)' : '') + ' cards';
 }
 
 document.getElementById('search-input').addEventListener('input', filterCards);
