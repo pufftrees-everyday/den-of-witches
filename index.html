@@ -77,19 +77,16 @@
 
   /* ── LAYOUT ── */
   .app {
-    display: grid;
-    grid-template-columns: 1fr 340px;
-    grid-template-rows: auto 1fr;
+    display: flex;
+    flex-direction: column;
     min-height: calc(100vh - 60px);
   }
 
   /* ── SEARCH PANEL ── */
   .search-panel {
-    grid-column: 1;
-    grid-row: 1 / 3;
-    border-right: 1px solid var(--border);
     display: flex;
     flex-direction: column;
+    flex: 1;
   }
 
   .search-bar {
@@ -736,6 +733,27 @@
 
   .modal-close:hover { color: var(--parchment); }
 
+  /* ── DECK BUILDER PANEL ── */
+  .deck-builder-panel {
+    display: none;
+    border-top: 1px solid var(--border);
+    background: var(--abyss);
+    padding: 20px 24px;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .deck-builder-panel.open {
+    display: flex;
+  }
+
+  .deck-builder-inner {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 24px;
+    align-items: start;
+  }
+
   /* ── RESPONSIVE ── */
   @media (max-width: 800px) {
     .app { grid-template-columns: 1fr; grid-template-rows: auto auto auto; }
@@ -751,7 +769,7 @@
 
 <header>
   <div class="logo">Grimoire <span>· Sorcery TCG</span></div>
-  <div class="header-meta">Deck Builder</div>
+  <button class="btn btn-primary" style="font-size:0.72rem;padding:7px 18px;flex:none;" onclick="toggleDeckBuilder()">✦ New Deck</button>
 </header>
 
 <div class="app">
@@ -792,38 +810,43 @@
         </div>
       </div>
     </div>
+
+  <!-- DECK BUILDER PANEL -->
+  <div class="deck-builder-panel" id="deck-builder-panel">
+    <div class="deck-builder-inner">
+      <!-- LEFT: deck list -->
+      <div>
+        <div class="deck-header" style="padding:0 0 14px;border-bottom:1px solid var(--border);margin-bottom:12px;">
+          <div class="deck-title-row">
+            <input type="text" id="deck-name-input" placeholder="Name your deck…" style="background:transparent;border:none;border-bottom:1px solid var(--border);border-radius:0;color:var(--gold);font-family:'Cinzel',serif;font-size:1.05rem;font-weight:600;padding:4px 0 6px;letter-spacing:0.04em;flex:1;">
+            <div class="deck-count" id="deck-count">0 cards</div>
+          </div>
+          <div class="deck-stats" id="deck-stats" style="margin-top:8px;"></div>
+        </div>
+        <div class="deck-list" id="deck-list" style="max-height:400px;overflow-y:auto;">
+          <div class="deck-empty">
+            <span class="sigil">✦</span>
+            Search for cards above and click + to add them.
+          </div>
+        </div>
+      </div>
+      <!-- RIGHT: actions + saved -->
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="deck-actions" style="padding:0;border:none;flex-direction:column;">
+          <button class="btn btn-primary" onclick="saveDeck()">Save Deck</button>
+          <button class="btn btn-ghost" onclick="openImport()">Import from Curiosa</button>
+          <button class="btn btn-ghost" onclick="exportDeck()">Export as Text</button>
+          <button class="btn btn-danger" onclick="clearDeck()">Clear Deck</button>
+        </div>
+        <div class="saved-decks" id="saved-decks-section" style="display:none;border-top:1px solid var(--border);padding-top:12px;">
+          <div class="saved-decks-header">Saved Decks</div>
+          <div id="saved-decks-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   </section>
-
-  <!-- DECK PANEL -->
-  <aside class="deck-panel">
-    <div class="deck-header">
-      <div class="deck-title-row">
-        <h2>Your Deck</h2>
-        <div class="deck-count" id="deck-count">0 cards</div>
-      </div>
-      <input type="text" id="deck-name-input" placeholder="Name your deck…">
-      <div class="deck-stats" id="deck-stats"></div>
-    </div>
-
-    <div class="deck-list" id="deck-list">
-      <div class="deck-empty">
-        <span class="sigil">✦</span>
-        Your grimoire awaits.<br>Search for cards and add them to begin.
-      </div>
-    </div>
-
-    <div class="deck-actions">
-      <button class="btn btn-primary" onclick="saveDeck()">Save</button>
-      <button class="btn btn-ghost" onclick="openImport()">Import</button>
-      <button class="btn btn-ghost" onclick="exportDeck()">Export</button>
-      <button class="btn btn-danger" onclick="clearDeck()">Clear</button>
-    </div>
-
-    <div class="saved-decks" id="saved-decks-section" style="display:none">
-      <div class="saved-decks-header">Saved Decks</div>
-      <div id="saved-decks-list"></div>
-    </div>
-  </aside>
 </div>
 
 <!-- CARD MODAL -->
@@ -868,7 +891,15 @@ let deck = {}; // cardId -> { card, qty }
 let currentModalCard = null;
 const IMAGE_BASE = 'https://pub-5999238092ad418ca60e7a9ad641cf57.r2.dev/';
 
-// ── FETCH CARDS ──
+// ── TOGGLE DECK BUILDER ──
+function toggleDeckBuilder() {
+  const panel = document.getElementById('deck-builder-panel');
+  panel.classList.toggle('open');
+  const btn = document.querySelector('header .btn-primary');
+  btn.textContent = panel.classList.contains('open') ? '✕ Close Deck' : '✦ New Deck';
+}
+
+
 async function loadCards() {
   try {
     const res = await fetch('cards.json');
