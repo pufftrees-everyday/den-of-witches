@@ -215,8 +215,12 @@
   .modal-img { background: var(--twilight); display: flex; align-items: center; justify-content: center; width: 520px; min-height: 520px; }
   .modal-img img { width: 460px; height: 613px; object-fit: cover; display: block; }
   /* Site cards: container sized for landscape, image rotated to fill it */
-  .modal-img.site-img { width: 700px; min-height: 700px; }
-  .modal-img.site-img img { width: 660px; height: 495px; transform: rotate(90deg); object-fit: contain; }
+  .modal-img.site-img { width: 900px; min-height: 620px; }
+  .modal-img.site-img img { width: 860px; height: 645px; transform: rotate(90deg); object-fit: contain; }
+  .modal.site-modal .modal-name { font-size: 1.6rem; }
+  .modal.site-modal .modal-type { font-size: 1.2rem; }
+  .modal.site-modal .modal-text { font-size: 1.1rem; }
+  .modal.site-modal .modal-stat { font-size: 1rem; }
   .modal-body { padding: 28px; display: flex; flex-direction: column; gap: 14px; }
   .modal-name { font-family: 'Cinzel', serif; font-size: 3rem; font-weight: 600; color: var(--gold); }
   .modal-type { font-size: 2.6rem; color: var(--arcane); font-style: italic; }
@@ -505,12 +509,15 @@ function openModal(id) {
   currentModalCard = id;
   const imgEl = document.getElementById('modal-img');
   const imgContainer = imgEl.parentElement;
+  const modalEl = imgContainer.parentElement;
   imgEl.src = getImageUrl(card);
   imgEl.className = '';
   if (card.type === 'Site') {
     imgContainer.className = 'modal-img site-img';
+    modalEl.className = 'modal site-modal';
   } else {
     imgContainer.className = 'modal-img';
+    modalEl.className = 'modal';
   }
   document.getElementById('modal-name').textContent = card.name;
   document.getElementById('modal-type').textContent = [card.type, card.set].filter(Boolean).join(' · ');
@@ -528,8 +535,7 @@ function openModal(id) {
     if (t) stats.push({l:'Threshold',v:t});
   }
   document.getElementById('modal-stats').innerHTML = stats.map(s=>`<div class="modal-stat"><b>${s.l}:</b> ${s.v}</div>`).join('');
-  const deckOpen = document.getElementById('deck-builder-section').style.display !== 'none';
-  document.getElementById('modal-add-btn').style.display = deckOpen ? 'block' : 'none';
+  document.getElementById('modal-add-btn').style.display = 'none';
   document.getElementById('modal-overlay').classList.add('open');
 }
 
