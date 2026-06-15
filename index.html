@@ -247,7 +247,7 @@
   <div class="logo">Grimoire <span>· Sorcery TCG</span></div>
   <div class="header-nav">
     <button class="btn btn-ghost" onclick="toggleMyDecks()">My Decks</button>
-    <button class="btn btn-primary" onclick="newDeck()">✦ New Deck</button>
+    <button class="btn btn-primary" onclick="window.location.href='deckbuilder.html'">✦ New Deck</button>
   </div>
 </header>
 
@@ -259,24 +259,6 @@
     <div class="decks-grid" id="decks-grid"></div>
   </div>
 
-  <!-- DECK BUILDER -->
-  <div id="deck-builder-section" style="display:none;margin-bottom:32px;">
-    <div class="section-title">Deck Builder</div>
-    <div class="deck-builder-bar">
-      <input type="text" id="deck-name-input" placeholder="Name your deck…" oninput="updateDeckLabel()">
-      <div class="deck-builder-actions">
-        <button class="btn btn-primary btn-sm" onclick="saveDeck()">Save</button>
-        <button class="btn btn-ghost btn-sm" onclick="openImport()">Import</button>
-        <button class="btn btn-ghost btn-sm" onclick="exportDeck()">Export</button>
-        <button class="btn btn-danger btn-sm" onclick="clearDeck()">Clear</button>
-        <button class="btn btn-ghost btn-sm" onclick="closeDeckBuilder()">✕ Close</button>
-      </div>
-    </div>
-    <div class="deck-stats-row" id="deck-stats"></div>
-    <div class="deck-visual-grid" id="deck-visual-grid">
-      <div class="deck-empty">Search for cards below and click + to add them to your deck.</div>
-    </div>
-  </div>
 
   <!-- CARD EXPLORER -->
   <div id="card-explorer-section">
@@ -337,22 +319,6 @@
       <button class="modal-add" id="modal-add-btn">+ Add to Deck</button>
     </div>
     <button class="modal-close" onclick="closeModal()">✕</button>
-  </div>
-</div>
-
-<!-- IMPORT MODAL -->
-<div class="modal-overlay" id="import-overlay" onclick="closeImport(event)">
-  <div class="modal" style="grid-template-columns:1fr;max-width:480px;">
-    <div class="modal-body" style="padding:24px;">
-      <div class="modal-name" style="margin-bottom:6px;">Import from Curiosa</div>
-      <div class="modal-type" style="margin-bottom:12px;">Paste your decklist from curiosa.io</div>
-      <textarea id="import-text" placeholder="1Archimago&#10;Artifact (4)&#10;1Ring of Morrigan&#10;1&#10;..." style="width:100%;height:200px;background:var(--dusk);border:1px solid var(--border);color:var(--parchment);font-family:'Crimson Pro',serif;font-size:0.9rem;padding:10px;border-radius:4px;resize:vertical;outline:none;line-height:1.6;"></textarea>
-      <div style="display:flex;gap:8px;margin-top:12px;">
-        <button class="modal-add" style="flex:1" onclick="runImport()">Import</button>
-        <button class="modal-add" style="flex:1;background:transparent;border-color:var(--border-strong);color:var(--rune);" onclick="closeImport()">Cancel</button>
-      </div>
-    </div>
-    <button class="modal-close" onclick="closeImport()">✕</button>
   </div>
 </div>
 
@@ -466,99 +432,25 @@ window.addEventListener('scroll', () => {
   }
 });
 
-// ADD TO DECK
+// ADD TO DECK - disabled on this page
 function getCard(id) { return allCards.find(c => c.id === id || c.name === id); }
 
-function addCard(id) {
-  const card = getCard(id);
-  if (!card) return;
-  if (document.getElementById('deck-builder-section').style.display === 'none') openDeckBuilder();
-  const key = String(id);
-  deck[key] = deck[key] ? { ...deck[key], qty: deck[key].qty + 1 } : { card, qty: 1 };
-  renderDeck();
-  toast(`${card.name} added`);
-}
-
-// DECK BUILDER
-function newDeck() {
-  deck = {};
-  activeDeckId = null;
-  document.getElementById('deck-name-input').value = '';
-  openDeckBuilder();
-}
-
-function openDeckBuilder() {
-  document.getElementById('deck-builder-section').style.display = 'block';
-  renderDeck();
-  renderCards(getFilteredCards());
-  document.getElementById('deck-builder-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function closeDeckBuilder() {
-  document.getElementById('deck-builder-section').style.display = 'none';
-  renderCards(getFilteredCards());
-}
-
-function getFilteredCards() {
-  const q = document.getElementById('search-input').value.toLowerCase();
-  const type = document.getElementById('filter-type').value;
-  const set = document.getElementById('filter-set').value;
-  const rarity = document.getElementById('filter-rarity').value;
-  const element = document.getElementById('filter-element').value;
-  return allCards.filter(c =>
-    (!q || c.name.toLowerCase().includes(q)) &&
-    (!type || c.type === type) &&
-    (!set || c.set === set) &&
-    (!rarity || c.rarity === rarity) &&
-    (!element || (c.element || '').includes(element))
-  );
-}
-
+// DECK BUILDER - on separate page
+function newDeck() { window.location.href = 'deckbuilder.html'; }
+function openDeckBuilder() { window.location.href = 'deckbuilder.html'; }
+function closeDeckBuilder() {}
+function getFilteredCards() { return allCards; }
 function updateDeckLabel() {}
+function changeQty() {}
+function removeCard() {}
+function renderDeck() {}
+function saveDeck() {}
+function exportDeck() {}
+function clearDeck() {}
+function openImport() {}
+function closeImport() {}
+function runImport() {}
 
-// QTY
-function changeQty(key, delta) {
-  if (!deck[key]) return;
-  deck[key].qty += delta;
-  if (deck[key].qty <= 0) delete deck[key];
-  renderDeck();
-}
-function removeCard(key) { delete deck[key]; renderDeck(); }
-
-// RENDER DECK
-function renderDeck() {
-  const entries = Object.entries(deck);
-  const total = entries.reduce((s,[,v]) => s+v.qty, 0);
-  document.getElementById('deck-stats').innerHTML = total
-    ? `<div class="stat-pill"><b>${total}</b> cards</div><div class="stat-pill"><b>${entries.length}</b> unique</div>` : '';
-
-  const grid = document.getElementById('deck-visual-grid');
-  if (!entries.length) { grid.innerHTML = '<div class="deck-empty">Search for cards below and click + to add them to your deck.</div>'; return; }
-
-  const groups = {};
-  entries.forEach(([key,{card,qty}]) => {
-    const t = card.type || 'Other';
-    (groups[t] = groups[t]||[]).push({key,card,qty});
-  });
-  const order = ['Avatar','Site','Minion','Magic','Artifact','Aura','Other'];
-  const types = [...new Set([...order.filter(t=>groups[t]),...Object.keys(groups).filter(t=>!order.includes(t))])];
-
-  grid.innerHTML = types.map(type => {
-    const grp = groups[type];
-    const grpQty = grp.reduce((s,e)=>s+e.qty,0);
-    return `<div class="dvg-header">${type}<span>${grpQty}</span></div>` +
-      grp.map(({key,card,qty}) => `
-        <div class="dvg-card" onclick="openModal('${escId(card.id)}')">
-          <img src="${getImageUrl(card)}" alt="${card.name}" loading="lazy" onerror="this.style.opacity='0'">
-          ${qty>1?`<div class="dvg-qty">×${qty}</div>`:''}
-          <div class="dvg-controls">
-            <button class="qty-btn" onclick="event.stopPropagation();changeQty('${key}',-1)">−</button>
-            <button class="qty-btn" onclick="event.stopPropagation();changeQty('${key}',1)">+</button>
-            <button class="del-btn" onclick="event.stopPropagation();removeCard('${key}')">✕</button>
-          </div>
-        </div>`).join('');
-  }).join('');
-}
 
 // MY DECKS
 function toggleMyDecks() {
@@ -581,7 +473,7 @@ function renderMyDecks() {
       <div class="deck-tile-name">${name}</div>
       <div class="deck-tile-meta">${qty} cards${date?' · '+date:''}</div>
     </div>`;
-  }).join('') + `<div class="new-deck-tile" onclick="newDeck()">✦ New Deck</div>`;
+  }).join('') + `<div class="new-deck-tile" onclick="window.location.href='deckbuilder.html'">✦ New Deck</div>`;
 }
 
 function saveDeck() {
@@ -596,15 +488,7 @@ function saveDeck() {
 }
 
 function loadDeck(id) {
-  const saved = getSavedDecks();
-  if (!saved[id]) return;
-  const {name, deck:d} = saved[id];
-  deck = {};
-  Object.entries(d).forEach(([k,v]) => deck[k]=v);
-  activeDeckId = id;
-  document.getElementById('deck-name-input').value = name;
-  openDeckBuilder();
-  toast(`"${name}" loaded`);
+  window.location.href = `deckbuilder.html?deck=${id}`;
 }
 
 function deleteDeck(id) {
@@ -612,7 +496,6 @@ function deleteDeck(id) {
   const name = saved[id]?.name||'Deck';
   delete saved[id];
   localStorage.setItem('grimoire_decks', JSON.stringify(saved));
-  if (activeDeckId===id) closeDeckBuilder();
   renderMyDecks();
   toast(`"${name}" deleted`);
 }
