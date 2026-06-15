@@ -250,13 +250,13 @@
 <div class="page">
 
   <!-- MY DECKS -->
-  <div id="my-decks-section">
+  <div id="my-decks-section" style="display:none;margin-bottom:32px;">
     <div class="section-title">My Decks</div>
     <div class="decks-grid" id="decks-grid"></div>
   </div>
 
   <!-- DECK BUILDER -->
-  <div id="deck-builder-section">
+  <div id="deck-builder-section" style="display:none;margin-bottom:32px;">
     <div class="section-title">Deck Builder</div>
     <div class="deck-builder-bar">
       <input type="text" id="deck-name-input" placeholder="Name your deck…" oninput="updateDeckLabel()">
@@ -364,11 +364,11 @@ const IMAGE_BASE = 'https://pub-5999238092ad418ca60e7a9ad641cf57.r2.dev/';
 // LOAD CARDS
 async function loadCards() {
   try {
-    let res = await fetch('cards.json');
-    if (!res.ok) res = await fetch('./cards.json');
-    if (!res.ok) throw new Error('not found');
+    const res = await fetch('cards.json');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     const raw = Array.isArray(data) ? data : (data.data || data.cards || []);
+    if (!raw.length) throw new Error('Empty card list');
     allCards = raw.map(card => {
       const g = card.guardian || {};
       const firstSet = (card.sets || [])[0];
@@ -394,7 +394,8 @@ async function loadCards() {
     });
     filterCards();
   } catch(e) {
-    document.getElementById('card-grid').innerHTML = `<div class="status"><span class="loading-rune" style="animation:none;opacity:0.5">✦</span>Could not load cards.json.<br><small style="font-size:0.8rem;margin-top:8px;display:block">Make sure cards.json is uploaded to your GitHub repo alongside index.html.</small></div>`;
+    console.error('loadCards failed:', e);
+    document.getElementById('card-grid').innerHTML = `<div class="status"><span class="loading-rune" style="animation:none;opacity:0.5">✦</span>Could not load cards.json.<br><small style="font-size:0.8rem;margin-top:8px;display:block">Error: ${e.message}<br>Make sure cards.json is in your GitHub repo alongside index.html.</small></div>`;
   }
 }
 
