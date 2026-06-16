@@ -321,6 +321,26 @@
   .section-req.ok { color: #7ab88a; }
   .section-req.warn { color: var(--ember); }
 
+  /* Sub-section headers (Minion, Magic, etc) — match deck section style */
+  .sub-section-header {
+    grid-column: 1 / -1;
+    font-family: 'Cinzel', serif; font-size: 0.68rem; font-weight: 700;
+    letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold);
+    padding: 10px 0 5px; border-bottom: 1px solid #2a2640;
+    margin-bottom: 6px;
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer; user-select: none;
+    transition: color 0.15s;
+  }
+  .sub-section-header:hover { color: var(--gold-bright, #e8c87a); }
+  .sub-section-header-left { display: flex; align-items: center; gap: 6px; }
+  .sub-section-arrow { font-size: 0.55rem; color: var(--mist); transition: transform 0.2s; }
+  .sub-section-arrow.collapsed { transform: rotate(-90deg); }
+  .sub-section-count { font-family: 'Crimson Pro', serif; font-style: normal; letter-spacing: 0; font-size: 0.85rem; color: var(--arcane); font-weight: 400; }
+
+  .sub-section-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; grid-column: 1 / -1; margin-bottom: 6px; }
+  .sub-section-cards.hidden { display: none; }
+
   /* VISUAL CARD GRID IN DECK */
   .deck-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
 
@@ -749,6 +769,7 @@ const advFilters = { minionSubtype: new Set(), artifactSubtype: new Set(), siteS
 
 // Track collapsed state for deck sections
 const sectionCollapsed = { avatar: false, atlas: false, spellbook: false };
+const subCollapsed = {};
 
 function toggleFilterPanel() {
   const bar = document.getElementById('filter-toggle-bar');
@@ -776,6 +797,15 @@ function toggleDeckSection(section) {
   sectionCollapsed[section] = !sectionCollapsed[section];
   const el = document.getElementById('deck-section-' + section);
   if (el) el.classList.toggle('collapsed', sectionCollapsed[section]);
+}
+
+function toggleSubSection(section, type) {
+  const key = section + '-' + type;
+  subCollapsed[key] = !subCollapsed[key];
+  const arrow = document.getElementById('sub-arrow-' + key);
+  if (arrow) arrow.classList.toggle('collapsed', subCollapsed[key]);
+  const cards = document.getElementById('sub-cards-' + key);
+  if (cards) cards.classList.toggle('hidden', subCollapsed[key]);
 }
 
 function toggleChip(btn) {
@@ -1069,8 +1099,20 @@ function renderSection(title, section, entries, reqMsg, isOk, req, groups) {
     cardsHtml = types.map(type => {
       const grp = groups[type];
       const grpQty = grp.reduce((s,e)=>s+e.qty,0);
+      const subKey = section + '-' + type;
+      const isCollapsed = subCollapsed[subKey] || false;
       const cards = grp.map(({key,card,qty}) => renderDeckCard(section, key, card, qty)).join('');
-      return `<div style="grid-column:1/-1;font-family:'Cinzel',serif;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--mist);padding:8px 0 4px;border-bottom:1px solid var(--border);margin-bottom:4px;">${type} <span style="color:var(--arcane);font-family:'Crimson Pro',serif;font-style:normal;letter-spacing:0">${grpQty}</span></div>${cards}`;
+      return `
+        <div class="sub-section-header" style="grid-column:1/-1" onclick="toggleSubSection('${section}','${type}')">
+          <div class="sub-section-header-left">
+            <span class="sub-section-arrow${isCollapsed ? ' collapsed' : ''}" id="sub-arrow-${subKey}">▼</span>
+            ${type}
+          </div>
+          <span class="sub-section-count">${grpQty}</span>
+        </div>
+        <div class="sub-section-cards${isCollapsed ? ' hidden' : ''}" id="sub-cards-${subKey}">
+          ${cards}
+        </div>`;
     }).join('');
   } else {
     cardsHtml = entries.map(([key,{card,qty}]) => renderDeckCard(section, key, card, qty)).join('');
@@ -1087,7 +1129,7 @@ function renderSection(title, section, entries, reqMsg, isOk, req, groups) {
       </div>
       <div class="deck-section-body">
         ${reqMsg && !isOk ? `<div class="violation">${reqMsg}</div>` : ''}
-        <div class="deck-card-grid">${cardsHtml}</div>
+        ${groups ? `<div style="display:flex;flex-direction:column;">${cardsHtml}</div>` : `<div class="deck-card-grid">${cardsHtml}</div>`}
       </div>
     </div>`;
 }
