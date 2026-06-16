@@ -719,6 +719,7 @@
         <input type="text" id="deck-name-input" placeholder="Name your deck…">
         <div class="deck-actions">
           <button class="btn btn-ghost" onclick="saveDeck()">Save</button>
+          <button class="btn btn-primary" onclick="shareDeck()">Share</button>
           <button class="btn btn-ghost" onclick="openImport()">Import</button>
           <button class="btn btn-ghost" onclick="exportDeck()">Export</button>
           <button class="btn btn-danger" onclick="clearDeck()">Clear</button>
@@ -778,6 +779,19 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="share-overlay" onclick="closeShare(event)">
+  <div class="import-modal">
+    <h2>Share Deck</h2>
+    <p>Send this link to a friend — it opens this exact deck in their builder.</p>
+    <textarea id="share-text" readonly style="height:90px;" onclick="this.select()"></textarea>
+    <div style="display:flex;gap:8px;margin-top:12px;">
+      <button class="btn btn-primary" style="flex:1" onclick="copyShareLink()">Copy Link</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="closeShare()">Done</button>
+    </div>
+    <button class="modal-close" onclick="closeShare()">✕</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -829,10 +843,12 @@ async function loadCards() {
       };
     }).sort((a, b) => a.name.localeCompare(b.name));
     filterCards();
-    // Load deck if id passed in URL
+    // Load shared deck from ?d= , or saved deck from ?deck=
     const params = new URLSearchParams(window.location.search);
+    const sharedCode = params.get('d');
     const deckId = params.get('deck');
-    if (deckId) loadDeck(deckId);
+    if (sharedCode) loadSharedDeck(sharedCode);
+    else if (deckId) loadDeck(deckId);
     else renderDeck();
   } catch(e) {
     document.getElementById('card-grid').innerHTML = `<div class="status">Could not load cards.json.<br><small>${e.message}</small></div>`;
@@ -1292,6 +1308,78 @@ function exportDeck() {
   a.download = name.replace(/\s+/g,'_') + '.txt';
   a.click();
   toast('Deck exported');
+}
+
+// ── SHARE VIA LINK ──
+function encodeDeck() {
+  // Compact representation: name + arrays of [cardName, qty]
+  const name = document.getElementById('deck-name-input').value.trim() || 'Shared Deck';
+  const pack = section => Object.values(deck[section]).map(({card, qty}) => [card.name, qty]);
+  const payload = { n: name, a: pack('avatar'), t: pack('atlas'), s: pack('spellbook') };
+  // JSON → URI-safe base64
+  const json = JSON.stringify(payload);
+  return btoa(unescape(encodeURIComponent(json)));
+}
+
+function shareDeck() {
+  const total = getDeckCounts().total;
+  if (total === 0) { toast('Add some cards first'); return; }
+  const code = encodeDeck();
+  const base = window.location.origin + window.location.pathname;
+  const link = `${base}?d=${code}`;
+  document.getElementById('share-text').value = link;
+  document.getElementById('share-overlay').classList.add('open');
+}
+
+function closeShare(e) {
+  if (!e || e.target === document.getElementById('share-overlay')) {
+    document.getElementById('share-overlay').classList.remove('open');
+  }
+}
+
+function copyShareLink() {
+  const ta = document.getElementById('share-text');
+  ta.select();
+  const link = ta.value;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(link).then(() => toast('Link copied!')).catch(() => {
+      document.execCommand('copy'); toast('Link copied!');
+    });
+  } else {
+    document.execCommand('copy'); toast('Link copied!');
+  }
+}
+
+function loadSharedDeck(code) {
+  try {
+    const json = decodeURIComponent(escape(atob(code)));
+    const payload = JSON.parse(json);
+    const newDeck = { avatar:{}, atlas:{}, spellbook:{} };
+    let matched = 0, missing = 0;
+    const place = (arr, section) => {
+      (arr || []).forEach(([cardName, qty]) => {
+        const card = allCards.find(c => c.name === cardName);
+        if (card) { newDeck[section][String(card.id)] = { card, qty: qty || 1 }; matched++; }
+        else missing++;
+      });
+    };
+    place(payload.a, 'avatar');
+    place(payload.t, 'atlas');
+    place(payload.s, 'spellbook');
+    if (matched === 0) { toast('Shared deck had no matching cards'); return false; }
+    deck = newDeck;
+    document.getElementById('deck-name-input').value = payload.n || 'Shared Deck';
+    renderDeck();
+    renderCardGrid();
+    toast(`Loaded shared deck${missing ? ` (${missing} cards not found)` : ''}`);
+    // Clean the URL so a refresh doesn't reload/clobber edits
+    history.replaceState({}, '', window.location.pathname);
+    return true;
+  } catch(e) {
+    console.warn('Bad share code', e);
+    toast('Could not read shared deck link');
+    return false;
+  }
 }
 
 // ── CLEAR ──
