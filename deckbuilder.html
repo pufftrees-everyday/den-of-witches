@@ -240,7 +240,26 @@
     pointer-events: none;
   }
 
-  .status { padding: 30px 12px; text-align: center; color: var(--mist); font-style: italic; font-size: 0.9rem; }
+  /* DRAG AND DROP */
+  .card-item[draggable="true"] { cursor: grab; }
+  .card-item[draggable="true"]:active { cursor: grabbing; }
+  .card-item.dragging { opacity: 0.4; transform: scale(0.96); }
+
+  .deck-drop-zone {
+    transition: background 0.15s, box-shadow 0.15s;
+  }
+  .deck-drop-zone.drag-over {
+    background: rgba(155,135,212,0.08);
+    box-shadow: inset 0 0 0 2px var(--arcane);
+  }
+
+  .drag-ghost {
+    position: fixed; pointer-events: none; z-index: 9999;
+    width: 80px; border-radius: 4px; overflow: hidden;
+    border: 2px solid var(--arcane); box-shadow: var(--glow-strong);
+    opacity: 0.9; transform: rotate(3deg);
+    transition: none;
+  }
   .loading-rune { font-size: 2rem; display: block; margin-bottom: 10px; animation: pulse 2s infinite; }
   @keyframes pulse { 0%,100%{opacity:0.3} 50%{opacity:1} }
 
@@ -371,11 +390,11 @@
   }
 
   .dvg-qty {
-    position: absolute; top: 3px; left: 3px;
+    position: absolute; bottom: 5px; right: 5px;
     background: rgba(11,10,15,0.9); border: 1px solid var(--border-strong);
     border-radius: 2px; color: var(--shimmer);
     font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 700;
-    padding: 1px 5px; pointer-events: none;
+    padding: 1px 5px; pointer-events: none; z-index: 2;
   }
 
   .dvg-controls {
@@ -644,7 +663,7 @@
       <div class="deck-stats" id="deck-stats"></div>
     </div>
 
-    <div class="deck-body" id="deck-body">
+    <div class="deck-body deck-drop-zone" id="deck-body">
       <!-- Rendered by JS -->
     </div>
   </div>
@@ -886,8 +905,11 @@ function renderCardGrid(append = false) {
   const shown = currentCards.slice(append ? visibleCount - PAGE_SIZE : 0, visibleCount);
   const html = shown.map(card => {
     const inDeck = getDeckCountForCard(card.id);
-    return `<div class="card-item" onclick="openModal('${escId(card.id)}')">
-      <img src="${getImageUrl(card)}" alt="${card.name}" loading="lazy" onerror="this.style.opacity='0.2'">
+    return `<div class="card-item" draggable="true" data-card-id="${escId(card.id)}"
+      onclick="openModal('${escId(card.id)}')"
+      ondragstart="onCardDragStart(event,'${escId(card.id)}')"
+      ondragend="onCardDragEnd(event)">
+      <img src="${getImageUrl(card)}" alt="${card.name}" loading="lazy" onerror="this.style.opacity='0.2'" draggable="false">
       ${inDeck > 0 ? `<div class="in-deck-badge">×${inDeck}</div>` : ''}
       <div class="card-item-name">${card.name}</div>
     </div>`;
@@ -1254,6 +1276,37 @@ function runImport() {
   toast(`Imported ${matched} cards${skipped ? ` (${skipped} not found)` : ''}`);
 }
 
+// ── DRAG AND DROP ──
+let dragCardId = null;
+let dragGhost = null;
+
+function onCardDragStart(e, cardId) {
+  dragCardId = cardId;
+  e.dataTransfer.effectAllowed = 'copy';
+  e.dataTransfer.setData('text/plain', cardId);
+
+  // Create custom ghost
+  const card = allCards.find(c => c.id === cardId || c.name === cardId);
+  if (card) {
+    dragGhost = document.createElement('div');
+    dragGhost.className = 'drag-ghost';
+    dragGhost.innerHTML = `<img src="${getImageUrl(card)}" style="width:100%;display:block">`;
+    document.body.appendChild(dragGhost);
+    dragGhost.style.left = '-200px';
+    dragGhost.style.top = '-200px';
+    e.dataTransfer.setDragImage(dragGhost, 40, 40);
+  }
+
+  e.currentTarget.classList.add('dragging');
+}
+
+function onCardDragEnd(e) {
+  e.currentTarget.classList.remove('dragging');
+  if (dragGhost) { dragGhost.remove(); dragGhost = null; }
+  dragCardId = null;
+  document.getElementById('deck-body').classList.remove('drag-over');
+}
+
 // ── TOAST ──
 function toast(msg) {
   const el = document.getElementById('toast');
@@ -1272,6 +1325,36 @@ document.addEventListener('DOMContentLoaded', () => {
       renderCardGrid(true);
     }
   }, { passive: true });
+
+  // Drag and drop onto deck panel
+  const deckBody = document.getElementById('deck-body');
+  deckBody.addEventListener('dragover', e => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy';
+    deckBody.classList.add('drag-over');
+  });
+  deckBody.addEventListener('dragleave', e => {
+    if (!deckBody.contains(e.relatedTarget)) {
+      deckBody.classList.remove('drag-over');
+    }
+  });
+  deckBody.addEventListener('drop', e => {
+    e.preventDefault();
+    deckBody.classList.remove('drag-over');
+    const id = e.dataTransfer.getData('text/plain') || dragCardId;
+    if (!id) return;
+    const card = allCards.find(c => c.id === id || c.name === id);
+    if (!card) return;
+    const result = addCardToDeck(card, 1);
+    if (result.ok) {
+      renderDeck();
+      renderCardGrid();
+      toast(result.message);
+    } else {
+      toast(result.message);
+    }
+  });
+
   loadCards();
 });
 </script>
