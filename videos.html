@@ -252,22 +252,56 @@ function renderFeatured() {
 }
 
 // ── RSS CHANNEL FEEDS ──
-// Use a CORS proxy to fetch YouTube RSS feeds
-const RSS_PROXY = 'https://api.rss2json.com/v1/api.json?rss_url=';
+// Use multiple proxies with fallback
+const RSS_PROXIES = [
+  (url) => `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}&count=8`,
+  (url) => `https://cors-anywhere.herokuapp.com/${url}`,
+];
 
 async function fetchChannelFeed(channel) {
   const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channel.channelId}`;
-  const proxyUrl = `${RSS_PROXY}${encodeURIComponent(rssUrl)}&count=8`;
+  
+  // Try rss2json first
+  try {
+    const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}&count=8`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.status === 'ok' && data.items?.length) return data.items;
+    }
+  } catch(e) {}
+
+  // Fallback: fetch raw RSS via allorigins proxy and parse it
+  const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
   const res = await fetch(proxyUrl);
-  if (!res.ok) throw new Error('Feed fetch failed');
+  if (!res.ok) throw new Error('All proxies failed');
   const data = await res.json();
-  if (data.status !== 'ok') throw new Error(data.message || 'Feed error');
-  return data.items || [];
+  const xml = data.contents;
+  if (!xml) throw new Error('Empty response');
+
+  // Parse XML manually
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(xml, 'text/xml');
+  const entries = [...doc.querySelectorAll('entry')];
+  return entries.slice(0, 8).map(e => ({
+    title: e.querySelector('title')?.textContent || '',
+    link: e.querySelector('link')?.getAttribute('href') || '',
+    guid: e.querySelector('videoId')?.textContent || '',
+    pubDate: e.querySelector('published')?.textContent || '',
+  }));
 }
 
 function getVideoIdFromFeedItem(item) {
-  // rss2json returns the link as the YouTube watch URL
-  return extractVideoId(item.link || item.guid || '');
+  // rss2json format: link is watch URL
+  if (item.link) {
+    const id = extractVideoId(item.link);
+    if (id) return id;
+  }
+  // Raw XML format: guid is yt:video:VIDEO_ID
+  if (item.guid) {
+    const m = item.guid.match(/([a-zA-Z0-9_-]{11})$/);
+    if (m) return m[1];
+  }
+  return null;
 }
 
 function timeAgo(dateStr) {
