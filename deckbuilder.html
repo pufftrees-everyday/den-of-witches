@@ -537,15 +537,6 @@ function filterCards() {
 
 document.getElementById('search-input').addEventListener('input', filterCards);
 
-window.addEventListener('scroll', () => {}, { passive: true });
-document.querySelector('.card-list') && document.querySelector('.card-list').addEventListener('scroll', function() {
-  if (visibleCount >= currentCards.length) return;
-  if (this.scrollTop + this.clientHeight >= this.scrollHeight - 200) {
-    visibleCount += PAGE_SIZE;
-    renderCardGrid(true);
-  }
-}, { passive: true });
-
 // ── RENDER CARD GRID ──
 function renderCardGrid(append = false) {
   const grid = document.getElementById('card-grid');
@@ -913,20 +904,16 @@ function toast(msg) {
 
 document.addEventListener('keydown', e => { if (e.key==='Escape') { closeModal({}); closeImport({}); } });
 
-// Scroll to load more in card list
-setTimeout(() => {
-  const list = document.querySelector('.card-list');
-  if (list) list.addEventListener('scroll', function() {
-    if (visibleCount >= currentCards.length) return;
-    if (this.scrollTop + this.clientHeight >= this.scrollHeight - 200) {
-      visibleCount += PAGE_SIZE;
-      renderCardGrid(true);
-    }
-  });
-}, 100);
-
 // ── INIT ──
 loadCards();
+
+document.querySelector('.card-list').addEventListener('scroll', function() {
+  if (visibleCount >= currentCards.length) return;
+  if (this.scrollTop + this.clientHeight >= this.scrollHeight - 200) {
+    visibleCount += PAGE_SIZE;
+    renderCardGrid(true);
+  }
+}, { passive: true });
 </script>
 </body>
 </html>
