@@ -108,12 +108,75 @@
 
   .result-count { font-size: 0.75rem; color: var(--mist); font-style: italic; padding: 2px 0; }
 
-  /* CARD LIST — compact */
+  /* ADVANCED TOGGLE */
+  .advanced-toggle {
+    display: flex; align-items: center; justify-content: space-between;
+    background: #0d0b14; border-top: 1px solid #2a2640;
+    padding: 7px 12px; cursor: pointer; user-select: none;
+    flex-shrink: 0; transition: background 0.15s;
+  }
+  .advanced-toggle:hover { background: #13111e; }
+  .advanced-toggle-label {
+    font-family: 'Cinzel', serif; font-size: 0.62rem; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase; color: var(--rune);
+    display: flex; align-items: center; gap: 7px;
+  }
+  .adv-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--mist); transition: background 0.2s; }
+  .advanced-toggle.has-active .adv-dot { background: var(--arcane); }
+  .advanced-toggle-arrow { font-size: 0.6rem; color: var(--mist); transition: transform 0.2s; }
+  .advanced-toggle.open .advanced-toggle-arrow { transform: rotate(180deg); }
+
+  /* ADVANCED PANEL */
+  .advanced-panel {
+    display: none; flex-direction: column; gap: 14px;
+    background: #0a0910; border-top: 1px solid #2a2640;
+    padding: 12px; overflow-y: auto; flex-shrink: 0;
+    max-height: 280px;
+  }
+  .advanced-panel::-webkit-scrollbar { width: 3px; }
+  .advanced-panel::-webkit-scrollbar-thumb { background: var(--mist); }
+  .advanced-panel.open { display: flex; }
+
+  .adv-section-title {
+    font-family: 'Cinzel', serif; font-size: 0.6rem; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold);
+    margin-bottom: 7px; padding-bottom: 5px;
+    border-bottom: 1px solid #1a1728;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .adv-clear { background: none; border: none; color: var(--rune); font-size: 0.68rem; cursor: pointer; font-family: 'Crimson Pro', serif; font-style: italic; padding: 0; transition: color 0.15s; }
+  .adv-clear:hover { color: var(--ember); }
+
+  .adv-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .adv-chip {
+    padding: 2px 9px; font-family: 'Crimson Pro', serif; font-size: 0.88rem;
+    border: 1px solid #2a2640; border-radius: 2px;
+    background: #13111e; color: var(--shimmer);
+    cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  }
+  .adv-chip:hover { border-color: var(--arcane); color: #fff; }
+  .adv-chip.active { background: var(--rune); border-color: var(--arcane); color: #fff; }
+
+  .adv-range-row { display: flex; flex-wrap: wrap; gap: 12px; }
+  .adv-range { display: flex; align-items: center; gap: 6px; }
+  .adv-range label { font-family: 'Cinzel', serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rune); white-space: nowrap; }
+  .adv-range input[type="number"] { width: 52px; background: #13111e; border: 1px solid #2a2640; color: var(--parchment); font-family: 'Crimson Pro', serif; font-size: 0.88rem; padding: 4px 6px; outline: none; -moz-appearance: textfield; }
+  .adv-range input[type="number"]::-webkit-outer-spin-button,
+  .adv-range input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .adv-range input[type="number"]:focus { border-color: var(--rune); }
+  .adv-range span { color: var(--mist); font-size: 0.8rem; }
+
+  /* CARD LIST */
   .card-list { flex: 1; overflow-y: auto; padding: 8px; }
   .card-list::-webkit-scrollbar { width: 4px; }
   .card-list::-webkit-scrollbar-thumb { background: var(--mist); border-radius: 2px; }
 
   .card-list-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+
+  /* Site-only rotation mode */
+  .card-list-grid.sites-only { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  .card-list-grid.sites-only .card-item { aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; overflow: visible; }
+  .card-list-grid.sites-only .card-item img { position: absolute; width: 75%; aspect-ratio: 3/4; transform: rotate(90deg); object-fit: contain; }
 
   .card-item {
     cursor: pointer;
@@ -376,6 +439,104 @@
       </div>
       <div class="result-count" id="result-count"></div>
     </div>
+
+    <!-- ADVANCED TOGGLE -->
+    <div class="advanced-toggle" id="advanced-toggle" onclick="toggleAdvanced()">
+      <div class="advanced-toggle-label"><span class="adv-dot"></span>Advanced Filters</div>
+      <span class="advanced-toggle-arrow">▼</span>
+    </div>
+
+    <!-- ADVANCED PANEL -->
+    <div class="advanced-panel" id="advanced-panel">
+      <div>
+        <div class="adv-section-title">Minion Subtype <button class="adv-clear" onclick="clearAdvGroup('minionSubtype')">clear</button></div>
+        <div class="adv-chips">
+          <button class="adv-chip" data-adv-group="minionSubtype" data-value="Angel" onclick="toggleAdvChip(this)">Angel</button>
+          <button class="adv-chip" data-adv-group="minionSubtype" data-value="Beast" onclick="toggleAdvChip(this)">Beast</button>
+          <button class="adv-chip" data-adv-group="minionSubtype" data-value="Demon" onclick="toggleAdvChip(this)">Demon</button>
+          <button class="adv-chip" data-adv-group="minionSubtype" data-value="Dragon" onclick="toggleAdvChip(this)">Dragon</button>
+          <button class="adv-chip" data-adv-group="minionSubtype" data-value="Dwarf" onclick="toggleAdvChip(this)">Dwarf</button>
+          <button class="adv-chip" data-adv-group="minionSubtype" data-value="Faerie" onclick="toggleAdvChip(this)">Faerie</button>
+          <button class="adv-chip" data-adv-group="minionSubtype" data-value="Giant" onclick="toggleAdvChip(this)">Giant</button>
+          <button class="adv-chip" data-adv-group="minionSubtype" data-value="Gnome" onclick="toggleAdvChip(this)">Gnome</button>
+          <button class="adv-chip" data-adv-group="minionSubtype" data-value="Goblin" onclick="toggleAdvChip(this)">Goblin</button>
+          <button class="adv-chip" data-adv-group="minionSubtype" data-value="Merfolk" onclick="toggleAdvChip(this)">Merfolk</button>
+          <button class="adv-chip" data-adv-group="minionSubtype" data-value="Monster" onclick="toggleAdvChip(this)">Monster</button>
+          <button class="adv-chip" data-adv-group="minionSubtype" data-value="Mortal" onclick="toggleAdvChip(this)">Mortal</button>
+          <button class="adv-chip" data-adv-group="minionSubtype" data-value="Ogre" onclick="toggleAdvChip(this)">Ogre</button>
+          <button class="adv-chip" data-adv-group="minionSubtype" data-value="Sphinx" onclick="toggleAdvChip(this)">Sphinx</button>
+          <button class="adv-chip" data-adv-group="minionSubtype" data-value="Spirit" onclick="toggleAdvChip(this)">Spirit</button>
+          <button class="adv-chip" data-adv-group="minionSubtype" data-value="Troll" onclick="toggleAdvChip(this)">Troll</button>
+          <button class="adv-chip" data-adv-group="minionSubtype" data-value="Undead" onclick="toggleAdvChip(this)">Undead</button>
+        </div>
+      </div>
+      <div>
+        <div class="adv-section-title">Artifact Subtype <button class="adv-clear" onclick="clearAdvGroup('artifactSubtype')">clear</button></div>
+        <div class="adv-chips">
+          <button class="adv-chip" data-adv-group="artifactSubtype" data-value="Armor" onclick="toggleAdvChip(this)">Armor</button>
+          <button class="adv-chip" data-adv-group="artifactSubtype" data-value="Automaton" onclick="toggleAdvChip(this)">Automaton</button>
+          <button class="adv-chip" data-adv-group="artifactSubtype" data-value="Device" onclick="toggleAdvChip(this)">Device</button>
+          <button class="adv-chip" data-adv-group="artifactSubtype" data-value="Document" onclick="toggleAdvChip(this)">Document</button>
+          <button class="adv-chip" data-adv-group="artifactSubtype" data-value="Instruments" onclick="toggleAdvChip(this)">Instruments</button>
+          <button class="adv-chip" data-adv-group="artifactSubtype" data-value="Monument" onclick="toggleAdvChip(this)">Monument</button>
+          <button class="adv-chip" data-adv-group="artifactSubtype" data-value="Potion" onclick="toggleAdvChip(this)">Potion</button>
+          <button class="adv-chip" data-adv-group="artifactSubtype" data-value="Relic" onclick="toggleAdvChip(this)">Relic</button>
+          <button class="adv-chip" data-adv-group="artifactSubtype" data-value="Weapon" onclick="toggleAdvChip(this)">Weapon</button>
+        </div>
+      </div>
+      <div>
+        <div class="adv-section-title">Site Subtype <button class="adv-clear" onclick="clearAdvGroup('siteSubtype')">clear</button></div>
+        <div class="adv-chips">
+          <button class="adv-chip" data-adv-group="siteSubtype" data-value="Desert" onclick="toggleAdvChip(this)">Desert</button>
+          <button class="adv-chip" data-adv-group="siteSubtype" data-value="River" onclick="toggleAdvChip(this)">River</button>
+          <button class="adv-chip" data-adv-group="siteSubtype" data-value="Tower" onclick="toggleAdvChip(this)">Tower</button>
+          <button class="adv-chip" data-adv-group="siteSubtype" data-value="Village" onclick="toggleAdvChip(this)">Village</button>
+        </div>
+      </div>
+      <div>
+        <div class="adv-section-title">Keyword <button class="adv-clear" onclick="clearAdvGroup('keyword')">clear</button></div>
+        <div class="adv-chips">
+          <button class="adv-chip" data-adv-group="keyword" data-value="Airborne" onclick="toggleAdvChip(this)">Airborne</button>
+          <button class="adv-chip" data-adv-group="keyword" data-value="Burrowing" onclick="toggleAdvChip(this)">Burrowing</button>
+          <button class="adv-chip" data-adv-group="keyword" data-value="Charge" onclick="toggleAdvChip(this)">Charge</button>
+          <button class="adv-chip" data-adv-group="keyword" data-value="Deathrite" onclick="toggleAdvChip(this)">Deathrite</button>
+          <button class="adv-chip" data-adv-group="keyword" data-value="Disable" onclick="toggleAdvChip(this)">Disable</button>
+          <button class="adv-chip" data-adv-group="keyword" data-value="Flooded" onclick="toggleAdvChip(this)">Flooded</button>
+          <button class="adv-chip" data-adv-group="keyword" data-value="Genesis" onclick="toggleAdvChip(this)">Genesis</button>
+          <button class="adv-chip" data-adv-group="keyword" data-value="Immobile" onclick="toggleAdvChip(this)">Immobile</button>
+          <button class="adv-chip" data-adv-group="keyword" data-value="Lance" onclick="toggleAdvChip(this)">Lance</button>
+          <button class="adv-chip" data-adv-group="keyword" data-value="Lethal" onclick="toggleAdvChip(this)">Lethal</button>
+          <button class="adv-chip" data-adv-group="keyword" data-value="Movement" onclick="toggleAdvChip(this)">Movement +X</button>
+          <button class="adv-chip" data-adv-group="keyword" data-value="Ranged" onclick="toggleAdvChip(this)">Ranged</button>
+          <button class="adv-chip" data-adv-group="keyword" data-value="Spellcaster" onclick="toggleAdvChip(this)">Spellcaster</button>
+          <button class="adv-chip" data-adv-group="keyword" data-value="Stealth" onclick="toggleAdvChip(this)">Stealth</button>
+          <button class="adv-chip" data-adv-group="keyword" data-value="Strike First" onclick="toggleAdvChip(this)">Strike First</button>
+          <button class="adv-chip" data-adv-group="keyword" data-value="Submerge" onclick="toggleAdvChip(this)">Submerge</button>
+          <button class="adv-chip" data-adv-group="keyword" data-value="Transform" onclick="toggleAdvChip(this)">Transform</button>
+          <button class="adv-chip" data-adv-group="keyword" data-value="Voidwalk" onclick="toggleAdvChip(this)">Voidwalk</button>
+          <button class="adv-chip" data-adv-group="keyword" data-value="Ward" onclick="toggleAdvChip(this)">Ward</button>
+          <button class="adv-chip" data-adv-group="keyword" data-value="Waterbound" onclick="toggleAdvChip(this)">Waterbound</button>
+        </div>
+      </div>
+      <div>
+        <div class="adv-section-title">Cost &amp; Power <button class="adv-clear" onclick="clearRanges()">clear</button></div>
+        <div class="adv-range-row">
+          <div class="adv-range">
+            <label>Cost</label>
+            <input type="number" id="cost-min" min="0" max="20" placeholder="Min" oninput="filterCards()">
+            <span>–</span>
+            <input type="number" id="cost-max" min="0" max="20" placeholder="Max" oninput="filterCards()">
+          </div>
+          <div class="adv-range">
+            <label>Power</label>
+            <input type="number" id="power-min" min="0" max="20" placeholder="Min" oninput="filterCards()">
+            <span>–</span>
+            <input type="number" id="power-max" min="0" max="20" placeholder="Max" oninput="filterCards()">
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="card-list">
       <div class="card-list-grid" id="card-grid">
         <div class="status"><span class="loading-rune">⧫</span>Loading cards…</div>
@@ -457,7 +618,6 @@ let allCards = [];
 let currentCards = [];
 let visibleCount = 200;
 const PAGE_SIZE = 200;
-const activeFilters = { type: new Set(), set: new Set(), rarity: new Set() };
 
 // deck: { atlas: {key: {card, qty}}, spellbook: {key: {card, qty}}, avatar: {key: {card, qty}} }
 let deck = { avatar: {}, atlas: {}, spellbook: {} };
@@ -519,6 +679,9 @@ function getImageUrl(card) {
 function escId(id) { return String(id).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
 
 // ── FILTERS ──
+const activeFilters = { type: new Set(), set: new Set(), rarity: new Set() };
+const advFilters = { minionSubtype: new Set(), artifactSubtype: new Set(), siteSubtype: new Set(), keyword: new Set() };
+
 function toggleChip(btn) {
   const { group, value } = btn.dataset;
   if (activeFilters[group].has(value)) { activeFilters[group].delete(value); btn.classList.remove('active'); }
@@ -526,14 +689,63 @@ function toggleChip(btn) {
   filterCards();
 }
 
+function toggleAdvChip(btn) {
+  const group = btn.dataset.advGroup;
+  const value = btn.dataset.value;
+  if (advFilters[group].has(value)) { advFilters[group].delete(value); btn.classList.remove('active'); }
+  else { advFilters[group].add(value); btn.classList.add('active'); }
+  updateAdvDot();
+  filterCards();
+}
+
+function clearAdvGroup(group) {
+  advFilters[group].clear();
+  document.querySelectorAll(`[data-adv-group="${group}"]`).forEach(b => b.classList.remove('active'));
+  updateAdvDot();
+  filterCards();
+}
+
+function clearRanges() {
+  ['cost-min','cost-max','power-min','power-max'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  filterCards();
+}
+
+function toggleAdvanced() {
+  document.getElementById('advanced-toggle').classList.toggle('open');
+  document.getElementById('advanced-panel').classList.toggle('open');
+}
+
+function updateAdvDot() {
+  const hasActive = Object.values(advFilters).some(s => s.size > 0);
+  document.getElementById('advanced-toggle').classList.toggle('has-active', hasActive);
+}
+
 function filterCards() {
   const q = document.getElementById('search-input').value.toLowerCase();
-  const filtered = allCards.filter(c =>
-    (!q || c.name.toLowerCase().includes(q)) &&
-    (!activeFilters.type.size || activeFilters.type.has(c.type)) &&
-    (!activeFilters.set.size || activeFilters.set.has(c.set)) &&
-    (!activeFilters.rarity.size || activeFilters.rarity.has(c.rarity))
-  );
+  const costMin = document.getElementById('cost-min')?.value !== '' ? parseInt(document.getElementById('cost-min').value) : null;
+  const costMax = document.getElementById('cost-max')?.value !== '' ? parseInt(document.getElementById('cost-max').value) : null;
+  const powMin = document.getElementById('power-min')?.value !== '' ? parseInt(document.getElementById('power-min').value) : null;
+  const powMax = document.getElementById('power-max')?.value !== '' ? parseInt(document.getElementById('power-max').value) : null;
+
+  const filtered = allCards.filter(c => {
+    if (q && !c.name.toLowerCase().includes(q)) return false;
+    if (activeFilters.type.size && !activeFilters.type.has(c.type)) return false;
+    if (activeFilters.set.size && !activeFilters.set.has(c.set)) return false;
+    if (activeFilters.rarity.size && !activeFilters.rarity.has(c.rarity)) return false;
+    const sub = c.subTypes || '';
+    if (advFilters.minionSubtype.size && ![...advFilters.minionSubtype].some(s => sub.includes(s))) return false;
+    if (advFilters.artifactSubtype.size && ![...advFilters.artifactSubtype].some(s => sub.includes(s))) return false;
+    if (advFilters.siteSubtype.size && ![...advFilters.siteSubtype].some(s => sub.includes(s))) return false;
+    const rt = (c.rules_text || '').toLowerCase();
+    if (advFilters.keyword.size && ![...advFilters.keyword].every(kw => rt.includes(kw.toLowerCase()))) return false;
+    if (costMin !== null && (c.cost == null || c.cost < costMin)) return false;
+    if (costMax !== null && (c.cost == null || c.cost > costMax)) return false;
+    const power = c.attack;
+    if (powMin !== null && (power == null || power < powMin)) return false;
+    if (powMax !== null && (power == null || power > powMax)) return false;
+    return true;
+  });
+
   currentCards = filtered;
   visibleCount = PAGE_SIZE;
   renderCardGrid();
@@ -542,6 +754,8 @@ function filterCards() {
 // ── RENDER CARD GRID ──
 function renderCardGrid(append = false) {
   const grid = document.getElementById('card-grid');
+  const sitesOnly = activeFilters.type.size === 1 && activeFilters.type.has('Site');
+  grid.classList.toggle('sites-only', sitesOnly);
   const shown = currentCards.slice(append ? visibleCount - PAGE_SIZE : 0, visibleCount);
   const html = shown.map(card => {
     const inDeck = getDeckCountForCard(card.id);
