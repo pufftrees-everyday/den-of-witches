@@ -276,7 +276,10 @@ function getVideoIdFromFeedItem(item) { return null; }
 // ── CHANNEL FEEDS — YouTube playlist embed (no proxy needed) ──
 async function renderChannels() {
   const container = document.getElementById('channels-container');
-  container.innerHTML = CHANNELS.map(ch => `
+  container.innerHTML = CHANNELS.map(ch => {
+    // Convert channel ID to uploads playlist ID: UC... -> UU...
+    const playlistId = 'UU' + ch.channelId.slice(2);
+    return `
     <div class="channel-section">
       <div class="channel-header">
         <div class="channel-name">${ch.name}</div>
@@ -285,7 +288,7 @@ async function renderChannels() {
       <div class="channel-player">
         <div class="video-embed">
           <iframe
-            src="https://www.youtube.com/embed?listType=user_uploads&list=${ch.channelId}&index=0"
+            src="https://www.youtube.com/embed?list=${playlistId}&index=0"
             allowfullscreen loading="lazy" title="${ch.name}">
           </iframe>
         </div>
@@ -293,8 +296,8 @@ async function renderChannels() {
           <a href="${ch.url}/videos" target="_blank" class="browse-link">Browse all videos from ${ch.name} ↗</a>
         </div>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 // ── TOAST ──
