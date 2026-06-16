@@ -53,7 +53,9 @@
 
   .logo { font-family: 'Cinzel', serif; font-size: 1.3rem; font-weight: 700; letter-spacing: 0.08em; color: var(--gold); text-shadow: 0 0 20px rgba(200,169,110,0.4); }
   .logo span { color: var(--arcane); font-weight: 400; }
-  .header-nav { display: flex; gap: 10px; }
+  .header-nav { display: flex; gap: 10px; align-items: center; }
+  .header-link { font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rune); text-decoration: none; transition: color 0.2s; }
+  .header-link:hover { color: var(--arcane); }
 
   /* BUTTONS */
   .btn { padding: 7px 16px; font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; border-radius: 4px; cursor: pointer; border: 1px solid transparent; transition: background 0.2s, border-color 0.2s, color 0.2s; }
@@ -450,6 +452,8 @@
 <header>
   <div class="logo">Grimoire <span>· Sorcery TCG</span></div>
   <div class="header-nav">
+    <a href="https://drive.google.com/file/d/1sgQo0xf0N2teIR0zlyl91g9j6LVncZnr/view" target="_blank" class="header-link">Rulebook</a>
+    <a href="https://play.sorcerytcg.com/" target="_blank" class="header-link">Play Network</a>
     <button class="btn btn-ghost" onclick="toggleMyDecks()">My Decks</button>
     <button class="btn btn-primary" onclick="window.location.href='deckbuilder.html'">✦ New Deck</button>
   </div>
