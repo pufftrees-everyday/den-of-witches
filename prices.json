@@ -1,7 +1,1360 @@
 {
-  "generated": "2026-06-16T04:35:41.176Z",
+  "generated": "2026-06-16T05:04:30.589Z",
   "source": "JustTCG (justtcg.com)",
   "game": "Sorcery: Contested Realm",
-  "totalCards": 0,
-  "prices": {}
+  "totalCards": 338,
+  "prices": {
+    "Alpha - Booster Box Case": {
+      "market": 6109.75,
+      "updated": 1781586164516
+    },
+    "Courtesan Thaïs (Foil)": {
+      "market": 3999,
+      "updated": 1781586164516
+    },
+    "Philosopher's Stone (Foil)": {
+      "market": 700,
+      "updated": 1781586164516
+    },
+    "Avatar of Water (Foil)": {
+      "market": 2500,
+      "updated": 1781586164516
+    },
+    "Onyx Core (Foil)": {
+      "market": 186.77,
+      "updated": 1781586187759
+    },
+    "Ruler of Thul (Foil)": {
+      "market": 1725.5,
+      "updated": 1781586164516
+    },
+    "Amethyst Core (Foil)": {
+      "market": 291.44,
+      "updated": 1781586175986
+    },
+    "Alpha - Booster Box": {
+      "market": 1562.21,
+      "updated": 1781586164516
+    },
+    "Ruby Core (Foil)": {
+      "market": 125,
+      "updated": 1781586204975
+    },
+    "Aquamarine Core (Foil)": {
+      "market": 229.33,
+      "updated": 1781586181920
+    },
+    "Avatar of Air (Foil)": {
+      "market": 1299.99,
+      "updated": 1781586164516
+    },
+    "Gothic Booster Case": {
+      "market": 975.4,
+      "updated": 1781586164516
+    },
+    "Pathfinder (Foil)": {
+      "market": 123.12,
+      "updated": 1781586204975
+    },
+    "Beta - Booster Box Case": {
+      "market": 915.31,
+      "updated": 1781586164516
+    },
+    "Mirror Realm (Foil)": {
+      "market": 149.44,
+      "updated": 1781586199176
+    },
+    "Avatar of Fire (Foil)": {
+      "market": 789.99,
+      "updated": 1781586164516
+    },
+    "Arthurian Legends Booster Case": {
+      "market": 779.22,
+      "updated": 1781586164516
+    },
+    "The Four Elementals Preconstructed Deck Box": {
+      "market": 744.5,
+      "updated": 1781586164516
+    },
+    "The Colour Out of Space (Foil)": {
+      "market": 93.58,
+      "updated": 1781586222854
+    },
+    "Ring of Morrigan (Foil)": {
+      "market": 562.9,
+      "updated": 1781586170144
+    },
+    "Smokestacks of Gnaak (Foil)": {
+      "market": 60.35,
+      "updated": 1781586247049
+    },
+    "Great Old One (Foil)": {
+      "market": 548.32,
+      "updated": 1781586170144
+    },
+    "Death Dealer": {
+      "market": 499,
+      "updated": 1781586170144
+    },
+    "Dragonlord (Foil)": {
+      "market": 436.39,
+      "updated": 1781586170144
+    },
+    "Dragonlord Box": {
+      "market": 430.13,
+      "updated": 1781586170144
+    },
+    "Magician (Foil)": {
+      "market": 428.34,
+      "updated": 1781586170144
+    },
+    "Deathspeaker (Foil)": {
+      "market": 54.07,
+      "updated": 1781586252987
+    },
+    "Browse (Foil)": {
+      "market": 75.11,
+      "updated": 1781586235271
+    },
+    "Sorcerer (Foil)": {
+      "market": 400,
+      "updated": 1781586170144
+    },
+    "Mix Terra (Foil)": {
+      "market": 382.25,
+      "updated": 1781586170144
+    },
+    "Philosopher's Stone": {
+      "market": 89,
+      "updated": 1781586229024
+    },
+    "Pnakotic Manuscript (Foil)": {
+      "market": 365.77,
+      "updated": 1781586170144
+    },
+    "Morgana le Fay (Foil)": {
+      "market": 353.85,
+      "updated": 1781586170144
+    },
+    "Imposter (Foil)": {
+      "market": 352,
+      "updated": 1781586170144
+    },
+    "The Immortal Throne (Foil)": {
+      "market": 345.67,
+      "updated": 1781586170144
+    },
+    "Queen of Midland (Foil)": {
+      "market": 345.5,
+      "updated": 1781586170144
+    },
+    "Pristine Paradise (Foil)": {
+      "market": 338.33,
+      "updated": 1781586170144
+    },
+    "Courtesan Thaïs": {
+      "market": 327.64,
+      "updated": 1781586170144
+    },
+    "Maelstrom (Foil)": {
+      "market": 326.27,
+      "updated": 1781586170144
+    },
+    "Grim Reaper (Foil)": {
+      "market": 325,
+      "updated": 1781586175986
+    },
+    "Kythera Mechanism (Foil)": {
+      "market": 325,
+      "updated": 1781586175986
+    },
+    "River of Flame (Foil)": {
+      "market": 78.08,
+      "updated": 1781586229024
+    },
+    "The Four Elementals Preconstructed Deck: Air": {
+      "market": 324.5,
+      "updated": 1781586175986
+    },
+    "Avatar of Air (Preconstructed Deck)": {
+      "market": 316.55,
+      "updated": 1781586175986
+    },
+    "Atlantean Fate (Foil)": {
+      "market": 73.48,
+      "updated": 1781586235271
+    },
+    "Ether Core (Foil)": {
+      "market": 302.08,
+      "updated": 1781586175986
+    },
+    "Roots of Yggdrasil (Foil)": {
+      "market": 301.85,
+      "updated": 1781586175986
+    },
+    "Witherwing Hero (Foil)": {
+      "market": 300.99,
+      "updated": 1781586175986
+    },
+    "Vaults of Zul (Foil)": {
+      "market": 300.55,
+      "updated": 1781586175986
+    },
+    "Donnybrook Inn (Foil)": {
+      "market": 300,
+      "updated": 1781586175986
+    },
+    "Cerberus in Chains (Foil)": {
+      "market": 298.89,
+      "updated": 1781586175986
+    },
+    "Star-seeds of Uhr (Foil)": {
+      "market": 295.99,
+      "updated": 1781586175986
+    },
+    "Archangel Michael (Foil)": {
+      "market": 293.18,
+      "updated": 1781586175986
+    },
+    "Twist of Fate (Foil)": {
+      "market": 288.14,
+      "updated": 1781586175986
+    },
+    "Erik's Curiosa": {
+      "market": 282.02,
+      "updated": 1781586175986
+    },
+    "Aino (Foil)": {
+      "market": 280,
+      "updated": 1781586175986
+    },
+    "Witch (Foil)": {
+      "market": 277.58,
+      "updated": 1781586175986
+    },
+    "Mix Aqua (Foil)": {
+      "market": 275.5,
+      "updated": 1781586175986
+    },
+    "Dream-Quest (Foil)": {
+      "market": 275,
+      "updated": 1781586181920
+    },
+    "Caelestis (Foil)": {
+      "market": 275,
+      "updated": 1781586181920
+    },
+    "Captain Baldassare (Foil)": {
+      "market": 272,
+      "updated": 1781586181920
+    },
+    "Mother Nature (Foil)": {
+      "market": 270.49,
+      "updated": 1781586181920
+    },
+    "Tadpole Pool (Foil)": {
+      "market": 269.69,
+      "updated": 1781586181920
+    },
+    "Great Wall (Foil)": {
+      "market": 269,
+      "updated": 1781586181920
+    },
+    "Pact with the Devil (Foil)": {
+      "market": 261.63,
+      "updated": 1781586181920
+    },
+    "Shrine of the Dragonlord (Foil)": {
+      "market": 259.27,
+      "updated": 1781586181920
+    },
+    "Vile Imp (Foil)": {
+      "market": 254.33,
+      "updated": 1781586181920
+    },
+    "Witherwing Hero (Alpha Investments Promo) (Foil)": {
+      "market": 250,
+      "updated": 1781586181920
+    },
+    "Mix Ignis (Foil)": {
+      "market": 249.95,
+      "updated": 1781586181920
+    },
+    "Ignis Rex (Foil)": {
+      "market": 245.55,
+      "updated": 1781586181920
+    },
+    "Lord of Unland (Foil)": {
+      "market": 245.5,
+      "updated": 1781586181920
+    },
+    "Dome of Osiros (Foil)": {
+      "market": 245.49,
+      "updated": 1781586181920
+    },
+    "Savior": {
+      "market": 244.99,
+      "updated": 1781586181920
+    },
+    "Ring of Morrigan": {
+      "market": 238.77,
+      "updated": 1781586181920
+    },
+    "Torrid Omphalos (Foil)": {
+      "market": 226.38,
+      "updated": 1781586181920
+    },
+    "Boneyard (Foil)": {
+      "market": 225.48,
+      "updated": 1781586181920
+    },
+    "Infernal Legion (Foil)": {
+      "market": 220,
+      "updated": 1781586181920
+    },
+    "Necromancer": {
+      "market": 219.05,
+      "updated": 1781586187759
+    },
+    "Realm-Eater (Foil)": {
+      "market": 218.43,
+      "updated": 1781586187759
+    },
+    "Spear of Destiny (Foil)": {
+      "market": 215,
+      "updated": 1781586187759
+    },
+    "Duplicator (Foil)": {
+      "market": 215,
+      "updated": 1781586187759
+    },
+    "Key to the City (Foil)": {
+      "market": 214.9,
+      "updated": 1781586187759
+    },
+    "King Arthur": {
+      "market": 212.25,
+      "updated": 1781586187759
+    },
+    "Avatar of Earth (Preconstructed Deck)": {
+      "market": 210.24,
+      "updated": 1781586187759
+    },
+    "The Four Elementals Preconstructed Deck: Earth": {
+      "market": 210,
+      "updated": 1781586187759
+    },
+    "Algor Omphalos (Foil)": {
+      "market": 202.88,
+      "updated": 1781586187759
+    },
+    "Grandmaster Wizard (Foil)": {
+      "market": 200,
+      "updated": 1781586187759
+    },
+    "Elementalist (Foil)": {
+      "market": 56.55,
+      "updated": 1781586247049
+    },
+    "Plague of Frogs (Foil)": {
+      "market": 65,
+      "updated": 1781586241307
+    },
+    "Archangel Raphael (Foil)": {
+      "market": 197.77,
+      "updated": 1781586187759
+    },
+    "Archangel Samael (Foil)": {
+      "market": 197.48,
+      "updated": 1781586187759
+    },
+    "Ruler of Thul": {
+      "market": 194.68,
+      "updated": 1781586187759
+    },
+    "Gothic Booster Box": {
+      "market": 194.04,
+      "updated": 1781586187759
+    },
+    "Harbinger": {
+      "market": 192.33,
+      "updated": 1781586187759
+    },
+    "Blasted Oak (Foil)": {
+      "market": 189.32,
+      "updated": 1781586187759
+    },
+    "Lilith (Foil)": {
+      "market": 186.58,
+      "updated": 1781586187759
+    },
+    "Dank Omphalos (Foil)": {
+      "market": 183,
+      "updated": 1781586193494
+    },
+    "Kiss of Judas (Foil)": {
+      "market": 182.58,
+      "updated": 1781586193494
+    },
+    "The Colour Out of Space": {
+      "market": 182.55,
+      "updated": 1781586193494
+    },
+    "Dragonlord's Lair (Foil)": {
+      "market": 181.78,
+      "updated": 1781586193494
+    },
+    "Doomsday Device (Foil)": {
+      "market": 181.33,
+      "updated": 1781586193494
+    },
+    "Adtonitum (Foil)": {
+      "market": 180,
+      "updated": 1781586193494
+    },
+    "Amazon Warriors (Alpha Investments Promo) (Foil)": {
+      "market": 178.78,
+      "updated": 1781586193494
+    },
+    "Pendulum of Peril (Foil)": {
+      "market": 176.36,
+      "updated": 1781586193494
+    },
+    "Doomsday Prophet (Foil)": {
+      "market": 175,
+      "updated": 1781586193494
+    },
+    "Four Waters of Paradise (Foil)": {
+      "market": 174.99,
+      "updated": 1781586193494
+    },
+    "Enchantress (Foil)": {
+      "market": 174.75,
+      "updated": 1781586193494
+    },
+    "Joyous Garde (Foil)": {
+      "market": 173.26,
+      "updated": 1781586193494
+    },
+    "The Empyrean (Foil)": {
+      "market": 173,
+      "updated": 1781586193494
+    },
+    "Garden of Eden (Foil)": {
+      "market": 172.44,
+      "updated": 1781586193494
+    },
+    "Midland Army (Foil)": {
+      "market": 171,
+      "updated": 1781586193494
+    },
+    "Battlemage (Foil)": {
+      "market": 55,
+      "updated": 1781586252987
+    },
+    "Temple of Moloch (Foil)": {
+      "market": 169.75,
+      "updated": 1781586193494
+    },
+    "Sorcery: Contested Realm - Pledge Pack": {
+      "market": 168.75,
+      "updated": 1781586193494
+    },
+    "Persecutor": {
+      "market": 168.11,
+      "updated": 1781586193494
+    },
+    "Vatn Draconis (Foil)": {
+      "market": 166.85,
+      "updated": 1781586193494
+    },
+    "Mix Aer (Foil)": {
+      "market": 164.26,
+      "updated": 1781586199176
+    },
+    "King of the Realm (Foil)": {
+      "market": 162.31,
+      "updated": 1781586199176
+    },
+    "Char Omphalos (Foil)": {
+      "market": 160.13,
+      "updated": 1781586199176
+    },
+    "Gigantism (Foil)": {
+      "market": 160,
+      "updated": 1781586199176
+    },
+    "Beta - Booster Box": {
+      "market": 159.75,
+      "updated": 1781586199176
+    },
+    "Archangel Gabriel (Foil)": {
+      "market": 159.25,
+      "updated": 1781586199176
+    },
+    "Vesuvius (Foil)": {
+      "market": 158.47,
+      "updated": 1781586199176
+    },
+    "Ruby Core": {
+      "market": 50.92,
+      "updated": 1781586258823
+    },
+    "Maiden, Mother, Crone (Foil)": {
+      "market": 145.22,
+      "updated": 1781586199176
+    },
+    "Avatar of Water (Preconstructed Deck)": {
+      "market": 145.18,
+      "updated": 1781586199176
+    },
+    "The Void (Foil)": {
+      "market": 144.03,
+      "updated": 1781586199176
+    },
+    "Sorcerer (Store Alternate Art Promo) (Foil)": {
+      "market": 142.21,
+      "updated": 1781586199176
+    },
+    "Balor of the Evil Eye (Foil)": {
+      "market": 141.74,
+      "updated": 1781586199176
+    },
+    "The Four Elementals Preconstructed Deck: Water": {
+      "market": 141.51,
+      "updated": 1781586199176
+    },
+    "Moonsong Talagelum (Foil)": {
+      "market": 141.19,
+      "updated": 1781586199176
+    },
+    "Royal Bodyguard (Foil)": {
+      "market": 140.22,
+      "updated": 1781586199176
+    },
+    "Innsmouth Dock (Foil)": {
+      "market": 140,
+      "updated": 1781586199176
+    },
+    "Tintagel (Foil)": {
+      "market": 139.34,
+      "updated": 1781586199176
+    },
+    "Ruins (Foil)": {
+      "market": 59.03,
+      "updated": 1781586247049
+    },
+    "Avatar of Fire (Preconstructed Deck)": {
+      "market": 135.09,
+      "updated": 1781586204975
+    },
+    "Infiltrate (Foil)": {
+      "market": 133,
+      "updated": 1781586204975
+    },
+    "Arthurian Legends Booster Box": {
+      "market": 132.91,
+      "updated": 1781586204975
+    },
+    "The Apex of Babel (Foil)": {
+      "market": 130.75,
+      "updated": 1781586204975
+    },
+    "Steppe (Foil)": {
+      "market": 129.91,
+      "updated": 1781586204975
+    },
+    "Tabula Rasa (Foil)": {
+      "market": 126.66,
+      "updated": 1781586204975
+    },
+    "Oasis (Foil)": {
+      "market": 123.37,
+      "updated": 1781586204975
+    },
+    "Draco Corvus (Foil)": {
+      "market": 123.26,
+      "updated": 1781586204975
+    },
+    "Amulet of Niniane (Foil)": {
+      "market": 122.96,
+      "updated": 1781586204975
+    },
+    "Horns of Behemoth (Foil)": {
+      "market": 122.92,
+      "updated": 1781586204975
+    },
+    "Pied Piper of Hameln (Foil)": {
+      "market": 122.91,
+      "updated": 1781586204975
+    },
+    "Black Mass (Foil)": {
+      "market": 122.74,
+      "updated": 1781586204975
+    },
+    "Chaoswish (Foil)": {
+      "market": 122.39,
+      "updated": 1781586204975
+    },
+    "Cloud City": {
+      "market": 120.71,
+      "updated": 1781586204975
+    },
+    "War Horse (Foil)": {
+      "market": 120,
+      "updated": 1781586204975
+    },
+    "Altar of Malachai (Foil)": {
+      "market": 119.98,
+      "updated": 1781586204975
+    },
+    "Polar Explorers (Foil)": {
+      "market": 119.9,
+      "updated": 1781586204975
+    },
+    "Glastonbury Tor (Foil)": {
+      "market": 119.89,
+      "updated": 1781586204975
+    },
+    "The Malleus Maleficarum (Foil)": {
+      "market": 118.98,
+      "updated": 1781586210994
+    },
+    "Saint of Redemption (Foil)": {
+      "market": 118.24,
+      "updated": 1781586210994
+    },
+    "Seer (Foil)": {
+      "market": 117.92,
+      "updated": 1781586210994
+    },
+    "The Four Elementals Preconstructed Deck: Fire": {
+      "market": 117.26,
+      "updated": 1781586210994
+    },
+    "Doctor Demetrius (Foil)": {
+      "market": 116.21,
+      "updated": 1781586210994
+    },
+    "The Rack (Foil)": {
+      "market": 115.89,
+      "updated": 1781586210994
+    },
+    "Grigori Rasputin (Foil)": {
+      "market": 115.88,
+      "updated": 1781586210994
+    },
+    "Windmill (Foil)": {
+      "market": 115,
+      "updated": 1781586210994
+    },
+    "The Doom of Dilmun (Foil)": {
+      "market": 114.81,
+      "updated": 1781586210994
+    },
+    "Eclipse (Foil)": {
+      "market": 114.66,
+      "updated": 1781586210994
+    },
+    "The Inquisition (Foil)": {
+      "market": 114.3,
+      "updated": 1781586210994
+    },
+    "Cradle of Etherrum (Foil)": {
+      "market": 113.79,
+      "updated": 1781586210994
+    },
+    "Koschei's Egg (Foil)": {
+      "market": 112,
+      "updated": 1781586210994
+    },
+    "Asmodeus (Foil)": {
+      "market": 111.67,
+      "updated": 1781586210994
+    },
+    "Talamh Dreig (Foil)": {
+      "market": 110.85,
+      "updated": 1781586210994
+    },
+    "Mephistopheles (Foil)": {
+      "market": 109.96,
+      "updated": 1781586210994
+    },
+    "Onyx Core": {
+      "market": 47.33,
+      "updated": 1781586264806
+    },
+    "Mount Ussar Sanctuary (Foil)": {
+      "market": 107.53,
+      "updated": 1781586210994
+    },
+    "The Green Knight (Foil)": {
+      "market": 107.18,
+      "updated": 1781586210994
+    },
+    "Kairos the Archivist (Foil)": {
+      "market": 106.43,
+      "updated": 1781586210994
+    },
+    "Lightning Bolt (Team Covenant Promo) (Foil)": {
+      "market": 106.03,
+      "updated": 1781586216962
+    },
+    "Highland Princess (Foil)": {
+      "market": 105.95,
+      "updated": 1781586216962
+    },
+    "Camelot (Foil)": {
+      "market": 49.49,
+      "updated": 1781586264806
+    },
+    "Observatory (Foil)": {
+      "market": 104.71,
+      "updated": 1781586216962
+    },
+    "City of Glass (Foil)": {
+      "market": 104.5,
+      "updated": 1781586216962
+    },
+    "Bane of Aventis (Foil)": {
+      "market": 102.8,
+      "updated": 1781586216962
+    },
+    "Ironclad (Foil)": {
+      "market": 102.46,
+      "updated": 1781586216962
+    },
+    "Boudicca (Foil)": {
+      "market": 102.44,
+      "updated": 1781586216962
+    },
+    "City of Plenty (Foil)": {
+      "market": 101.99,
+      "updated": 1781586216962
+    },
+    "City of Souls (Foil)": {
+      "market": 101.59,
+      "updated": 1781586216962
+    },
+    "Ghost Ship (Foil)": {
+      "market": 101.48,
+      "updated": 1781586216962
+    },
+    "Peace Offering (Foil)": {
+      "market": 101.24,
+      "updated": 1781586216962
+    },
+    "Fields of Camlann (Foil)": {
+      "market": 101.23,
+      "updated": 1781586216962
+    },
+    "Druid (Box Topper) (Foil)": {
+      "market": 101,
+      "updated": 1781586216962
+    },
+    "Archangel Michael": {
+      "market": 100.65,
+      "updated": 1781586216962
+    },
+    "Pudge Butcher (Foil)": {
+      "market": 100.01,
+      "updated": 1781586216962
+    },
+    "Abaddon Succubus (Foil)": {
+      "market": 100,
+      "updated": 1781586216962
+    },
+    "Rest in Peace (Foil)": {
+      "market": 99.3,
+      "updated": 1781586216962
+    },
+    "Draconian Bonekite (Foil)": {
+      "market": 99.18,
+      "updated": 1781586216962
+    },
+    "The Manor at Daperyll Hill (Foil)": {
+      "market": 98.72,
+      "updated": 1781586216962
+    },
+    "Sister Stefania (Foil)": {
+      "market": 98.6,
+      "updated": 1781586222854
+    },
+    "Gilman House (Foil)": {
+      "market": 97.96,
+      "updated": 1781586222854
+    },
+    "Hellmouth (Foil)": {
+      "market": 97.11,
+      "updated": 1781586222854
+    },
+    "Kor Crematory (Foil)": {
+      "market": 97,
+      "updated": 1781586222854
+    },
+    "Earthquake (Foil)": {
+      "market": 96.69,
+      "updated": 1781586222854
+    },
+    "Aquamarine Core": {
+      "market": 51.75,
+      "updated": 1781586258823
+    },
+    "City of Traitors (Foil)": {
+      "market": 94.9,
+      "updated": 1781586222854
+    },
+    "Morgana le Fay": {
+      "market": 94.39,
+      "updated": 1781586222854
+    },
+    "Thing in the Ice (Foil)": {
+      "market": 93.32,
+      "updated": 1781586222854
+    },
+    "Caerleon-Upon-Usk (Foil)": {
+      "market": 92.98,
+      "updated": 1781586222854
+    },
+    "Amethyst Core": {
+      "market": 92.66,
+      "updated": 1781586222854
+    },
+    "Sea of Ash (Foil)": {
+      "market": 92.57,
+      "updated": 1781586222854
+    },
+    "Lifewish (Foil)": {
+      "market": 92.54,
+      "updated": 1781586222854
+    },
+    "Wormelow Tump (Foil)": {
+      "market": 91.98,
+      "updated": 1781586222854
+    },
+    "Megamoeba (Foil)": {
+      "market": 91.45,
+      "updated": 1781586222854
+    },
+    "Edge of the World (Foil)": {
+      "market": 89.99,
+      "updated": 1781586222854
+    },
+    "Diluvian Kraken (Foil)": {
+      "market": 89.94,
+      "updated": 1781586222854
+    },
+    "Apostles of Thamariel (Foil)": {
+      "market": 89.77,
+      "updated": 1781586222854
+    },
+    "Returned King (Foil)": {
+      "market": 89.76,
+      "updated": 1781586222854
+    },
+    "The Pallid Bust (Foil)": {
+      "market": 89.49,
+      "updated": 1781586229024
+    },
+    "Merlin (Foil)": {
+      "market": 88.37,
+      "updated": 1781586229024
+    },
+    "Abundance (Foil)": {
+      "market": 88.29,
+      "updated": 1781586229024
+    },
+    "Crossroads (Foil)": {
+      "market": 87,
+      "updated": 1781586229024
+    },
+    "Book of the Dead (Foil)": {
+      "market": 84.69,
+      "updated": 1781586229024
+    },
+    "Jack the Ripper (Foil)": {
+      "market": 84.24,
+      "updated": 1781586229024
+    },
+    "Goat for Azazel (Foil)": {
+      "market": 83.38,
+      "updated": 1781586229024
+    },
+    "Plate of the Whale (Foil)": {
+      "market": 83.17,
+      "updated": 1781586229024
+    },
+    "Xeraphine Konrul (Foil)": {
+      "market": 82.63,
+      "updated": 1781586229024
+    },
+    "Aqueduct (Foil)": {
+      "market": 82.6,
+      "updated": 1781586229024
+    },
+    "The Flood (Foil)": {
+      "market": 81.15,
+      "updated": 1781586229024
+    },
+    "Lighthouse (Foil)": {
+      "market": 80.01,
+      "updated": 1781586229024
+    },
+    "Varistus the Evictor (Foil)": {
+      "market": 79.06,
+      "updated": 1781586229024
+    },
+    "Lord of Lies (Foil)": {
+      "market": 78.98,
+      "updated": 1781586229024
+    },
+    "Questing Beast (Foil)": {
+      "market": 77.81,
+      "updated": 1781586229024
+    },
+    "Wuthering Heights (Foil)": {
+      "market": 77.31,
+      "updated": 1781586229024
+    },
+    "Interrogator (Foil)": {
+      "market": 76.65,
+      "updated": 1781586229024
+    },
+    "Divine Intervention (Foil)": {
+      "market": 76.2,
+      "updated": 1781586229024
+    },
+    "Peasant Revolt (Foil)": {
+      "market": 75.84,
+      "updated": 1781586235271
+    },
+    "The Lady of the Lake (Foil)": {
+      "market": 75.79,
+      "updated": 1781586235271
+    },
+    "Deathwish (Foil)": {
+      "market": 75.76,
+      "updated": 1781586235271
+    },
+    "Ancient Dragon (Foil)": {
+      "market": 75.31,
+      "updated": 1781586235271
+    },
+    "The Black Plague (Foil)": {
+      "market": 75,
+      "updated": 1781586235271
+    },
+    "Atlas Wanderers (Foil)": {
+      "market": 74.95,
+      "updated": 1781586235271
+    },
+    "Vivien the Enchantress (Foil)": {
+      "market": 73.54,
+      "updated": 1781586235271
+    },
+    "Watery Grave (Foil)": {
+      "market": 73.15,
+      "updated": 1781586235271
+    },
+    "Mirror Realm": {
+      "market": 72.55,
+      "updated": 1781586235271
+    },
+    "Nosferatu (Foil)": {
+      "market": 71.59,
+      "updated": 1781586235271
+    },
+    "Hellstar (Foil)": {
+      "market": 71.53,
+      "updated": 1781586235271
+    },
+    "Sir Galahad (Foil)": {
+      "market": 71.13,
+      "updated": 1781586235271
+    },
+    "Selfsame Simulacrum (Foil)": {
+      "market": 71,
+      "updated": 1781586235271
+    },
+    "Screaming Skull (Foil)": {
+      "market": 70.84,
+      "updated": 1781586235271
+    },
+    "Wrath of the Sea (Foil)": {
+      "market": 70.75,
+      "updated": 1781586235271
+    },
+    "Young Master Damion (Foil)": {
+      "market": 70.34,
+      "updated": 1781586235271
+    },
+    "Sisters of Silence (Foil)": {
+      "market": 70,
+      "updated": 1781586235271
+    },
+    "Legion of Gall (Foil)": {
+      "market": 70,
+      "updated": 1781586235271
+    },
+    "Locusts of Illyria (Foil)": {
+      "market": 70,
+      "updated": 1781586241307
+    },
+    "Lilith": {
+      "market": 69.94,
+      "updated": 1781586241307
+    },
+    "Mover of Mountains (Foil)": {
+      "market": 69.88,
+      "updated": 1781586241307
+    },
+    "Purgatory (Foil)": {
+      "market": 69.69,
+      "updated": 1781586241307
+    },
+    "Blood Mana (Foil)": {
+      "market": 69.45,
+      "updated": 1781586241307
+    },
+    "Mesmerism (Foil)": {
+      "market": 69.09,
+      "updated": 1781586241307
+    },
+    "Cage of Sidrak (Foil)": {
+      "market": 68.55,
+      "updated": 1781586241307
+    },
+    "Defiler Spire (Foil)": {
+      "market": 68.47,
+      "updated": 1781586241307
+    },
+    "Dank Omphalos": {
+      "market": 68.15,
+      "updated": 1781586241307
+    },
+    "Gargantula (Foil)": {
+      "market": 67.44,
+      "updated": 1781586241307
+    },
+    "Animist (Foil)": {
+      "market": 67.15,
+      "updated": 1781586241307
+    },
+    "Death Dealer (Foil)": {
+      "market": 65.84,
+      "updated": 1781586241307
+    },
+    "Orpheus' Crossing (Foil)": {
+      "market": 64.58,
+      "updated": 1781586241307
+    },
+    "Flame of the First Ones (Foil)": {
+      "market": 64.33,
+      "updated": 1781586241307
+    },
+    "Torrid Omphalos": {
+      "market": 64.2,
+      "updated": 1781586241307
+    },
+    "Blaze of Glory (Foil)": {
+      "market": 64.15,
+      "updated": 1781586241307
+    },
+    "The Great Famine (Foil)": {
+      "market": 64.11,
+      "updated": 1781586241307
+    },
+    "Army of the Dead (Foil)": {
+      "market": 63.55,
+      "updated": 1781586241307
+    },
+    "Sinkhole (Foil)": {
+      "market": 63.16,
+      "updated": 1781586241307
+    },
+    "Excalibur (Foil)": {
+      "market": 62.4,
+      "updated": 1781586247049
+    },
+    "Book of Blessings (Foil)": {
+      "market": 61.75,
+      "updated": 1781586247049
+    },
+    "White Hart (Foil)": {
+      "market": 61.46,
+      "updated": 1781586247049
+    },
+    "Shrine of the Dragonlord": {
+      "market": 61.45,
+      "updated": 1781586247049
+    },
+    "Highland Princess": {
+      "market": 61,
+      "updated": 1781586247049
+    },
+    "Satanic Panic (Foil)": {
+      "market": 60,
+      "updated": 1781586247049
+    },
+    "Primordial Spring (Foil)": {
+      "market": 59.98,
+      "updated": 1781586247049
+    },
+    "Endless Fence (Foil)": {
+      "market": 59.35,
+      "updated": 1781586247049
+    },
+    "Salt the Earth (Foil)": {
+      "market": 58.73,
+      "updated": 1781586247049
+    },
+    "Feast for Crows (Foil)": {
+      "market": 58.42,
+      "updated": 1781586247049
+    },
+    "Sow the Earth (Foil)": {
+      "market": 58.39,
+      "updated": 1781586247049
+    },
+    "Evil Twin (Foil)": {
+      "market": 58.01,
+      "updated": 1781586247049
+    },
+    "Mask of Mayhem (Foil)": {
+      "market": 57.95,
+      "updated": 1781586247049
+    },
+    "Tithe (Foil)": {
+      "market": 57.8,
+      "updated": 1781586247049
+    },
+    "Bower of Bliss (Foil)": {
+      "market": 57.4,
+      "updated": 1781586247049
+    },
+    "Merlin's Tower (Foil)": {
+      "market": 56.72,
+      "updated": 1781586247049
+    },
+    "Bodach Bogeyman (Foil)": {
+      "market": 56.51,
+      "updated": 1781586247049
+    },
+    "Day of Judgment (Foil)": {
+      "market": 56.43,
+      "updated": 1781586252987
+    },
+    "Rift Valley (Foil)": {
+      "market": 56.39,
+      "updated": 1781586252987
+    },
+    "Deliverance (Foil)": {
+      "market": 56.02,
+      "updated": 1781586252987
+    },
+    "Kingdom of Agartha (Foil)": {
+      "market": 56,
+      "updated": 1781586252987
+    },
+    "Pillar of Zeiros (Foil)": {
+      "market": 55.52,
+      "updated": 1781586252987
+    },
+    "Char Omphalos": {
+      "market": 55.44,
+      "updated": 1781586252987
+    },
+    "Autumn Unicorn (Foil)": {
+      "market": 55,
+      "updated": 1781586252987
+    },
+    "Highland Falconer (Foil)": {
+      "market": 55,
+      "updated": 1781586252987
+    },
+    "Death's Door (Foil) (Pledge Pack)": {
+      "market": 54.97,
+      "updated": 1781586252987
+    },
+    "A Midsummer Night's Dream (Foil)": {
+      "market": 54.74,
+      "updated": 1781586252987
+    },
+    "Sir Lancelot (Foil)": {
+      "market": 54.49,
+      "updated": 1781586252987
+    },
+    "All Mortals Gone (Foil)": {
+      "market": 54.45,
+      "updated": 1781586252987
+    },
+    "Sacred Stag (Foil)": {
+      "market": 54.42,
+      "updated": 1781586252987
+    },
+    "Blink (Foil)": {
+      "market": 54.07,
+      "updated": 1781586252987
+    },
+    "Nelly Longarms (Foil)": {
+      "market": 53.61,
+      "updated": 1781586252987
+    },
+    "Maiden, Mother, Crone": {
+      "market": 53.26,
+      "updated": 1781586252987
+    },
+    "Riddle Sphinx (Foil)": {
+      "market": 53.13,
+      "updated": 1781586252987
+    },
+    "Valley of Delight (Foil)": {
+      "market": 52.99,
+      "updated": 1781586252987
+    },
+    "Grey Wolves (Foil)": {
+      "market": 52.84,
+      "updated": 1781586258823
+    },
+    "Whirling Blades (Foil)": {
+      "market": 52.45,
+      "updated": 1781586258823
+    },
+    "Pollimorph (Foil)": {
+      "market": 52.36,
+      "updated": 1781586258823
+    },
+    "Fields of Phyxis": {
+      "market": 52.17,
+      "updated": 1781586258823
+    },
+    "The Four Elementals Preconstructed Deck Box (Beta)": {
+      "market": 51.98,
+      "updated": 1781586258823
+    },
+    "River Rapids (Foil)": {
+      "market": 51.82,
+      "updated": 1781586258823
+    },
+    "Corruptor (Foil)": {
+      "market": 51.69,
+      "updated": 1781586258823
+    },
+    "Armageddon (Foil)": {
+      "market": 51.58,
+      "updated": 1781586258823
+    },
+    "Myrrh's Trophy Room (Foil)": {
+      "market": 51.23,
+      "updated": 1781586258823
+    },
+    "Hounds of Ondaros (Foil)": {
+      "market": 50.84,
+      "updated": 1781586258823
+    },
+    "Balor of the Evil Eye": {
+      "market": 50.79,
+      "updated": 1781586258823
+    },
+    "Key to the City": {
+      "market": 50.73,
+      "updated": 1781586258823
+    },
+    "Mirage (Foil)": {
+      "market": 50.33,
+      "updated": 1781586258823
+    },
+    "Powerwish (Foil)": {
+      "market": 50.31,
+      "updated": 1781586258823
+    },
+    "Angel's Egg (Foil)": {
+      "market": 50,
+      "updated": 1781586258823
+    },
+    "Undertaker Engine (Foil)": {
+      "market": 49.99,
+      "updated": 1781586258823
+    },
+    "Torshammar Trinket (Foil)": {
+      "market": 49.95,
+      "updated": 1781586258823
+    },
+    "Drums of Doom (Foil)": {
+      "market": 49.94,
+      "updated": 1781586258823
+    },
+    "Haystack": {
+      "market": 49.51,
+      "updated": 1781586264806
+    },
+    "Spellslinger (Promo)": {
+      "market": 49.27,
+      "updated": 1781586264806
+    },
+    "Baba Yaga's Hut (Foil)": {
+      "market": 48.99,
+      "updated": 1781586264806
+    },
+    "The Hexham Haunts (Foil)": {
+      "market": 48.98,
+      "updated": 1781586264806
+    },
+    "Vatn Draconis": {
+      "market": 48.72,
+      "updated": 1781586264806
+    },
+    "Darkest Dungeon (Foil)": {
+      "market": 48.58,
+      "updated": 1781586264806
+    },
+    "Old Mortimer's Den (Foil)": {
+      "market": 48.35,
+      "updated": 1781586264806
+    },
+    "Queen Guinevere (Foil)": {
+      "market": 48.02,
+      "updated": 1781586264806
+    },
+    "Lady Iseult (Foil)": {
+      "market": 47.96,
+      "updated": 1781586264806
+    },
+    "Waypoint Portal": {
+      "market": 47.79,
+      "updated": 1781586264806
+    },
+    "Red Rock of Ravannis (Foil)": {
+      "market": 47.29,
+      "updated": 1781586264806
+    },
+    "All-terrain Vestments (Foil)": {
+      "market": 47.22,
+      "updated": 1781586264806
+    },
+    "Daperyll Vampire (Foil)": {
+      "market": 47,
+      "updated": 1781586264806
+    },
+    "Aino": {
+      "market": 46.95,
+      "updated": 1781586264806
+    },
+    "Sir Yvain (Foil)": {
+      "market": 46.78,
+      "updated": 1781586264806
+    },
+    "Scorched Earth (Foil)": {
+      "market": 46.74,
+      "updated": 1781586264806
+    },
+    "Craterize (Foil)": {
+      "market": 46.22,
+      "updated": 1781586264806
+    },
+    "Joyous Garde": {
+      "market": 46.01,
+      "updated": 1781586264806
+    }
+  }
 }
