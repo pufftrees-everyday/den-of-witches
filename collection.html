@@ -527,7 +527,9 @@ function updateStats() {
 }
 
 // ── LOAD CARDS ──
-let prices = {}; // cardName -> { market, foilMarket, updated }
+let prices = {};
+let priceSource = null;
+let priceDate = null;
 
 async function loadCards() {
   try {
@@ -559,9 +561,10 @@ async function loadCards() {
       if (pres.ok) {
         const pdata = await pres.json();
         prices = pdata.prices || {};
-        const generated = pdata.generated ? new Date(pdata.generated).toLocaleDateString() : null;
-        if (generated) {
-          document.getElementById('price-date').textContent = `Prices as of ${generated}`;
+        priceSource = pdata.source || 'JustTCG';
+        priceDate = pdata.generated ? new Date(pdata.generated).toLocaleDateString() : null;
+        if (priceDate) {
+          document.getElementById('price-date').textContent = `Prices as of ${priceDate}`;
         }
       }
     } catch(e) { /* prices.json not found, that's fine */ }
@@ -760,6 +763,7 @@ function exportList(flag, filename, title) {
     `// ${title}`,
     `// Generated ${new Date().toLocaleDateString()} by Pufftrees`,
     `// Total cards: ${totalQty} (${cards.length} unique)`,
+    priceDate ? `// Market prices from TCGPlayer as of ${priceDate}` : `// No price data available`,
     `// Total price: ${priceStr}`,
     ''
   ];
