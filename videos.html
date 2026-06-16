@@ -74,25 +74,11 @@
   .channel-link:hover { color: var(--arcane); }
   .channel-status { font-size: 0.75rem; color: var(--mist); font-style: italic; }
 
-  .channel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
-
-  /* RSS CARD (before clicking) */
-  .rss-card { background: var(--dusk); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; }
-  .rss-card:hover { border-color: var(--arcane); box-shadow: var(--glow); }
-
-  .rss-thumb { position: relative; padding-bottom: 56.25%; background: var(--twilight); overflow: hidden; }
-  .rss-thumb img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
-  .rss-play { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(11,10,15,0.4); opacity: 0; transition: opacity 0.2s; }
-  .rss-card:hover .rss-play { opacity: 1; }
-  .rss-play-icon { width: 48px; height: 48px; background: var(--rune); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #fff; }
-
-  .rss-info { padding: 10px 12px 12px; }
-  .rss-title { font-size: 0.85rem; color: var(--shimmer); line-height: 1.4; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .rss-date { font-size: 0.72rem; color: var(--mist); font-style: italic; }
-
-  /* Expanded embed replacing rss-card */
-  .rss-card.expanded { cursor: default; }
-  .rss-card.expanded:hover { border-color: var(--arcane); }
+  .channel-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+  .channel-player { background: var(--dusk); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; max-width: 780px; }
+  .channel-browse { padding: 12px 16px; border-top: 1px solid var(--border); }
+  .browse-link { font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; color: var(--arcane); text-decoration: none; transition: color 0.2s; }
+  .browse-link:hover { color: var(--shimmer); }
 
   /* LOADING / ERROR */
   .channel-loading { color: var(--mist); font-style: italic; font-size: 0.9rem; padding: 20px 0; }
@@ -252,127 +238,63 @@ function renderFeatured() {
 }
 
 // ── RSS CHANNEL FEEDS ──
-// Use multiple proxies with fallback
-const RSS_PROXIES = [
-  (url) => `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}&count=8`,
-  (url) => `https://cors-anywhere.herokuapp.com/${url}`,
-];
-
-async function fetchChannelFeed(channel) {
-  const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channel.channelId}`;
-  
-  // Try rss2json first
-  try {
-    const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}&count=8`);
-    if (res.ok) {
-      const data = await res.json();
-      if (data.status === 'ok' && data.items?.length) return data.items;
-    }
-  } catch(e) {}
-
-  // Fallback: fetch raw RSS via allorigins proxy and parse it
-  const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
-  const res = await fetch(proxyUrl);
-  if (!res.ok) throw new Error('All proxies failed');
-  const data = await res.json();
-  const xml = data.contents;
-  if (!xml) throw new Error('Empty response');
-
-  // Parse XML manually
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(xml, 'text/xml');
-  const entries = [...doc.querySelectorAll('entry')];
-  return entries.slice(0, 8).map(e => ({
-    title: e.querySelector('title')?.textContent || '',
-    link: e.querySelector('link')?.getAttribute('href') || '',
-    guid: e.querySelector('videoId')?.textContent || '',
-    pubDate: e.querySelector('published')?.textContent || '',
-  }));
-}
-
-function getVideoIdFromFeedItem(item) {
-  // rss2json format: link is watch URL
-  if (item.link) {
-    const id = extractVideoId(item.link);
-    if (id) return id;
-  }
-  // Raw XML format: guid is yt:video:VIDEO_ID
-  if (item.guid) {
-    const m = item.guid.match(/([a-zA-Z0-9_-]{11})$/);
-    if (m) return m[1];
-  }
-  return null;
-}
-
-function timeAgo(dateStr) {
-  const d = new Date(dateStr);
-  const now = new Date();
-  const diff = Math.floor((now - d) / 1000);
-  if (diff < 3600) return `${Math.floor(diff/60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff/3600)}h ago`;
-  if (diff < 604800) return `${Math.floor(diff/86400)}d ago`;
-  if (diff < 2592000) return `${Math.floor(diff/604800)}w ago`;
-  return d.toLocaleDateString();
-}
-
-let expandedVideos = new Set();
-
-function expandVideo(cardEl, videoId) {
-  if (expandedVideos.has(videoId)) return;
-  expandedVideos.add(videoId);
-  cardEl.classList.add('expanded');
-  cardEl.innerHTML = `
-    <div class="video-embed">
-      <iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allowfullscreen allow="autoplay"></iframe>
-    </div>`;
-}
+// ── CHANNEL FEEDS ──
+// Instead of RSS (CORS issues), we link directly to each channel
+// and embed their latest videos using YouTube's playlist embed
 
 async function renderChannels() {
   const container = document.getElementById('channels-container');
   container.innerHTML = CHANNELS.map(ch => `
-    <div class="channel-section" id="channel-${ch.channelId}">
+    <div class="channel-section">
       <div class="channel-header">
         <div class="channel-name">${ch.name}</div>
         <a href="${ch.url}" target="_blank" class="channel-link">↗ ${ch.handle}</a>
-        <span class="channel-status" id="status-${ch.channelId}">Loading…</span>
       </div>
-      <div class="channel-grid" id="grid-${ch.channelId}">
-        ${[...Array(4)].map(() => `<div style="background:var(--dusk);border-radius:6px;aspect-ratio:16/9;animation:pulse 2s infinite;"></div>`).join('')}
+      <div class="channel-grid">
+        <!-- Embed the channel's uploads playlist -->
+        <div class="channel-player">
+          <div class="video-embed">
+            <iframe
+              src="https://www.youtube.com/embed?listType=user_uploads&list=${ch.channelId}&index=0"
+              allowfullscreen loading="lazy"
+              title="${ch.name}">
+            </iframe>
+          </div>
+          <div class="channel-browse">
+            <a href="${ch.url}/videos" target="_blank" class="browse-link">
+              Browse all videos from ${ch.name} ↗
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   `).join('');
+}
 
-  // Fetch each channel
-  for (const ch of CHANNELS) {
-    const statusEl = document.getElementById(`status-${ch.channelId}`);
-    const gridEl = document.getElementById(`grid-${ch.channelId}`);
-    try {
-      const items = await fetchChannelFeed(ch);
-      statusEl.textContent = `${items.length} latest videos`;
+function getVideoIdFromFeedItem(item) { return null; }
 
-      gridEl.innerHTML = items.map(item => {
-        const videoId = getVideoIdFromFeedItem(item);
-        if (!videoId) return '';
-        const thumb = `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
-        const title = item.title || 'Untitled';
-        const date = item.pubDate ? timeAgo(item.pubDate) : '';
-        return `<div class="rss-card" id="rss-${videoId}" onclick="expandVideo(this,'${videoId}')">
-          <div class="rss-thumb">
-            <img src="${thumb}" alt="${title}" loading="lazy">
-            <div class="rss-play"><div class="rss-play-icon">▶</div></div>
-          </div>
-          <div class="rss-info">
-            <div class="rss-title">${title}</div>
-            <div class="rss-date">${date}</div>
-          </div>
-        </div>`;
-      }).join('');
-    } catch(e) {
-      statusEl.textContent = 'Could not load feed';
-      statusEl.style.color = 'var(--ember)';
-      gridEl.innerHTML = `<div class="channel-error">Could not load videos from ${ch.name}. <a href="${ch.url}" target="_blank" style="color:var(--arcane)">Visit channel →</a></div>`;
-    }
-  }
+// ── CHANNEL FEEDS — YouTube playlist embed (no proxy needed) ──
+async function renderChannels() {
+  const container = document.getElementById('channels-container');
+  container.innerHTML = CHANNELS.map(ch => `
+    <div class="channel-section">
+      <div class="channel-header">
+        <div class="channel-name">${ch.name}</div>
+        <a href="${ch.url}" target="_blank" class="channel-link">↗ ${ch.handle}</a>
+      </div>
+      <div class="channel-player">
+        <div class="video-embed">
+          <iframe
+            src="https://www.youtube.com/embed?listType=user_uploads&list=${ch.channelId}&index=0"
+            allowfullscreen loading="lazy" title="${ch.name}">
+          </iframe>
+        </div>
+        <div class="channel-browse">
+          <a href="${ch.url}/videos" target="_blank" class="browse-link">Browse all videos from ${ch.name} ↗</a>
+        </div>
+      </div>
+    </div>
+  `).join('');
 }
 
 // ── TOAST ──
