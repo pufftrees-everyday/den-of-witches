@@ -236,28 +236,66 @@
   .toast { position: fixed; bottom: 24px; right: 24px; background: var(--dusk); border: 1px solid var(--border-strong); color: var(--shimmer); font-size: 0.9rem; padding: 10px 18px; border-radius: 6px; box-shadow: var(--glow); z-index: 999; opacity: 0; transform: translateY(8px); transition: opacity 0.2s, transform 0.2s; pointer-events: none; font-style: italic; }
   .toast.show { opacity: 1; transform: translateY(0); }
 
+  /* HAMBURGER + MOBILE NAV */
+  .hamburger { display: none; background: none; border: 1px solid var(--border-strong); color: var(--gold); font-size: 1.3rem; line-height: 1; padding: 4px 12px; border-radius: 4px; cursor: pointer; }
+  .hamburger:active { background: rgba(155,135,212,0.12); }
+  .mobile-nav { display: none; position: sticky; top: 60px; z-index: 99; background: #0d0b14; border-bottom: 1px solid var(--border); flex-direction: column; padding: 8px 0; }
+  .mobile-nav.open { display: flex; }
+  .mobile-nav .header-link { padding: 13px 24px; font-size: 0.85rem; border-bottom: 1px solid rgba(155,135,212,0.06); }
+  .mobile-nav-divider { height: 1px; background: var(--border); margin: 4px 16px; }
+
+  @media (max-width: 820px) {
+    .nav-collapsible { display: none !important; }
+    .hamburger { display: block; }
+    header { padding: 0 16px; }
+  }
+
   @media (max-width: 700px) {
+    .page { padding: 14px; }
     .filter-stones { flex-wrap: wrap; }
+    .filter-stone { flex: 1 1 45%; min-width: 0; border-right: 3px solid #2a2640; border-bottom: 3px solid #2a2640; }
+    .filter-stone + .filter-stone::before { display: none; }
     .collection-bar { flex-direction: column; align-items: flex-start; }
+    .collection-actions { margin-left: 0; }
+    .card-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+    .card-grid.sites-only { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+  }
+
+  @media (max-width: 400px) {
+    .filter-stone { flex: 1 1 100%; }
+    .card-grid { grid-template-columns: repeat(2, 1fr); }
   }
 </style>
 </head>
 <body>
 
 <header>
-  <div style="display:flex;align-items:center;gap:16px;">
+  <div class="header-main" style="display:flex;align-items:center;gap:16px;">
     <div class="logo"><a href="index.html" style="color:var(--gold);text-decoration:none;font-family:'Cinzel Decorative',serif;font-weight:700;letter-spacing:0.04em;">✦ Cursed Realm</a></div>
-    <a href="collection.html" class="header-link">My Collection</a>
-    <a href="videos.html" class="header-link">Videos</a>
-    <button class="btn btn-ghost" onclick="window.location.href='index.html'">My Decks</button>
-    <button class="btn btn-primary" onclick="window.location.href='deckbuilder.html'">✦ New Deck</button>
+    <a href="collection.html" class="header-link nav-collapsible">My Collection</a>
+    <a href="videos.html" class="header-link nav-collapsible">Videos</a>
+    <a href="tracker.html" class="header-link nav-collapsible">Life Tracker</a>
+    <button class="btn btn-ghost nav-collapsible" onclick="window.location.href='index.html'">My Decks</button>
+    <button class="btn btn-primary nav-collapsible" onclick="window.location.href='deckbuilder.html'">✦ New Deck</button>
   </div>
-  <div class="header-nav">
+  <div class="header-nav nav-collapsible">
     <a href="https://drive.google.com/file/d/1sgQo0xf0N2teIR0zlyl91g9j6LVncZnr/view" target="_blank" class="header-link">Rulebook</a>
     <a href="https://play.sorcerytcg.com/" target="_blank" class="header-link">Play Network</a>
     <a href="https://sorcerytcg.com/" target="_blank" class="header-link">Sorcery TCG</a>
   </div>
+  <button class="hamburger" onclick="toggleMobileNav()" aria-label="Menu">☰</button>
 </header>
+
+<div class="mobile-nav" id="mobile-nav">
+  <a href="collection.html" class="header-link">My Collection</a>
+  <a href="videos.html" class="header-link">Videos</a>
+  <a href="tracker.html" class="header-link">Life Tracker</a>
+  <a href="deckbuilder.html" class="header-link">✦ New Deck</a>
+  <div class="mobile-nav-divider"></div>
+  <a href="https://drive.google.com/file/d/1sgQo0xf0N2teIR0zlyl91g9j6LVncZnr/view" target="_blank" class="header-link">Rulebook</a>
+  <a href="https://play.sorcerytcg.com/" target="_blank" class="header-link">Play Network</a>
+  <a href="https://sorcerytcg.com/" target="_blank" class="header-link">Sorcery TCG</a>
+</div>
 
 <div class="page">
 
@@ -808,6 +846,10 @@ function toast(msg) {
   const el = document.getElementById('toast');
   el.textContent = msg; el.classList.add('show');
   clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('show'), 2400);
+}
+
+function toggleMobileNav() {
+  document.getElementById('mobile-nav').classList.toggle('open');
 }
 
 // ── INFINITE SCROLL ──
