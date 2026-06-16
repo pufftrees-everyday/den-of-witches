@@ -218,7 +218,10 @@
   .badge-want { background: var(--ember); color: #fff; }
 
   .card-thumb-name { padding: 5px 8px; font-size: 0.8rem; color: var(--shimmer); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .card-thumb-meta { padding: 0 8px 6px; font-size: 0.7rem; color: var(--rune); font-style: italic; }
+  .card-thumb-meta { padding: 0 8px 4px; font-size: 0.7rem; color: var(--rune); font-style: italic; }
+  .card-price { padding: 2px 8px 6px; display: flex; gap: 6px; align-items: center; }
+  .price-market { font-family: 'Cinzel', serif; font-size: 0.75rem; font-weight: 600; color: var(--gold); }
+  .price-foil { font-size: 0.7rem; color: var(--arcane); font-style: italic; }
 
   /* STATUS */
   .status { padding: 60px 24px; text-align: center; color: var(--mist); font-style: italic; }
@@ -254,8 +257,9 @@
     <div class="collection-title">⧫ Collection</div>
     <div class="collection-stats">
       <div class="cstat"><b id="stat-total">0</b> cards</div>
-      <div class="cstat have-stat">Have: <b id="stat-have">0</b></div>
-      <div class="cstat want-stat">Want: <b id="stat-want">0</b></div>
+      <div class="cstat have-stat">Have: <b id="stat-have">0</b><span id="stat-have-value" style="color:var(--sage);font-size:0.78rem;"></span></div>
+      <div class="cstat want-stat">Want: <b id="stat-want">0</b><span id="stat-want-value" style="color:var(--ember);font-size:0.78rem;"></span></div>
+      <div class="cstat" id="price-date" style="color:var(--mist);font-style:italic;font-size:0.78rem;"></div>
     </div>
     <div class="view-toggle">
       <button class="view-btn active" onclick="setView('all')">All</button>
@@ -478,14 +482,22 @@ function updateCardThumbFlags(thumb, cardId, entry) {
 
 function updateStats() {
   const col = getCollection();
-  const haveCount = Object.values(col).filter(v => v.have).length;
-  const wantCount = Object.values(col).filter(v => v.want).length;
+  const haveCards = Object.entries(col).filter(([,v]) => v.have);
+  const wantCards = Object.entries(col).filter(([,v]) => v.want);
+  const haveValue = haveCards.reduce((sum, [name]) => sum + (prices[name]?.market || 0), 0);
+  const wantValue = wantCards.reduce((sum, [name]) => sum + (prices[name]?.market || 0), 0);
   document.getElementById('stat-total').textContent = allCards.length;
-  document.getElementById('stat-have').textContent = haveCount;
-  document.getElementById('stat-want').textContent = wantCount;
+  document.getElementById('stat-have').textContent = haveCards.length;
+  document.getElementById('stat-want').textContent = wantCards.length;
+  const haveValEl = document.getElementById('stat-have-value');
+  const wantValEl = document.getElementById('stat-want-value');
+  if (haveValEl) haveValEl.textContent = haveValue > 0 ? ` ($${haveValue.toFixed(2)})` : '';
+  if (wantValEl) wantValEl.textContent = wantValue > 0 ? ` ($${wantValue.toFixed(2)})` : '';
 }
 
 // ── LOAD CARDS ──
+let prices = {}; // cardName -> { market, foilMarket, updated }
+
 async function loadCards() {
   try {
     const res = await fetch('cards.json');
@@ -509,6 +521,20 @@ async function loadCards() {
         slug: firstVariant ? firstVariant.slug : null,
       };
     }).sort((a, b) => a.name.localeCompare(b.name));
+
+    // Try to load prices.json (optional — silently skip if not found)
+    try {
+      const pres = await fetch('prices.json');
+      if (pres.ok) {
+        const pdata = await pres.json();
+        prices = pdata.prices || {};
+        const generated = pdata.generated ? new Date(pdata.generated).toLocaleDateString() : null;
+        if (generated) {
+          document.getElementById('price-date').textContent = `Prices as of ${generated}`;
+        }
+      }
+    } catch(e) { /* prices.json not found, that's fine */ }
+
     updateStats();
     filterCards();
   } catch(e) {
@@ -541,6 +567,13 @@ function renderCards(cards, append = false) {
     const have = entry.have || false;
     const want = entry.want || false;
     const flagClass = (have && want ? ' flag-have flag-want' : have ? ' flag-have' : want ? ' flag-want' : '');
+    const price = prices[card.name];
+    const priceHtml = price?.market != null
+      ? `<div class="card-price">
+          <span class="price-market">$${price.market.toFixed(2)}</span>
+          ${price.foilMarket != null ? `<span class="price-foil">✦$${price.foilMarket.toFixed(2)}</span>` : ''}
+        </div>`
+      : '';
     return `<div class="card-thumb${flagClass}" data-id="${card.id}" onclick="void(0)">
       <img src="${getImageUrl(card)}" alt="${card.name}" loading="lazy" onerror="this.style.opacity='0.2'">
       <div class="flag-badge">
@@ -553,6 +586,7 @@ function renderCards(cards, append = false) {
       </div>
       <div class="card-thumb-name">${card.name}</div>
       <div class="card-thumb-meta">${[card.type, card.rarity, card.set].filter(Boolean).join(' · ')}</div>
+      ${priceHtml}
     </div>`;
   }).join('');
 
