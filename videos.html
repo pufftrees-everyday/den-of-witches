@@ -317,9 +317,13 @@ function renderFeatured() {
 // Instead of RSS (CORS issues), we link directly to each channel
 // and embed their latest videos using YouTube's playlist embed
 
+function getVideoIdFromFeedItem(item) { return null; }
+
+// ── CHANNEL FEEDS — YouTube playlist embed (no proxy needed) ──
 async function renderChannels() {
   const container = document.getElementById('channels-container');
   container.innerHTML = CHANNELS.map(ch => {
+    const playlistId = 'UU' + ch.channelId.slice(2);
     const tags = (ch.tags || []).map(t => `<span class="channel-tag">${t}</span>`).join('');
     return `
     <div class="channel-section">
@@ -331,15 +335,12 @@ async function renderChannels() {
         <div class="channel-player">
           <div class="video-embed">
             <iframe
-              src="https://www.youtube.com/embed?listType=user_uploads&list=${ch.channelId}&index=0"
-              allowfullscreen loading="lazy"
-              title="${ch.name}">
+              src="https://www.youtube.com/embed?list=${playlistId}&index=0"
+              allowfullscreen loading="lazy" title="${ch.name}">
             </iframe>
           </div>
           <div class="channel-browse">
-            <a href="${ch.url}/videos" target="_blank" class="browse-link">
-              Browse all videos from ${ch.name} ↗
-            </a>
+            <a href="${ch.url}/videos" target="_blank" class="browse-link">Browse all videos from ${ch.name} ↗</a>
           </div>
         </div>
         <div class="channel-about">
@@ -347,35 +348,6 @@ async function renderChannels() {
           <p class="channel-about-desc">${ch.desc || ''}</p>
           ${tags ? `<div class="channel-tags">${tags}</div>` : ''}
           <a href="${ch.url}?sub_confirmation=1" target="_blank" class="channel-sub-btn">Subscribe on YouTube</a>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function getVideoIdFromFeedItem(item) { return null; }
-
-// ── CHANNEL FEEDS — YouTube playlist embed (no proxy needed) ──
-async function renderChannels() {
-  const container = document.getElementById('channels-container');
-  container.innerHTML = CHANNELS.map(ch => {
-    // Convert channel ID to uploads playlist ID: UC... -> UU...
-    const playlistId = 'UU' + ch.channelId.slice(2);
-    return `
-    <div class="channel-section">
-      <div class="channel-header">
-        <div class="channel-name">${ch.name}</div>
-        <a href="${ch.url}" target="_blank" class="channel-link">↗ ${ch.handle}</a>
-      </div>
-      <div class="channel-player">
-        <div class="video-embed">
-          <iframe
-            src="https://www.youtube.com/embed?list=${playlistId}&index=0"
-            allowfullscreen loading="lazy" title="${ch.name}">
-          </iframe>
-        </div>
-        <div class="channel-browse">
-          <a href="${ch.url}/videos" target="_blank" class="browse-link">Browse all videos from ${ch.name} ↗</a>
         </div>
       </div>
     </div>`;
