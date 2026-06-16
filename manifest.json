@@ -1,6 +1,6 @@
 {
-  "name": "Grimoire Life Tracker",
-  "short_name": "Grimoire",
+  "name": "Cursed Realm Life Tracker",
+  "short_name": "Cursed Realm",
   "description": "A life and resource tracker for Sorcery: Contested Realm",
   "start_url": "tracker.html",
   "display": "standalone",
