@@ -348,6 +348,23 @@
   .stat-pill.warn { border-color: rgba(196,97,74,0.4); color: var(--ember); }
   .stat-pill.ok { border-color: rgba(90,138,106,0.4); color: #7ab88a; }
 
+  /* Public/private visibility bar */
+  .vis-bar { display: flex; align-items: center; gap: 10px; margin-top: 10px; padding: 8px 10px; background: rgba(155,135,212,0.05); border: 1px solid var(--border); border-radius: 5px; flex-wrap: wrap; }
+  .vis-status { display: flex; align-items: center; gap: 7px; font-family: 'Cinzel', serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+  .vis-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .vis-status.private .vis-dot { background: var(--mist); }
+  .vis-status.private { color: var(--rune); }
+  .vis-status.public .vis-dot { background: var(--sage); box-shadow: 0 0 6px var(--sage); }
+  .vis-status.public { color: #7ab88a; }
+  .vis-toggle-btn {
+    font-family: 'Cinzel', serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    background: transparent; border: 1px solid var(--border-strong); color: var(--rune);
+    padding: 5px 12px; border-radius: 4px; cursor: pointer; transition: all 0.15s; margin-left: auto;
+  }
+  .vis-toggle-btn:hover { border-color: var(--arcane); color: var(--arcane); }
+  .vis-toggle-btn.make-public:hover { border-color: var(--sage); color: #7ab88a; }
+  .vis-hint { font-size: 0.78rem; color: var(--mist); font-style: italic; width: 100%; }
+
   /* DECK SECTIONS */
   .deck-body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
   .deck-body::-webkit-scrollbar { width: 4px; }
@@ -803,6 +820,7 @@
         </div>
       </div>
       <div class="deck-stats" id="deck-stats"></div>
+      <div id="deck-visibility" style="display:none;"></div>
     </div>
 
     <div class="deck-body deck-drop-zone" id="deck-body">
@@ -929,6 +947,7 @@ let currentModalCard = null;
 let addQty = 1;
 let activeDeckId = null;
 let activeDeckCode = null; // short_code of the current deck if it's a cloud-saved deck
+let activeDeckPublic = false; // whether the current saved deck is public
 
 const IMAGE_BASE = 'https://pub-5999238092ad418ca60e7a9ad641cf57.r2.dev/';
 
@@ -1431,8 +1450,57 @@ function renderDeckCardRow(section, key, card, qty) {
   </div>`;
 }
 
-// ── SAVE / LOAD ──
-function getSavedDecks() { try { return JSON.parse(localStorage.getItem('grimoire_decks')||'{}'); } catch { return {}; } }
+// ── DECK VISIBILITY (public/private) ──
+function renderVisibilityBar() {
+  const bar = document.getElementById('deck-visibility');
+  if (!bar) return;
+
+  // Only relevant when logged in
+  if (!supa || !currentUser) { bar.style.display = 'none'; return; }
+
+  bar.style.display = 'block';
+
+  // Not saved to the cloud yet
+  if (!activeDeckCode) {
+    bar.innerHTML = `<div class="vis-bar">
+      <div class="vis-status private"><span class="vis-dot"></span>Private</div>
+      <span class="vis-hint">Save this deck, then you can publish it to the gallery.</span>
+    </div>`;
+    return;
+  }
+
+  if (activeDeckPublic) {
+    bar.innerHTML = `<div class="vis-bar">
+      <div class="vis-status public"><span class="vis-dot"></span>Public</div>
+      <button class="vis-toggle-btn" onclick="setDeckVisibility(false)">Make Private</button>
+      <span class="vis-hint">This deck is live in the <a href="gallery.html" style="color:var(--arcane);">Deck Gallery</a> for everyone to find.</span>
+    </div>`;
+  } else {
+    bar.innerHTML = `<div class="vis-bar">
+      <div class="vis-status private"><span class="vis-dot"></span>Private</div>
+      <button class="vis-toggle-btn make-public" onclick="setDeckVisibility(true)">Make Public</button>
+      <span class="vis-hint">Only you can see this deck. Make it public to share it in the gallery.</span>
+    </div>`;
+  }
+}
+
+async function setDeckVisibility(makePublic) {
+  if (!supa || !currentUser || !activeDeckCode) return;
+  try {
+    const { error } = await supa.from('decks')
+      .update({ is_public: makePublic, owner_id: currentUser.id })
+      .eq('short_code', activeDeckCode).eq('owner_id', currentUser.id);
+    if (error) throw error;
+    activeDeckPublic = makePublic;
+    renderVisibilityBar();
+    toast(makePublic ? 'Deck published to the gallery!' : 'Deck set to private');
+  } catch (e) {
+    console.error('Visibility change failed', e);
+    toast('Could not change visibility');
+  }
+}
+
+
 
 async function saveDeck() {
   const name = document.getElementById('deck-name-input').value.trim() || 'Unnamed Deck';
@@ -1466,6 +1534,7 @@ async function saveDeck() {
         if (!saved) throw new Error('Could not generate a unique code');
       }
       toast(`"${name}" saved to your account`);
+      renderVisibilityBar();
       return;
     } catch (e) {
       console.error('Cloud save failed', e);
@@ -1719,6 +1788,7 @@ async function submitAuth() {
       await refreshUser();
       await maybeMigrateDecks();
       updatePublishSection();
+      renderVisibilityBar();
     }
   } catch (e) {
     showAuthMsg(e.message || 'Something went wrong.', 'error');
@@ -1732,6 +1802,7 @@ async function logout() {
   currentUser = null;
   renderAuthBar();
   updatePublishSection();
+  renderVisibilityBar();
   toast('Signed out');
 }
 
@@ -1819,9 +1890,11 @@ function applyDeckPayload(payload) {
   // create the current user's OWN deck, never overwrite the original.
   activeDeckCode = null;
   activeDeckId = null;
+  activeDeckPublic = false;
   document.getElementById('deck-name-input').value = payload.n || 'Shared Deck';
   renderDeck();
   renderCardGrid();
+  renderVisibilityBar();
   toast(`Loaded shared deck${missing ? ` (${missing} cards not found)` : ''}`);
   history.replaceState({}, '', window.location.pathname);
   return true;
@@ -1836,14 +1909,22 @@ async function loadSharedDeck(code) {
     try {
       const { data, error } = await supa
         .from('decks')
-        .select('deck_data, name')
+        .select('deck_data, name, owner_id, is_public')
         .eq('short_code', code)
         .single();
       if (error) throw error;
       if (data && data.deck_data) {
         const payload = data.deck_data;
         if (!payload.n && data.name) payload.n = data.name;
-        return applyDeckPayload(payload);
+        const ok = applyDeckPayload(payload);
+        // If the current user owns this deck, claim it so Save updates it
+        // (instead of making a duplicate) and the visibility toggle works.
+        if (ok && currentUser && data.owner_id === currentUser.id) {
+          activeDeckCode = code;
+          activeDeckPublic = !!data.is_public;
+          renderVisibilityBar();
+        }
+        return ok;
       }
       toast('Shared deck not found');
       return false;
@@ -1871,8 +1952,10 @@ function clearDeck() {
   deck = { avatar: {}, atlas: {}, spellbook: {} };
   activeDeckCode = null;
   activeDeckId = null;
+  activeDeckPublic = false;
   renderDeck();
   renderCardGrid();
+  renderVisibilityBar();
   toast('Deck cleared');
 }
 
@@ -1910,8 +1993,10 @@ function runImport() {
   deck = newDeck;
   activeDeckCode = null; // imported deck is brand new and unsaved → next Save creates a fresh owned deck
   activeDeckId = null;
+  activeDeckPublic = false;
   renderDeck();
   renderCardGrid();
+  renderVisibilityBar();
   closeImport();
   toast(`Imported ${matched} cards${skipped ? ` (${skipped} not found)` : ''}`);
 }
@@ -1959,7 +2044,7 @@ function toggleMobileNav() {
 }
 
 // ── INIT ──
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('search-input').addEventListener('input', filterCards);
   document.addEventListener('keydown', e => { if (e.key==='Escape') { closeModal({}); closeImport({}); } });
   document.querySelector('.card-list').addEventListener('scroll', function() {
@@ -2015,12 +2100,15 @@ document.addEventListener('DOMContentLoaded', () => {
     vl.classList.toggle('active', viewMode === 'list');
   }
 
-  // Auth: render bar and check for an existing session
+  // Auth: resolve session FIRST so deck-ownership checks work on load
   renderAuthBar();
-  refreshUser();
+  await refreshUser();
+  renderVisibilityBar();
   if (supa) {
     supa.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') refreshUser();
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+        refreshUser().then(() => renderVisibilityBar());
+      }
     });
   }
 
