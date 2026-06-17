@@ -928,6 +928,7 @@ let deck = { avatar: {}, atlas: {}, spellbook: {} };
 let currentModalCard = null;
 let addQty = 1;
 let activeDeckId = null;
+let activeDeckCode = null; // short_code of the current deck if it's a cloud-saved deck
 
 const IMAGE_BASE = 'https://pub-5999238092ad418ca60e7a9ad641cf57.r2.dev/';
 
@@ -1433,8 +1434,43 @@ function renderDeckCardRow(section, key, card, qty) {
 // ── SAVE / LOAD ──
 function getSavedDecks() { try { return JSON.parse(localStorage.getItem('grimoire_decks')||'{}'); } catch { return {}; } }
 
-function saveDeck() {
+async function saveDeck() {
   const name = document.getElementById('deck-name-input').value.trim() || 'Unnamed Deck';
+
+  // Logged in → save to cloud as an owned, saved deck
+  if (supa && currentUser) {
+    try {
+      const payload = buildDeckPayload();
+      let code = activeDeckCode;
+      if (code) {
+        // Update existing cloud deck
+        const { error } = await supa.from('decks')
+          .update({ name, deck_data: payload, is_saved: true, updated_at: new Date().toISOString() })
+          .eq('short_code', code).eq('owner_id', currentUser.id);
+        if (error) throw error;
+      } else {
+        // Create a new cloud deck with a fresh short code
+        for (let attempt = 0; attempt < 5; attempt++) {
+          code = genShortCode();
+          const { error } = await supa.from('decks').insert({
+            short_code: code, name, deck_data: payload,
+            owner_id: currentUser.id, is_saved: true, is_public: false
+          });
+          if (!error) { activeDeckCode = code; break; }
+          if (error.code !== '23505') throw error;
+          code = null;
+        }
+        if (!code) throw new Error('Could not generate code');
+      }
+      toast(`"${name}" saved to your account`);
+      return;
+    } catch (e) {
+      console.warn('Cloud save failed, falling back to local', e);
+      // fall through to local save
+    }
+  }
+
+  // Guest → localStorage
   const saved = getSavedDecks();
   const id = activeDeckId || ('deck_' + Date.now());
   activeDeckId = id;
@@ -1677,6 +1713,7 @@ async function submitAuth() {
       closeAuth();
       toast('Signed in!');
       await refreshUser();
+      await maybeMigrateDecks();
       updatePublishSection();
     }
   } catch (e) {
@@ -1706,6 +1743,41 @@ async function refreshUser() {
     currentUser = { id: data.user.id, email: data.user.email, username };
   } else { currentUser = null; }
   renderAuthBar();
+}
+
+// On first login, offer to push local saved decks to the cloud (local wins)
+async function maybeMigrateDecks() {
+  if (!supa || !currentUser) return;
+  const migratedKey = 'grimoire_migrated_decks_' + currentUser.id;
+  if (localStorage.getItem(migratedKey)) return;
+  const local = getSavedDecks();
+  const ids = Object.keys(local);
+  if (!ids.length) { localStorage.setItem(migratedKey, '1'); return; }
+  const ok = confirm(`You have ${ids.length} deck(s) saved on this device. Save them to your account so they sync across devices?`);
+  if (ok) {
+    let migrated = 0;
+    for (const id of ids) {
+      const entry = local[id];
+      const payload = deckToPayload(entry.deck, entry.name);
+      for (let attempt = 0; attempt < 5; attempt++) {
+        const code = genShortCode();
+        const { error } = await supa.from('decks').insert({
+          short_code: code, name: entry.name || 'Unnamed Deck',
+          deck_data: payload, owner_id: currentUser.id, is_saved: true, is_public: false
+        });
+        if (!error) { migrated++; break; }
+        if (error.code !== '23505') break;
+      }
+    }
+    toast(`Migrated ${migrated} deck(s) to your account`);
+  }
+  localStorage.setItem(migratedKey, '1');
+}
+
+// Convert a stored deck object {avatar,atlas,spellbook} into share payload form
+function deckToPayload(d, name) {
+  const pack = sec => Object.values(d[sec] || {}).map(({card, qty}) => [card.name, qty]);
+  return { n: name || 'Unnamed Deck', a: pack('avatar'), t: pack('atlas'), s: pack('spellbook') };
 }
 
 function renderAuthBar() {

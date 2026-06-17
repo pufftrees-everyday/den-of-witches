@@ -364,6 +364,8 @@
     .card-grid { grid-template-columns: repeat(2, 1fr); }
   }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="cr-auth.js"></script>
 </head>
 <body>
 
@@ -377,6 +379,7 @@
     <button class="btn btn-ghost nav-collapsible" onclick="window.location.href='index.html'">My Decks</button>
     <button class="btn btn-primary nav-collapsible" onclick="window.location.href='deckbuilder.html'">✦ New Deck</button>
   </div>
+  <div class="header-nav nav-collapsible" id="auth-bar"></div>
   <div class="header-nav nav-collapsible">
     <a href="https://drive.google.com/file/d/1sgQo0xf0N2teIR0zlyl91g9j6LVncZnr/view" target="_blank" class="header-link">Rulebook</a>
     <a href="https://play.sorcerytcg.com/" target="_blank" class="header-link">Play Network</a>
@@ -602,21 +605,41 @@ const IMAGE_BASE = 'https://pub-5999238092ad418ca60e7a9ad641cf57.r2.dev/';
 
 // ── COLLECTION STORAGE ──
 // collection[cardName] = { have: number, want: number }
-function getCollection() {
-  try {
-    const col = JSON.parse(localStorage.getItem('grimoire_collection') || '{}');
-    // Migrate old boolean values to numbers
-    let needsSave = false;
-    for (const key of Object.keys(col)) {
-      if (typeof col[key].have === 'boolean') { col[key].have = col[key].have ? 1 : 0; needsSave = true; }
-      if (typeof col[key].want === 'boolean') { col[key].want = col[key].want ? 1 : 0; needsSave = true; }
-    }
-    if (needsSave) localStorage.setItem('grimoire_collection', JSON.stringify(col));
-    return col;
-  } catch { return {}; }
+// ── COLLECTION STORAGE (cloud when logged in, localStorage otherwise) ──
+// In-memory cache is the synchronous source of truth during the session.
+let collectionCache = null;
+let cloudSaveTimer = null;
+
+function normalizeCollection(col) {
+  // Migrate old boolean values to numbers
+  for (const key of Object.keys(col)) {
+    if (typeof col[key].have === 'boolean') col[key].have = col[key].have ? 1 : 0;
+    if (typeof col[key].want === 'boolean') col[key].want = col[key].want ? 1 : 0;
+  }
+  return col;
 }
+
+function getLocalCollection() {
+  try { return normalizeCollection(JSON.parse(localStorage.getItem('grimoire_collection') || '{}')); }
+  catch { return {}; }
+}
+
+function getCollection() {
+  // Returns the in-memory cache (hydrated at load). Falls back to local if not ready.
+  if (collectionCache) return collectionCache;
+  collectionCache = getLocalCollection();
+  return collectionCache;
+}
+
 function saveCollection(col) {
+  collectionCache = col;
+  // Always keep a local copy (offline + guest fallback)
   localStorage.setItem('grimoire_collection', JSON.stringify(col));
+  // If logged in, push to cloud (debounced so rapid +/- doesn't spam)
+  if (window.CR && CR.user) {
+    clearTimeout(cloudSaveTimer);
+    cloudSaveTimer = setTimeout(() => { CR.saveCloudCollection(col); }, 800);
+  }
 }
 
 function toggleFlag(cardId, flag) {
@@ -1051,6 +1074,66 @@ document.getElementById('vm-grid').classList.toggle('active', viewMode === 'grid
 document.getElementById('vm-list').classList.toggle('active', viewMode === 'list');
 
 loadCards();
+
+// ── AUTH + CLOUD SYNC INIT ──
+async function initCollectionSync() {
+  if (!window.CR) { collectionCache = getLocalCollection(); return; }
+  CR.onAuthChange = handleAuthChange;
+  await CR.refreshUser();
+  CR.renderAuthBar('auth-bar');
+  await hydrateCollection();
+  if (CR.supa) {
+    CR.supa.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') CR.refreshUser().then(() => CR.renderAuthBar('auth-bar'));
+    });
+  }
+}
+
+async function handleAuthChange(kind) {
+  CR.renderAuthBar('auth-bar');
+  if (kind === 'login') {
+    await maybeMigrateCollection();
+    await hydrateCollection();
+  } else {
+    // logged out → revert to local
+    collectionCache = getLocalCollection();
+    updateStats(); filterCards();
+  }
+}
+
+// Pull the cloud collection into the cache and re-render
+async function hydrateCollection() {
+  if (window.CR && CR.user) {
+    const cloud = await CR.fetchCloudCollection();
+    if (cloud) {
+      collectionCache = normalizeCollection(cloud);
+      // keep a local mirror too
+      localStorage.setItem('grimoire_collection', JSON.stringify(collectionCache));
+    } else {
+      collectionCache = getLocalCollection();
+    }
+  } else {
+    collectionCache = getLocalCollection();
+  }
+  updateStats(); filterCards();
+}
+
+// On first login, offer to push local collection to the cloud (local wins)
+async function maybeMigrateCollection() {
+  if (!window.CR || !CR.user) return;
+  const migratedKey = 'grimoire_migrated_collection_' + CR.user.id;
+  if (localStorage.getItem(migratedKey)) return;
+  const local = getLocalCollection();
+  if (!Object.keys(local).length) { localStorage.setItem(migratedKey, '1'); return; }
+  const ok = confirm('You have a collection saved on this device. Save it to your account so it syncs across devices?');
+  if (ok) {
+    await CR.saveCloudCollection(local);
+    toast('Collection saved to your account');
+  }
+  localStorage.setItem(migratedKey, '1');
+}
+
+initCollectionSync();
 </script>
 </body>
 </html>

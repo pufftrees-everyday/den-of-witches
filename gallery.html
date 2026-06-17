@@ -136,6 +136,11 @@
     </div>
   </div>
 
+  <div style="margin-bottom:22px;">
+    <input type="text" id="gallery-search" placeholder="Search decks by name, author, or avatar…" oninput="filterGallery()"
+      style="width:100%;background:#0b0a0f;border:1px solid var(--border-strong);color:var(--parchment);font-family:'Crimson Pro',serif;font-size:1.05rem;padding:11px 16px;border-radius:6px;outline:none;">
+  </div>
+
   <div id="gallery-content">
     <div class="status">Summoning decks…</div>
   </div>
@@ -291,22 +296,25 @@ function renderAuthBar() {
 }
 
 // ── GALLERY ──
+let galleryDecks = [];   // cached public decks
+let galleryAuthors = {}; // id → username
+
 async function loadGallery() {
   const container = document.getElementById('gallery-content');
   if (!supa) { container.innerHTML = '<div class="status">Gallery unavailable — could not connect.</div>'; return; }
   container.innerHTML = '<div class="status">Summoning decks…</div>';
 
   try {
-    // Fetch public decks, newest first
     const { data: decks, error } = await supa
       .from('decks')
       .select('id, short_code, name, deck_data, owner_id, views, created_at')
       .eq('is_public', true)
       .order('created_at', { ascending: false })
-      .limit(100);
+      .limit(200);
     if (error) throw error;
 
     if (!decks || !decks.length) {
+      galleryDecks = [];
       container.innerHTML = `<div class="empty-cta">
         <p>No decks have been published yet. Be the first!</p>
         <button class="btn btn-primary" onclick="window.location.href='deckbuilder.html'">Build a Deck</button>
@@ -316,17 +324,39 @@ async function loadGallery() {
 
     // Resolve author usernames
     const ownerIds = [...new Set(decks.map(d => d.owner_id).filter(Boolean))];
-    let authors = {};
+    galleryAuthors = {};
     if (ownerIds.length) {
       const { data: profs } = await supa.from('profiles').select('id, username').in('id', ownerIds);
-      (profs || []).forEach(p => authors[p.id] = p.username);
+      (profs || []).forEach(p => galleryAuthors[p.id] = p.username);
     }
 
-    container.innerHTML = `<div class="deck-gallery">${decks.map(d => renderDeckCard(d, authors)).join('')}</div>`;
+    galleryDecks = decks;
+    renderGallery(galleryDecks);
   } catch (e) {
     console.warn(e);
     container.innerHTML = `<div class="status">Could not load the gallery.<br><small>${e.message || ''}</small></div>`;
   }
+}
+
+function renderGallery(decks) {
+  const container = document.getElementById('gallery-content');
+  if (!decks.length) {
+    container.innerHTML = `<div class="status">No decks match your search.</div>`;
+    return;
+  }
+  container.innerHTML = `<div class="deck-gallery">${decks.map(d => renderDeckCard(d, galleryAuthors)).join('')}</div>`;
+}
+
+function filterGallery() {
+  const q = document.getElementById('gallery-search').value.trim().toLowerCase();
+  if (!q) { renderGallery(galleryDecks); return; }
+  const filtered = galleryDecks.filter(d => {
+    const name = (d.name || '').toLowerCase();
+    const author = (galleryAuthors[d.owner_id] || '').toLowerCase();
+    const av = (avatarName(d.deck_data || {}) || '').toLowerCase();
+    return name.includes(q) || author.includes(q) || av.includes(q);
+  });
+  renderGallery(filtered);
 }
 
 function deckCounts(deckData) {

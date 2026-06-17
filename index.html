@@ -544,6 +544,8 @@
     .search-bar { flex-direction: column; align-items: stretch; }
   }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="cr-auth.js"></script>
 </head>
 <body>
 
@@ -557,6 +559,7 @@
     <button class="btn btn-ghost nav-collapsible" onclick="toggleMyDecks()">My Decks</button>
     <button class="btn btn-primary nav-collapsible" onclick="window.location.href='deckbuilder.html'">✦ New Deck</button>
   </div>
+  <div class="header-nav nav-collapsible" id="auth-bar"></div>
   <div class="header-nav nav-collapsible">
     <a href="https://drive.google.com/file/d/1sgQo0xf0N2teIR0zlyl91g9j6LVncZnr/view" target="_blank" class="header-link">Rulebook</a>
     <a href="https://play.sorcerytcg.com/" target="_blank" class="header-link">Play Network</a>
@@ -1106,10 +1109,30 @@ function toggleMobileNav() {
 
 function getSavedDecks() { try { return JSON.parse(localStorage.getItem('grimoire_decks')||'{}'); } catch { return {}; } }
 
-function renderMyDecks() {
+let cloudDecks = []; // populated when logged in
+
+async function renderMyDecks() {
+  const grid = document.getElementById('decks-grid');
+
+  // If logged in, show cloud decks; otherwise local
+  if (window.CR && CR.user) {
+    cloudDecks = await CR.fetchCloudDecks();
+    grid.innerHTML = cloudDecks.map(d => {
+      const qty = ['a','t','s'].reduce((s,k)=>s+(d.deck_data[k]||[]).reduce((a,[,q])=>a+(q||0),0),0);
+      const date = d.updated_at ? new Date(d.updated_at).toLocaleDateString() : '';
+      const pub = d.is_public ? '<span style="color:var(--sage);font-size:0.7rem;"> · Public</span>' : '';
+      return `<div class="deck-tile" onclick="window.location.href='deckbuilder.html?d=${d.short_code}'">
+        <button class="deck-tile-del" onclick="event.stopPropagation();deleteCloudDeck('${d.short_code}')">✕</button>
+        <div class="deck-tile-name">${escHtml(d.name)}</div>
+        <div class="deck-tile-meta">${qty} cards${date?' · '+date:''}${pub}</div>
+      </div>`;
+    }).join('') + `<div class="new-deck-tile" onclick="window.location.href='deckbuilder.html'">✦ New Deck</div>`;
+    return;
+  }
+
+  // Guest → localStorage
   const saved = getSavedDecks();
   const keys = Object.keys(saved);
-  const grid = document.getElementById('decks-grid');
   grid.innerHTML = keys.map(id => {
     const {name, deck:d, savedAt} = saved[id];
     const qty = Object.values(d).reduce((s,v)=>s+v.qty,0);
@@ -1120,6 +1143,18 @@ function renderMyDecks() {
       <div class="deck-tile-meta">${qty} cards${date?' · '+date:''}</div>
     </div>`;
   }).join('') + `<div class="new-deck-tile" onclick="window.location.href='deckbuilder.html'">✦ New Deck</div>`;
+}
+
+function escHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+async function deleteCloudDeck(shortCode) {
+  if (!window.CR || !CR.user) return;
+  if (!confirm('Delete this deck from your account?')) return;
+  try {
+    await CR.supa.from('decks').delete().eq('short_code', shortCode).eq('owner_id', CR.user.id);
+    toast('Deck deleted');
+    renderMyDecks();
+  } catch(e) { toast('Could not delete'); }
 }
 
 function saveDeck() {
@@ -1249,6 +1284,20 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeModal({});clo
 // INIT
 renderMyDecks();
 loadCards();
+
+// Auth: render bar, refresh session, re-render decks once known
+(async function initIndexAuth() {
+  if (!window.CR) return;
+  CR.onAuthChange = () => { CR.renderAuthBar('auth-bar'); renderMyDecks(); };
+  await CR.refreshUser();
+  CR.renderAuthBar('auth-bar');
+  renderMyDecks();
+  if (CR.supa) {
+    CR.supa.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') CR.refreshUser().then(() => { CR.renderAuthBar('auth-bar'); renderMyDecks(); });
+    });
+  }
+})();
 </script>
 </body>
 </html>
