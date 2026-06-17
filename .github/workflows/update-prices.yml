@@ -1,0 +1,45 @@
+name: Update card prices
+
+# Runs twice a day, and can also be triggered manually from the Actions tab.
+on:
+  schedule:
+    # Times are in UTC. These are 09:00 and 21:00 UTC.
+    # 09:00 UTC = 2:00 AM Pacific / 5:00 AM Eastern (overnight refresh)
+    # 21:00 UTC = 2:00 PM Pacific / 5:00 PM Eastern (afternoon refresh)
+    - cron: '0 9 * * *'
+    - cron: '0 21 * * *'
+  workflow_dispatch:   # lets you run it on-demand from the GitHub Actions tab
+
+# Allow the workflow to push the updated prices.json back to the repo
+permissions:
+  contents: write
+
+jobs:
+  update-prices:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Fetch latest prices from JustTCG
+        env:
+          JUSTTCG_API_KEY: ${{ secrets.JUSTTCG_API_KEY }}
+        run: node fetch-prices.js "$JUSTTCG_API_KEY" --fresh
+
+      - name: Commit and push updated prices.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Only commit if prices.json actually changed
+          if git diff --quiet -- prices.json; then
+            echo "No price changes — nothing to commit."
+          else
+            git add prices.json
+            git commit -m "Auto-update card prices ($(date -u '+%Y-%m-%d %H:%M UTC'))"
+            git push
+          fi
