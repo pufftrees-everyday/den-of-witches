@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cursed Realm — Deck Gallery</title>
+<title>Cursed Realm — The Archive</title>
 <meta name="description" content="Browse and search decks published by the Sorcery: Contested Realm community.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cursedrealm.org/gallery.html">
-<meta property="og:title" content="Deck Gallery — Cursed Realm">
+<meta property="og:title" content="The Archive — Cursed Realm">
 <meta property="og:description" content="Browse and search decks published by the Sorcery: Contested Realm community.">
 <meta property="og:image" content="https://cursedrealm.org/social-banner.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:site_name" content="Cursed Realm">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Deck Gallery — Cursed Realm">
+<meta name="twitter:title" content="The Archive — Cursed Realm">
 <meta name="twitter:description" content="Browse and search decks published by the Sorcery: Contested Realm community.">
 <meta name="twitter:image" content="https://cursedrealm.org/social-banner.png">
 <meta name="theme-color" content="#0b0a0f">
@@ -146,12 +146,12 @@
         <a href="collection.html" class="header-link nav-collapsible">Collection</a>
     <button class="btn btn-ghost nav-collapsible" onclick="window.location.href='index.html'">My Decks</button>
     <button class="btn btn-primary nav-collapsible" onclick="window.location.href='deckbuilder.html'">New Deck</button>
-    <a href="gallery.html" class="header-link nav-collapsible" style="color:var(--arcane)">Deck Gallery</a>
-    <a href="videos.html" class="header-link nav-collapsible">Videos</a>
-    <a href="tracker.html" class="header-link nav-collapsible" style="color:var(--gold)">Life Tracker</a>
+    <a href="gallery.html" class="header-link nav-collapsible" style="color:var(--arcane)">The Archive</a>
     <div class="more-menu">
       <button class="more-trigger header-link nav-collapsible" onclick="toggleMoreMenu(event)">More <span style="font-size:0.6rem;">▾</span></button>
       <div class="more-dropdown" id="more-dropdown">
+        <a href="videos.html" class="more-item">Videos</a>
+        <a href="tracker.html" class="more-item">Life Tracker</a>
         <a href="https://drive.google.com/file/d/1sgQo0xf0N2teIR0zlyl91g9j6LVncZnr/view" target="_blank" rel="noopener" class="more-item">Rulebook</a>
         <a href="https://play.sorcerytcg.com/" target="_blank" rel="noopener" class="more-item">Play Network</a>
         <a href="https://sorcerytcg.com/" target="_blank" rel="noopener" class="more-item">Sorcery TCG</a>
@@ -167,18 +167,18 @@
     <a href="collection.html" class="header-link">Collection</a>
   <a href="index.html" class="header-link">My Decks</a>
   <a href="deckbuilder.html" class="header-link">New Deck</a>
-  <a href="gallery.html" class="header-link">Deck Gallery</a>
-  <a href="videos.html" class="header-link">Videos</a>
-  <a href="tracker.html" class="header-link" style="color:var(--gold)">Life Tracker</a>
+  <a href="gallery.html" class="header-link">The Archive</a>
   <a href="index.html#about-legal" class="header-link">About</a>
   <div class="mobile-nav-divider"></div>
+  <a href="videos.html" class="header-link">Videos</a>
+  <a href="tracker.html" class="header-link">Life Tracker</a>
   <div id="mobile-auth"></div>
 </div>
 
 <div class="page">
   <div class="gallery-head">
     <div>
-      <div class="gallery-title"><img src="icon-192.png" alt="">Deck Gallery</div>
+      <div class="gallery-title"><img src="icon-192.png" alt="">The Archive</div>
       <div class="gallery-sub">Decks published by the Cursed Realm community</div>
     </div>
   </div>
@@ -203,7 +203,7 @@
 
     <div class="auth-field" id="field-name" style="display:none;">
       <label>Display Name</label>
-      <input type="text" id="auth-name" placeholder="How you'll appear in the gallery" autocomplete="nickname">
+      <input type="text" id="auth-name" placeholder="How you'll appear in the Archive" autocomplete="nickname">
     </div>
     <div class="auth-field">
       <label>Email</label>
@@ -389,7 +389,7 @@ let galleryAuthors = {}; // id → username
 
 async function loadGallery() {
   const container = document.getElementById('gallery-content');
-  if (!supa) { container.innerHTML = '<div class="status">Gallery unavailable — could not connect.</div>'; return; }
+  if (!supa) { container.innerHTML = '<div class="status">The Archive is unavailable — could not connect.</div>'; return; }
   container.innerHTML = '<div class="status">Summoning decks…</div>';
 
   try {
@@ -422,7 +422,7 @@ async function loadGallery() {
     renderGallery(galleryDecks);
   } catch (e) {
     console.warn(e);
-    container.innerHTML = `<div class="status">Could not load the gallery.<br><small>${e.message || ''}</small></div>`;
+    container.innerHTML = `<div class="status">Could not load the Archive.<br><small>${e.message || ''}</small></div>`;
   }
 }
 
@@ -486,7 +486,7 @@ function openDeck(shortCode) {
 
 async function unpublishDeck(deckId) {
   if (!supa || !currentUser) return;
-  if (!confirm('Remove this deck from the public gallery?')) return;
+  if (!confirm('Remove this deck from the public Archive?')) return;
   try {
     const { error } = await supa.from('decks').update({ is_public: false }).eq('id', deckId);
     if (error) throw error;

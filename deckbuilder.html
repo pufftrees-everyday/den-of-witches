@@ -862,15 +862,15 @@
         <a href="collection.html" class="header-link nav-collapsible">Collection</a>
     <button class="btn btn-ghost nav-collapsible" onclick="window.location.href='index.html'">My Decks</button>
     <button class="btn btn-primary nav-collapsible" onclick="window.location.href='deckbuilder.html'">New Deck</button>
-    <a href="gallery.html" class="header-link nav-collapsible">Deck Gallery</a>
-    <a href="videos.html" class="header-link nav-collapsible">Videos</a>
-    <a href="tracker.html" class="header-link nav-collapsible" style="color:var(--gold)">Life Tracker</a>
+    <a href="gallery.html" class="header-link nav-collapsible">The Archive</a>
   </div>
   <div class="header-nav nav-collapsible" id="auth-bar"></div>
     <div class="header-nav nav-collapsible">
     <div class="more-menu">
       <button class="more-trigger header-link" onclick="toggleMoreMenu(event)">More <span style="font-size:0.6rem;">▾</span></button>
       <div class="more-dropdown" id="more-dropdown">
+        <a href="videos.html" class="more-item">Videos</a>
+        <a href="tracker.html" class="more-item">Life Tracker</a>
         <a href="https://drive.google.com/file/d/1sgQo0xf0N2teIR0zlyl91g9j6LVncZnr/view" target="_blank" rel="noopener" class="more-item">Rulebook</a>
         <a href="https://play.sorcerytcg.com/" target="_blank" rel="noopener" class="more-item">Play Network</a>
         <a href="https://sorcerytcg.com/" target="_blank" rel="noopener" class="more-item">Sorcery TCG</a>
@@ -885,10 +885,10 @@
   <a href="collection.html" class="header-link">Collection</a>
   <a href="index.html" class="header-link">My Decks</a>
   <a href="deckbuilder.html" class="header-link">New Deck</a>
-  <a href="gallery.html" class="header-link">Deck Gallery</a>
-  <a href="videos.html" class="header-link">Videos</a>
-  <a href="tracker.html" class="header-link" style="color:var(--gold)">Life Tracker</a>
+  <a href="gallery.html" class="header-link">The Archive</a>
   <div class="mobile-nav-divider"></div>
+  <a href="videos.html" class="header-link">Videos</a>
+  <a href="tracker.html" class="header-link">Life Tracker</a>
   <a href="https://drive.google.com/file/d/1sgQo0xf0N2teIR0zlyl91g9j6LVncZnr/view" target="_blank" class="header-link">Rulebook</a>
   <a href="https://play.sorcerytcg.com/" target="_blank" class="header-link">Play Network</a>
   <a href="https://sorcerytcg.com/" target="_blank" class="header-link">Sorcery TCG</a>
@@ -898,7 +898,7 @@
 <!-- GUEST WARNING (shown only when logged out) -->
 <div id="guest-banner" class="guest-banner" style="display:none;">
   <span class="guest-banner-icon">⚠</span>
-  <span class="guest-banner-text">Decks you build are only saved in this browser and could be lost if you clear your data or switch devices. <a onclick="openAuth('signup')">Create a free account</a> to save them to the cloud and publish to the gallery.</span>
+  <span class="guest-banner-text">Decks you build are only saved in this browser and could be lost if you clear your data or switch devices. <a onclick="openAuth('signup')">Create a free account</a> to save them to the cloud and publish to the Archive.</span>
   <button class="guest-banner-close" onclick="dismissGuestBanner()" title="Dismiss">✕</button>
 </div>
 
@@ -1103,7 +1103,7 @@
         <div class="ro-actions">
           <button class="btn btn-ghost" onclick="openDeckStats()">Stats</button>
           <button class="btn btn-primary" id="ro-copy-btn" onclick="copyViewedDeck()">Copy to My Decks</button>
-          <button class="btn btn-ghost" onclick="window.location.href='gallery.html'">← Gallery</button>
+          <button class="btn btn-ghost" onclick="window.location.href='gallery.html'">← The Archive</button>
         </div>
       </div>
       <div class="deck-stats" id="ro-stats"></div>
@@ -1241,7 +1241,7 @@
     <div id="auth-msg" style="display:none;font-size:0.85rem;padding:10px;border-radius:4px;margin-bottom:12px;"></div>
     <div id="auth-field-name" style="display:none;margin-bottom:12px;">
       <label style="display:block;font-family:'Cinzel',serif;font-size:0.62rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--rune);margin-bottom:6px;">Display Name</label>
-      <input type="text" id="auth-name" placeholder="How you'll appear in the gallery" style="width:100%;background:#0b0a0f;border:1px solid var(--border-strong);color:var(--parchment);font-family:'Crimson Pro',serif;font-size:1rem;padding:9px 12px;border-radius:4px;outline:none;">
+      <input type="text" id="auth-name" placeholder="How you'll appear in the Archive" style="width:100%;background:#0b0a0f;border:1px solid var(--border-strong);color:var(--parchment);font-family:'Crimson Pro',serif;font-size:1rem;padding:9px 12px;border-radius:4px;outline:none;">
     </div>
     <div style="margin-bottom:12px;">
       <label style="display:block;font-family:'Cinzel',serif;font-size:0.62rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--rune);margin-bottom:6px;">Email</label>
@@ -2283,7 +2283,7 @@ function renderVisibilityBar() {
   if (!activeDeckCode) {
     bar.innerHTML = `<div class="vis-bar">
       <div class="vis-status private"><span class="vis-dot"></span>Private</div>
-      <span class="vis-hint">Save this deck, then you can publish it to the gallery.</span>
+      <span class="vis-hint">Save this deck, then you can publish it to the Archive.</span>
     </div>`;
     return;
   }
@@ -2292,13 +2292,13 @@ function renderVisibilityBar() {
     bar.innerHTML = `<div class="vis-bar">
       <div class="vis-status public"><span class="vis-dot"></span>Public</div>
       <button class="vis-toggle-btn" onclick="setDeckVisibility(false)">Make Private</button>
-      <span class="vis-hint">This deck is live in the <a href="gallery.html" style="color:var(--arcane);">Deck Gallery</a> for everyone to find.</span>
+      <span class="vis-hint">This deck is live in the <a href="gallery.html" style="color:var(--arcane);">The Archive</a> for everyone to find.</span>
     </div>`;
   } else {
     bar.innerHTML = `<div class="vis-bar">
       <div class="vis-status private"><span class="vis-dot"></span>Private</div>
       <button class="vis-toggle-btn make-public" onclick="setDeckVisibility(true)">Make Public</button>
-      <span class="vis-hint">Only you can see this deck. Make it public to share it in the gallery.</span>
+      <span class="vis-hint">Only you can see this deck. Make it public to share it in the Archive.</span>
     </div>`;
   }
 }
@@ -2312,7 +2312,7 @@ async function setDeckVisibility(makePublic) {
     if (error) throw error;
     activeDeckPublic = makePublic;
     renderVisibilityBar();
-    toast(makePublic ? 'Deck published to the gallery!' : 'Deck set to private');
+    toast(makePublic ? 'Deck published to the Archive!' : 'Deck set to private');
   } catch (e) {
     console.error('Visibility change failed', e);
     toast('Could not change visibility');
@@ -2563,21 +2563,21 @@ function updatePublishSection() {
   const sec = document.getElementById('publish-section');
   if (!sec) return;
   if (!supa || !lastSharedCode) {
-    sec.innerHTML = `<div style="font-size:0.85rem;color:var(--mist);font-style:italic;">Want to publish to the public gallery? <a onclick="openAuth('login')" style="color:var(--arcane);cursor:pointer;text-decoration:underline;">Sign in</a> first.</div>`;
+    sec.innerHTML = `<div style="font-size:0.85rem;color:var(--mist);font-style:italic;">Want to publish to the public Archive? <a onclick="openAuth('login')" style="color:var(--arcane);cursor:pointer;text-decoration:underline;">Sign in</a> first.</div>`;
     if (currentUser) sec.innerHTML = '';
     return;
   }
   if (!currentUser) {
     sec.innerHTML = `<div style="font-size:0.85rem;color:var(--mist);">
-      <b style="color:var(--shimmer);font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;">Publish to Gallery</b><br>
+      <b style="color:var(--shimmer);font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;">Publish to Archive</b><br>
       <span style="font-style:italic;">Sign in to publish this deck for everyone to browse.</span><br>
       <button class="btn btn-ghost" style="margin-top:8px;" onclick="openAuth('login')">Sign In to Publish</button>
     </div>`;
   } else {
     sec.innerHTML = `<div style="font-size:0.85rem;color:var(--mist);">
-      <b style="color:var(--shimmer);font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;">Publish to Gallery</b><br>
-      <span style="font-style:italic;">Make this deck public so others can find it in the gallery.</span><br>
-      <button class="btn btn-primary" id="publish-btn" style="margin-top:8px;" onclick="publishCurrentDeck()">Publish to Gallery</button>
+      <b style="color:var(--shimmer);font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;">Publish to Archive</b><br>
+      <span style="font-style:italic;">Make this deck public so others can find it in the Archive.</span><br>
+      <button class="btn btn-primary" id="publish-btn" style="margin-top:8px;" onclick="publishCurrentDeck()">Publish to Archive</button>
     </div>`;
   }
 }
@@ -2635,13 +2635,13 @@ async function publishCurrentDeck() {
       }
     }
 
-    toast('Published to the gallery!');
+    toast('Published to the Archive!');
     renderVisibilityBar();
     const sec = document.getElementById('publish-section');
-    if (sec) sec.innerHTML = `<div style="font-size:0.9rem;color:var(--sage);font-style:italic;">✓ Published! View it in the <a href="gallery.html" style="color:var(--arcane);text-decoration:underline;">Deck Gallery</a>.</div>`;
+    if (sec) sec.innerHTML = `<div style="font-size:0.9rem;color:var(--sage);font-style:italic;">✓ Published! View it in the <a href="gallery.html" style="color:var(--arcane);text-decoration:underline;">The Archive</a>.</div>`;
   } catch (e) {
     toast('Could not publish: ' + (e.message || ''));
-    if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.textContent = 'Publish to Gallery'; }
+    if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.textContent = 'Publish to Archive'; }
   }
 }
 
