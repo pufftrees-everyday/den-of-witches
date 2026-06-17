@@ -790,7 +790,8 @@
     <div id="result-count" class="result-count"></div>
     <div class="sort-bar">
       <span class="sort-label">Sort:</span>
-      <button class="sort-btn active" id="sort-az" onclick="setSort('az')">A–Z <span class="sort-dir" id="dir-az">↓</span></button>
+      <button class="sort-btn active" id="sort-random" onclick="setSort('random')">⤮ Random</button>
+      <button class="sort-btn" id="sort-az" onclick="setSort('az')">A–Z <span class="sort-dir" id="dir-az">↓</span></button>
       <button class="sort-btn" id="sort-cost" onclick="setSort('cost')">Mana Cost <span class="sort-dir" id="dir-cost">↓</span></button>
     </div>
     <div id="card-grid" class="card-grid">
@@ -857,6 +858,7 @@ async function loadCards() {
         slug: firstVariant ? firstVariant.slug : null,
       };
     }).sort((a, b) => a.name.localeCompare(b.name));
+    reshuffle(); // assign random order for the default Random sort
     filterCards();
   } catch(e) {
     console.error('loadCards failed:', e);
@@ -914,15 +916,26 @@ function updateFilterDot() {
 }
 
 // SORT
-let currentSort = 'az';
+let currentSort = 'random';
 let sortReversed = false;
+let randomSeed = {}; // card.id → random value, stable until reshuffled
+
+function reshuffle() {
+  randomSeed = {};
+  allCards.forEach(c => { randomSeed[c.id] = Math.random(); });
+}
 
 function setSort(sort) {
   if (currentSort === sort) {
-    sortReversed = !sortReversed;
+    if (sort === 'random') {
+      reshuffle(); // clicking Random again gives a new shuffle
+    } else {
+      sortReversed = !sortReversed;
+    }
   } else {
     currentSort = sort;
     sortReversed = false;
+    if (sort === 'random') reshuffle();
   }
   // Update button states
   document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
@@ -934,7 +947,10 @@ function setSort(sort) {
 
 function sortCards(cards) {
   const sorted = [...cards];
-  if (currentSort === 'az') {
+  if (currentSort === 'random') {
+    sorted.sort((a, b) => (randomSeed[a.id] ?? 0) - (randomSeed[b.id] ?? 0));
+    return sorted; // random isn't reversed
+  } else if (currentSort === 'az') {
     sorted.sort((a, b) => a.name.localeCompare(b.name));
   } else if (currentSort === 'cost') {
     sorted.sort((a, b) => {
