@@ -288,6 +288,8 @@
   .card-list::-webkit-scrollbar-thumb { background: var(--mist); border-radius: 2px; }
 
   .card-list-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+  .card-list-grid.large-view { grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 14px; }
+  .card-list-grid.large-view.sites-only { grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)); }
 
   /* VIEW MODE TOGGLE */
   .viewmode-toggle { display: flex; border: 2px solid #2a2640; border-radius: 4px; overflow: hidden; flex-shrink: 0; }
@@ -821,6 +823,7 @@
     .card-list { overflow: visible; }
     .deck-panel, .explorer { min-height: 0; }
     .card-list-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+    .card-list-grid.large-view { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
     .deck-card-grid, .sub-section-cards { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
     .deck-card-grid-large, .sub-section-cards.large-mode { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
     .advanced-panel { max-height: none; }
@@ -828,6 +831,7 @@
 
   @media (max-width: 400px) {
     .card-list-grid { grid-template-columns: repeat(2, 1fr); }
+    .card-list-grid.large-view { grid-template-columns: 1fr; }
     .deck-card-grid, .sub-section-cards { grid-template-columns: repeat(2, 1fr); }
     .deck-card-grid-large, .sub-section-cards.large-mode { grid-template-columns: 1fr; }
   }
@@ -915,8 +919,9 @@
           <input type="text" id="search-input" placeholder="Search cards…" autocomplete="off">
         </div>
         <div class="viewmode-toggle">
-          <button class="viewmode-btn active" id="vm-grid" onclick="setViewMode('grid')" title="Grid view" aria-label="Grid view">⊞</button>
-          <button class="viewmode-btn" id="vm-list" onclick="setViewMode('list')" title="List view" aria-label="List view">☰</button>
+          <button class="viewmode-btn" id="vm-list" onclick="setViewMode('list')" title="Text view" aria-label="Text view">☰</button>
+          <button class="viewmode-btn active" id="vm-grid" onclick="setViewMode('grid')" title="Card view" aria-label="Card view">⊞</button>
+          <button class="viewmode-btn" id="vm-large" onclick="setViewMode('large')" title="Large card view" aria-label="Large card view">⊡</button>
         </div>
         <div class="result-count" id="result-count" style="white-space:nowrap;padding:0;margin:0;"></div>
       </div>
@@ -1477,6 +1482,7 @@ function renderCardGrid(append = false) {
   const sitesOnly = activeFilters.type.size === 1 && activeFilters.type.has('Site');
   grid.classList.toggle('sites-only', sitesOnly && viewMode === 'grid');
   grid.classList.toggle('list-view', viewMode === 'list');
+  grid.classList.toggle('large-view', viewMode === 'large');
   const shown = currentCards.slice(append ? visibleCount - PAGE_SIZE : 0, visibleCount);
   const html = shown.map(card => viewMode === 'list'
     ? renderDbCardRow(card)
@@ -1532,12 +1538,14 @@ function quickAddToDeck(id) {
   }
 }
 
-// ── VIEW MODE (grid/list) ──
+// ── VIEW MODE (text/card/large) ──
 function setViewMode(mode) {
   viewMode = mode;
   localStorage.setItem('grimoire_view_mode', mode);
   document.getElementById('vm-grid').classList.toggle('active', mode === 'grid');
   document.getElementById('vm-list').classList.toggle('active', mode === 'list');
+  const lg = document.getElementById('vm-large');
+  if (lg) lg.classList.toggle('active', mode === 'large');
   renderCardGrid();
   renderDeck();
 }
@@ -3155,10 +3163,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   // Restore saved view mode toggle state
-  const vg = document.getElementById('vm-grid'), vl = document.getElementById('vm-list');
+  const vg = document.getElementById('vm-grid'), vl = document.getElementById('vm-list'), vlg = document.getElementById('vm-large');
   if (vg && vl) {
     vg.classList.toggle('active', viewMode === 'grid');
     vl.classList.toggle('active', viewMode === 'list');
+    if (vlg) vlg.classList.toggle('active', viewMode === 'large');
   }
 
   // Auth: resolve session FIRST so deck-ownership checks work on load
