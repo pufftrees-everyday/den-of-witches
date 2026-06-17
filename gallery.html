@@ -71,6 +71,16 @@
 
   /* AUTH BAR */
   .auth-bar { display: flex; align-items: center; gap: 10px; }
+  .cr-profile-menu { position: fixed; z-index: 500; min-width: 200px; background: var(--dusk); border: 1px solid var(--border-strong); border-radius: 8px; box-shadow: 0 10px 34px rgba(0,0,0,0.55); padding: 6px; opacity: 0; transform: translateY(-6px); pointer-events: none; transition: opacity 0.14s, transform 0.14s; }
+  .cr-profile-menu.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  .cr-pm-header { padding: 8px 12px 10px; border-bottom: 1px solid var(--border); margin-bottom: 5px; }
+  .cr-pm-name { font-family: 'Cinzel', serif; color: var(--gold); font-size: 0.95rem; font-weight: 700; }
+  .cr-pm-email { font-size: 0.72rem; color: var(--mist); margin-top: 2px; word-break: break-all; }
+  .cr-pm-item { display: block; width: 100%; text-align: left; background: none; border: none; cursor: pointer; font-family: 'Crimson Pro', serif; font-size: 0.95rem; color: var(--parchment); padding: 9px 12px; border-radius: 5px; text-decoration: none; transition: background 0.12s, color 0.12s; }
+  .cr-pm-item:hover { background: rgba(155,135,212,0.12); color: var(--shimmer); }
+  .cr-pm-divider { height: 1px; background: var(--border); margin: 5px 8px; }
+  .cr-pm-signout { color: var(--ember); }
+  .cr-pm-signout:hover { background: rgba(196,97,74,0.12); color: var(--ember); }
   .auth-user { font-family: 'Cinzel', serif; font-size: 0.8rem; color: var(--arcane); }
   .auth-user b { color: var(--gold); }
 
@@ -116,6 +126,15 @@
 
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--dusk); border: 1px solid var(--border-strong); color: var(--parchment); padding: 12px 22px; border-radius: 6px; font-size: 0.95rem; opacity: 0; transition: all 0.3s; z-index: 400; }
   .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+  /* More dropdown menu */
+  .more-menu { position: relative; display: inline-block; }
+  .more-trigger { background: none; border: none; cursor: pointer; font-family: inherit; font-size: inherit; color: var(--rune); display: inline-flex; align-items: center; gap: 4px; }
+  .more-trigger:hover { color: var(--arcane); }
+  .more-dropdown { position: absolute; top: calc(100% + 6px); right: 0; min-width: 170px; background: var(--dusk); border: 1px solid var(--border-strong); border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); padding: 6px; opacity: 0; transform: translateY(-6px); pointer-events: none; transition: opacity 0.14s, transform 0.14s; z-index: 300; }
+  .more-dropdown.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  .more-item { display: block; font-family: 'Crimson Pro', serif; font-size: 0.92rem; color: var(--parchment); padding: 8px 12px; border-radius: 5px; text-decoration: none; white-space: nowrap; transition: background 0.12s, color 0.12s; }
+  .more-item:hover { background: rgba(155,135,212,0.12); color: var(--shimmer); }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -130,6 +149,15 @@
     <a href="gallery.html" class="header-link nav-collapsible" style="color:var(--arcane)">Deck Gallery</a>
     <a href="videos.html" class="header-link nav-collapsible">Videos</a>
     <a href="tracker.html" class="header-link nav-collapsible" style="color:var(--gold)">Life Tracker</a>
+    <div class="more-menu">
+      <button class="more-trigger header-link nav-collapsible" onclick="toggleMoreMenu(event)">More <span style="font-size:0.6rem;">▾</span></button>
+      <div class="more-dropdown" id="more-dropdown">
+        <a href="https://drive.google.com/file/d/1sgQo0xf0N2teIR0zlyl91g9j6LVncZnr/view" target="_blank" rel="noopener" class="more-item">Rulebook</a>
+        <a href="https://play.sorcerytcg.com/" target="_blank" rel="noopener" class="more-item">Play Network</a>
+        <a href="https://sorcerytcg.com/" target="_blank" rel="noopener" class="more-item">Sorcery TCG</a>
+        <a href="index.html#about-legal" class="more-item">About</a>
+      </div>
+    </div>
   </div>
   <div class="header-nav nav-collapsible" id="auth-bar"></div>
   <button class="hamburger" onclick="toggleMobileNav()" aria-label="Menu">☰</button>
@@ -142,6 +170,7 @@
   <a href="gallery.html" class="header-link">Deck Gallery</a>
   <a href="videos.html" class="header-link">Videos</a>
   <a href="tracker.html" class="header-link" style="color:var(--gold)">Life Tracker</a>
+  <a href="index.html#about-legal" class="header-link">About</a>
   <div class="mobile-nav-divider"></div>
   <div id="mobile-auth"></div>
 </div>
@@ -302,16 +331,56 @@ function renderAuthBar() {
   const bar = document.getElementById('auth-bar');
   const mob = document.getElementById('mobile-auth');
   if (currentUser) {
-    bar.innerHTML = `<span class="auth-user"><b>${currentUser.username}</b></span>
-      <button class="btn btn-ghost" onclick="logout()">Sign Out</button>`;
-    mob.innerHTML = `<a class="header-link" style="color:var(--gold)">${currentUser.username}</a>
-      <a class="header-link" onclick="logout()">Sign Out</a>`;
+    bar.innerHTML = `<button class="profile-trigger header-link" onclick="toggleProfileMenu(event)" style="background:none;border:none;cursor:pointer;color:var(--gold);text-transform:none;letter-spacing:0.04em;font-family:inherit;font-size:inherit;display:inline-flex;align-items:center;gap:5px;">${currentUser.username} <span style="font-size:0.6rem;">▾</span></button>`;
+    mob.innerHTML = `<a href="collection.html" class="header-link">My Collection</a>
+      <a href="collection.html" class="header-link">My Trades</a>
+      <a href="index.html#my-decks-section" class="header-link">My Decks</a>
+      <a class="header-link" onclick="logout()" style="color:var(--ember)">Sign Out</a>`;
   } else {
     bar.innerHTML = `<button class="btn btn-ghost" onclick="openAuth('login')">Sign In</button>
       <button class="btn btn-primary" onclick="openAuth('signup')">Sign Up</button>`;
     mob.innerHTML = `<a class="header-link" onclick="openAuth('login')">Sign In</a>
       <a class="header-link" onclick="openAuth('signup')">Sign Up</a>`;
   }
+}
+
+function toggleProfileMenu(e) {
+  if (e) e.stopPropagation();
+  let menu = document.getElementById('cr-profile-menu');
+  if (menu && menu.classList.contains('open')) { closeProfileMenu(); return; }
+  if (!menu) {
+    menu = document.createElement('div');
+    menu.id = 'cr-profile-menu';
+    menu.className = 'cr-profile-menu';
+    menu.innerHTML = `
+      <div class="cr-pm-header">
+        <div class="cr-pm-name">${currentUser ? currentUser.username : 'Account'}</div>
+        <div class="cr-pm-email">${currentUser ? (currentUser.email || '') : ''}</div>
+      </div>
+      <a href="collection.html" class="cr-pm-item">My Collection</a>
+      <a href="collection.html" class="cr-pm-item">My Trades</a>
+      <a href="index.html#my-decks-section" class="cr-pm-item">My Decks</a>
+      <div class="cr-pm-divider"></div>
+      <button class="cr-pm-item cr-pm-signout" onclick="logout()">Sign Out</button>`;
+    document.body.appendChild(menu);
+  }
+  const trigger = e ? e.currentTarget : document.querySelector('.profile-trigger');
+  if (trigger) {
+    const r = trigger.getBoundingClientRect();
+    menu.style.top = (r.bottom + 6) + 'px';
+    menu.style.right = Math.max(8, window.innerWidth - r.right) + 'px';
+  }
+  menu.classList.add('open');
+  setTimeout(() => document.addEventListener('click', profileMenuOutside), 0);
+}
+function closeProfileMenu() {
+  const menu = document.getElementById('cr-profile-menu');
+  if (menu) menu.classList.remove('open');
+  document.removeEventListener('click', profileMenuOutside);
+}
+function profileMenuOutside(e) {
+  const menu = document.getElementById('cr-profile-menu');
+  if (menu && !menu.contains(e.target) && !e.target.closest('.profile-trigger')) closeProfileMenu();
 }
 
 // ── GALLERY ──
@@ -444,6 +513,21 @@ function escapeHtml(s) {
     });
   }
 })();
+
+function toggleMoreMenu(e){
+  if(e) e.stopPropagation();
+  var d=document.getElementById('more-dropdown');
+  if(!d) return;
+  var open=d.classList.toggle('open');
+  if(open){ setTimeout(function(){ document.addEventListener('click', moreMenuOutside); },0); }
+  else { document.removeEventListener('click', moreMenuOutside); }
+}
+function moreMenuOutside(e){
+  var d=document.getElementById('more-dropdown');
+  if(d && !d.classList.contains('open')) return;
+  if(d && !e.target.closest('.more-menu')){ d.classList.remove('open'); document.removeEventListener('click', moreMenuOutside); }
+}
+
 </script>
 </body>
 </html>

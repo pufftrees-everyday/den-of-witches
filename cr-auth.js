@@ -140,11 +140,51 @@
     const bar = document.getElementById(elId);
     if (!bar) return;
     if (CR.user) {
-      bar.innerHTML = `<span class="header-link" style="color:var(--gold);text-transform:none;letter-spacing:0.04em;">${CR.user.username}</span>
-        <a class="header-link" onclick="CR.logout()" style="cursor:pointer;">Sign Out</a>`;
+      bar.innerHTML = `<button class="profile-trigger header-link" onclick="CR.toggleProfileMenu(event)" style="background:none;border:none;cursor:pointer;color:var(--gold);text-transform:none;letter-spacing:0.04em;font-family:inherit;font-size:inherit;display:inline-flex;align-items:center;gap:5px;">${CR.user.username} <span style="font-size:0.6rem;">▾</span></button>`;
     } else {
       bar.innerHTML = `<a class="header-link" onclick="CR.openAuth('login')" style="cursor:pointer;">Sign In</a>`;
     }
+  };
+
+  // ── PROFILE MENU ──
+  CR.toggleProfileMenu = function (e) {
+    if (e) e.stopPropagation();
+    let menu = document.getElementById('cr-profile-menu');
+    if (menu && menu.classList.contains('open')) { CR.closeProfileMenu(); return; }
+    if (!menu) {
+      menu = document.createElement('div');
+      menu.id = 'cr-profile-menu';
+      menu.className = 'cr-profile-menu';
+      menu.innerHTML = `
+        <div class="cr-pm-header">
+          <div class="cr-pm-name">${CR.user ? CR.user.username : 'Account'}</div>
+          <div class="cr-pm-email">${CR.user ? (CR.user.email || '') : ''}</div>
+        </div>
+        <a href="collection.html" class="cr-pm-item">My Collection</a>
+        <a href="collection.html" class="cr-pm-item">My Trades</a>
+        <a href="index.html#my-decks-section" class="cr-pm-item">My Decks</a>
+        <div class="cr-pm-divider"></div>
+        <button class="cr-pm-item cr-pm-signout" onclick="CR.logout()">Sign Out</button>`;
+      document.body.appendChild(menu);
+    }
+    // Position under the trigger
+    const trigger = e ? e.currentTarget : document.querySelector('.profile-trigger');
+    if (trigger) {
+      const r = trigger.getBoundingClientRect();
+      menu.style.top = (r.bottom + 6) + 'px';
+      menu.style.right = Math.max(8, window.innerWidth - r.right) + 'px';
+    }
+    menu.classList.add('open');
+    setTimeout(() => document.addEventListener('click', CR._profileMenuOutside), 0);
+  };
+  CR.closeProfileMenu = function () {
+    const menu = document.getElementById('cr-profile-menu');
+    if (menu) menu.classList.remove('open');
+    document.removeEventListener('click', CR._profileMenuOutside);
+  };
+  CR._profileMenuOutside = function (e) {
+    const menu = document.getElementById('cr-profile-menu');
+    if (menu && !menu.contains(e.target) && !e.target.closest('.profile-trigger')) CR.closeProfileMenu();
   };
 
   // ── CLOUD: COLLECTION ──
@@ -180,4 +220,23 @@
   };
 
   window.CR = CR;
+
+  // Inject profile menu styles once
+  if (!document.getElementById('cr-profile-menu-styles')) {
+    const st = document.createElement('style');
+    st.id = 'cr-profile-menu-styles';
+    st.textContent = `
+      .cr-profile-menu { position: fixed; z-index: 500; min-width: 200px; background: var(--dusk, #1a1826); border: 1px solid var(--border-strong, rgba(155,135,212,0.35)); border-radius: 8px; box-shadow: 0 10px 34px rgba(0,0,0,0.55); padding: 6px; opacity: 0; transform: translateY(-6px); pointer-events: none; transition: opacity 0.14s, transform 0.14s; }
+      .cr-profile-menu.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+      .cr-pm-header { padding: 8px 12px 10px; border-bottom: 1px solid var(--border, rgba(155,135,212,0.18)); margin-bottom: 5px; }
+      .cr-pm-name { font-family: 'Cinzel', serif; color: var(--gold, #c8a96e); font-size: 0.95rem; font-weight: 700; }
+      .cr-pm-email { font-size: 0.72rem; color: var(--mist, #3a3658); margin-top: 2px; word-break: break-all; }
+      .cr-pm-item { display: block; width: 100%; text-align: left; background: none; border: none; cursor: pointer; font-family: 'Crimson Pro', serif; font-size: 0.95rem; color: var(--parchment, #e8e0cc); padding: 9px 12px; border-radius: 5px; text-decoration: none; transition: background 0.12s, color 0.12s; }
+      .cr-pm-item:hover { background: rgba(155,135,212,0.12); color: var(--shimmer, #c9bfee); }
+      .cr-pm-divider { height: 1px; background: var(--border, rgba(155,135,212,0.18)); margin: 5px 8px; }
+      .cr-pm-signout { color: var(--ember, #c4614a); }
+      .cr-pm-signout:hover { background: rgba(196,97,74,0.12); color: var(--ember, #c4614a); }
+    `;
+    document.head.appendChild(st);
+  }
 })();
