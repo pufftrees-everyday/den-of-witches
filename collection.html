@@ -238,6 +238,9 @@
 
   /* VIEW MODE TOGGLE (grid/list) */
   .viewmode-toggle { display: flex; gap: 0; border: 2px solid #2a2640; border-radius: 4px; overflow: hidden; flex-shrink: 0; }
+  .viewmode-wrap { display: flex; align-items: center; gap: 7px; flex-shrink: 0; }
+  .viewmode-label { font-family: 'Cinzel', serif; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rune); white-space: nowrap; }
+  @media (max-width: 560px) { .viewmode-label { display: none; } }
   .finish-toggle { display: flex; gap: 0; border: 2px solid #2a2640; border-radius: 4px; overflow: hidden; flex-shrink: 0; }
   .finish-btn { font-family: 'Cinzel', serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; background: #13111e; border: none; color: var(--rune); padding: 6px 12px; cursor: pointer; transition: all 0.15s; }
   .finish-btn:not(.active):hover { background: #1a1728; color: var(--arcane); }
@@ -507,9 +510,12 @@
       <button class="view-btn" onclick="setView('want')">Want</button>
       <button class="view-btn" onclick="setView('missing')">Missing</button>
     </div>
-    <div class="viewmode-toggle">
-      <button class="viewmode-btn active" id="vm-grid" onclick="setViewMode('grid')" title="Grid view" aria-label="Grid view">⊞</button>
-      <button class="viewmode-btn" id="vm-list" onclick="setViewMode('list')" title="List view" aria-label="List view">☰</button>
+    <div class="viewmode-wrap">
+      <span class="viewmode-label">Change View</span>
+      <div class="viewmode-toggle">
+        <button class="viewmode-btn active" id="vm-grid" onclick="setViewMode('grid')" title="Grid view" aria-label="Grid view">⊞</button>
+        <button class="viewmode-btn" id="vm-list" onclick="setViewMode('list')" title="List view" aria-label="List view">☰</button>
+      </div>
     </div>
     <div class="finish-toggle">
       <button class="finish-btn active" id="finish-standard" onclick="setFinish('standard')">Standard</button>
