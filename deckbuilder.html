@@ -527,6 +527,9 @@
 
   /* VISUAL CARD GRID IN DECK */
   .deck-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+  /* DECK SIDE — LARGE CARD VIEW (~2x size, ~quarter the count per row) */
+  .deck-card-grid-large { grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 14px; }
+  .sub-section-cards.large-mode { grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 14px; }
 
   /* DECK SIDE — LIST VIEW */
   .deck-card-list { display: flex; flex-direction: column; gap: 3px; }
@@ -819,12 +822,14 @@
     .deck-panel, .explorer { min-height: 0; }
     .card-list-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
     .deck-card-grid, .sub-section-cards { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+    .deck-card-grid-large, .sub-section-cards.large-mode { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
     .advanced-panel { max-height: none; }
   }
 
   @media (max-width: 400px) {
     .card-list-grid { grid-template-columns: repeat(2, 1fr); }
     .deck-card-grid, .sub-section-cards { grid-template-columns: repeat(2, 1fr); }
+    .deck-card-grid-large, .sub-section-cards.large-mode { grid-template-columns: 1fr; }
   }
 
   /* More dropdown menu */
@@ -845,7 +850,7 @@
     <div class="logo"><a href="index.html" style="color:var(--gold);text-decoration:none;font-family:'Cinzel Decorative',serif;font-weight:700;letter-spacing:0.04em;display:flex;align-items:center;gap:9px;"><img src="icon-192.png" alt="" style="width:30px;height:30px;border-radius:6px;display:block;">Cursed Realm</a></div>
         <a href="collection.html" class="header-link nav-collapsible">Collection</a>
     <button class="btn btn-ghost nav-collapsible" onclick="window.location.href='index.html'">My Decks</button>
-    <button class="btn btn-primary nav-collapsible" onclick="window.location.href='deckbuilder.html'">✦ New Deck</button>
+    <button class="btn btn-primary nav-collapsible" onclick="window.location.href='deckbuilder.html'">New Deck</button>
     <a href="gallery.html" class="header-link nav-collapsible">Deck Gallery</a>
     <a href="videos.html" class="header-link nav-collapsible">Videos</a>
     <a href="tracker.html" class="header-link nav-collapsible" style="color:var(--gold)">Life Tracker</a>
@@ -868,7 +873,7 @@
 <div class="mobile-nav" id="mobile-nav">
   <a href="collection.html" class="header-link">Collection</a>
   <a href="index.html" class="header-link">My Decks</a>
-  <a href="deckbuilder.html" class="header-link">✦ New Deck</a>
+  <a href="deckbuilder.html" class="header-link">New Deck</a>
   <a href="gallery.html" class="header-link">Deck Gallery</a>
   <a href="videos.html" class="header-link">Videos</a>
   <a href="tracker.html" class="header-link" style="color:var(--gold)">Life Tracker</a>
@@ -1090,8 +1095,9 @@
       </div>
       <div class="deck-stats" id="ro-stats"></div>
       <div class="deck-viewmode" id="deck-viewmode">
-        <button class="dvm-btn" id="dvm-grid" onclick="setDeckViewMode('grid')" title="Card view" aria-label="Card view">⊞</button>
         <button class="dvm-btn" id="dvm-list" onclick="setDeckViewMode('list')" title="Text view" aria-label="Text view">☰</button>
+        <button class="dvm-btn" id="dvm-grid" onclick="setDeckViewMode('grid')" title="Card view" aria-label="Card view">⊞</button>
+        <button class="dvm-btn" id="dvm-large" onclick="setDeckViewMode('large')" title="Large card view" aria-label="Large card view">⊡</button>
       </div>
     </div>
 
@@ -1111,8 +1117,9 @@
       <div class="deck-stats" id="deck-stats"></div>
       <div id="deck-visibility" style="display:none;"></div>
       <div class="deck-viewmode" id="deck-viewmode-edit">
-        <button class="dvm-btn" id="dvm-grid-edit" onclick="setDeckViewMode('grid')" title="Card view" aria-label="Card view">⊞</button>
         <button class="dvm-btn" id="dvm-list-edit" onclick="setDeckViewMode('list')" title="Text view" aria-label="Text view">☰</button>
+        <button class="dvm-btn" id="dvm-grid-edit" onclick="setDeckViewMode('grid')" title="Card view" aria-label="Card view">⊞</button>
+        <button class="dvm-btn" id="dvm-large-edit" onclick="setDeckViewMode('large')" title="Large card view" aria-label="Large card view">⊡</button>
       </div>
     </div>
 
@@ -2137,7 +2144,7 @@ function renderSection(title, section, entries, reqMsg, isOk, req, groups) {
           </div>
           <span class="sub-section-count">${grpQty}</span>
         </div>
-        <div class="sub-section-cards${isCollapsed ? ' hidden' : ''}${deckViewMode === 'list' ? ' list-mode' : ''}" id="sub-cards-${subKey}">
+        <div class="sub-section-cards${isCollapsed ? ' hidden' : ''}${deckViewMode === 'list' ? ' list-mode' : ''}${deckViewMode === 'large' ? ' large-mode' : ''}" id="sub-cards-${subKey}">
           ${cards}
         </div>`;
     }).join('');
@@ -2156,7 +2163,7 @@ function renderSection(title, section, entries, reqMsg, isOk, req, groups) {
       </div>
       <div class="deck-section-body">
         ${reqMsg && !isOk ? `<div class="violation">${reqMsg}</div>` : ''}
-        ${groups ? `<div style="display:flex;flex-direction:column;">${cardsHtml}</div>` : `<div class="${deckViewMode === 'list' ? 'deck-card-list' : 'deck-card-grid'}">${cardsHtml}</div>`}
+        ${groups ? `<div style="display:flex;flex-direction:column;">${cardsHtml}</div>` : `<div class="${deckViewMode === 'list' ? 'deck-card-list' : (deckViewMode === 'large' ? 'deck-card-grid deck-card-grid-large' : 'deck-card-grid')}">${cardsHtml}</div>`}
       </div>
     </div>`;
 }
@@ -2928,10 +2935,11 @@ function setDeckViewMode(mode) {
 }
 
 function syncDeckViewToggle() {
-  [['dvm-grid','dvm-list'],['dvm-grid-edit','dvm-list-edit']].forEach(([g,l]) => {
-    const gb = document.getElementById(g), lb = document.getElementById(l);
+  [['dvm-grid','dvm-list','dvm-large'],['dvm-grid-edit','dvm-list-edit','dvm-large-edit']].forEach(([g,l,lg]) => {
+    const gb = document.getElementById(g), lb = document.getElementById(l), lgb = document.getElementById(lg);
     if (gb) gb.classList.toggle('active', deckViewMode === 'grid');
     if (lb) lb.classList.toggle('active', deckViewMode === 'list');
+    if (lgb) lgb.classList.toggle('active', deckViewMode === 'large');
   });
 }
 

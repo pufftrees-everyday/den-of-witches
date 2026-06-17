@@ -640,7 +640,7 @@
     <div class="logo"><a href="index.html" style="color:var(--gold);text-decoration:none;font-family:'Cinzel Decorative',serif;font-weight:700;letter-spacing:0.04em;display:flex;align-items:center;gap:9px;"><img src="icon-192.png" alt="" style="width:30px;height:30px;border-radius:6px;display:block;">Cursed Realm</a></div>
         <a href="collection.html" class="header-link nav-collapsible">Collection</a>
     <button class="btn btn-ghost nav-collapsible" onclick="toggleMyDecks()">My Decks</button>
-    <button class="btn btn-primary nav-collapsible" onclick="window.location.href='deckbuilder.html'">✦ New Deck</button>
+    <button class="btn btn-primary nav-collapsible" onclick="window.location.href='deckbuilder.html'">New Deck</button>
     <a href="gallery.html" class="header-link nav-collapsible">Deck Gallery</a>
     <a href="videos.html" class="header-link nav-collapsible">Videos</a>
     <a href="tracker.html" class="header-link nav-collapsible" style="color:var(--gold)">Life Tracker</a>
@@ -663,7 +663,7 @@
 <div class="mobile-nav" id="mobile-nav">
     <a href="collection.html" class="header-link">Collection</a>
   <a href="#my-decks-section" class="header-link" onclick="document.getElementById('my-decks-section')?.scrollIntoView({behavior:'smooth'})">My Decks</a>
-  <a href="deckbuilder.html" class="header-link">✦ New Deck</a>
+  <a href="deckbuilder.html" class="header-link">New Deck</a>
   <a href="gallery.html" class="header-link">Deck Gallery</a>
   <a href="videos.html" class="header-link">Videos</a>
   <a href="tracker.html" class="header-link" style="color:var(--gold)">Life Tracker</a>
@@ -1297,7 +1297,7 @@ async function renderMyDecks() {
         <div class="deck-tile-name">${escHtml(d.name)}</div>
         <div class="deck-tile-meta">${qty} cards${date?' · '+date:''}${pub}</div>
       </div>`;
-    }).join('') + `<div class="new-deck-tile" onclick="window.location.href='deckbuilder.html'">✦ New Deck</div>`;
+    }).join('') + `<div class="new-deck-tile" onclick="window.location.href='deckbuilder.html'">New Deck</div>`;
     return;
   }
 
@@ -1313,7 +1313,7 @@ async function renderMyDecks() {
       <div class="deck-tile-name">${name}</div>
       <div class="deck-tile-meta">${qty} cards${date?' · '+date:''}</div>
     </div>`;
-  }).join('') + `<div class="new-deck-tile" onclick="window.location.href='deckbuilder.html'">✦ New Deck</div>`;
+  }).join('') + `<div class="new-deck-tile" onclick="window.location.href='deckbuilder.html'">New Deck</div>`;
 }
 
 function escHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
