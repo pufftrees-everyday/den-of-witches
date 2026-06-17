@@ -279,6 +279,8 @@
   }
   .adv-chip:hover { border-color: var(--arcane); color: #fff; }
   .adv-chip.active { background: var(--rune); border-color: var(--arcane); color: #fff; }
+  .sort-chip { display: inline-flex; align-items: center; gap: 4px; }
+  .sort-chip .sort-dir { font-size: 0.7rem; }
 
   .adv-range-row { display: flex; flex-wrap: wrap; gap: 12px; }
   .adv-range { display: flex; align-items: center; gap: 6px; }
@@ -993,6 +995,13 @@
     <!-- ADVANCED PANEL -->
     <div class="advanced-panel" id="advanced-panel">
       <div>
+        <div class="adv-section-title">Sort</div>
+        <div class="adv-chips">
+          <button class="adv-chip sort-chip active" id="ex-sort-az" data-sort="az" onclick="setExplorerSort('az')">A–Z <span class="sort-dir" id="ex-dir-az">↓</span></button>
+          <button class="adv-chip sort-chip" id="ex-sort-cost" data-sort="cost" onclick="setExplorerSort('cost')">Mana Cost <span class="sort-dir" id="ex-dir-cost"></span></button>
+        </div>
+      </div>
+      <div>
         <div class="adv-section-title">Minion Subtype <button class="adv-clear" onclick="clearAdvGroup('minionSubtype')">clear</button></div>
         <div class="adv-chips">
           <button class="adv-chip" data-adv-group="minionSubtype" data-value="Angel" onclick="toggleAdvChip(this)">Angel</button>
@@ -1512,9 +1521,40 @@ function filterCards() {
     return true;
   });
 
-  currentCards = filtered;
+  currentCards = sortExplorerCards(filtered);
   visibleCount = PAGE_SIZE;
   renderCardGrid();
+}
+
+// ── EXPLORER SORT ──
+let explorerSort = 'az';      // 'az' | 'cost'
+let explorerSortRev = false;  // reverse direction
+
+function setExplorerSort(mode) {
+  if (explorerSort === mode) { explorerSortRev = !explorerSortRev; }
+  else { explorerSort = mode; explorerSortRev = false; }
+  // Button active states
+  document.getElementById('ex-sort-az').classList.toggle('active', explorerSort === 'az');
+  document.getElementById('ex-sort-cost').classList.toggle('active', explorerSort === 'cost');
+  // Direction arrows
+  const az = document.getElementById('ex-dir-az'), co = document.getElementById('ex-dir-cost');
+  if (az) az.textContent = explorerSort === 'az' ? (explorerSortRev ? '↑' : '↓') : '';
+  if (co) co.textContent = explorerSort === 'cost' ? (explorerSortRev ? '↑' : '↓') : '';
+  filterCards();
+}
+
+function sortExplorerCards(cards) {
+  const sorted = [...cards];
+  if (explorerSort === 'cost') {
+    sorted.sort((a, b) => {
+      const ca = (a.cost == null ? 999 : a.cost), cb = (b.cost == null ? 999 : b.cost);
+      return ca !== cb ? ca - cb : a.name.localeCompare(b.name);
+    });
+  } else {
+    sorted.sort((a, b) => a.name.localeCompare(b.name));
+  }
+  if (explorerSortRev) sorted.reverse();
+  return sorted;
 }
 
 // ── RENDER CARD GRID ──
