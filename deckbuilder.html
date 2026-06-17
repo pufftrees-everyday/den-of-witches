@@ -623,13 +623,13 @@
     position: relative;
   }
   .stats-modal h2 { font-family: 'Cinzel Decorative', serif; color: var(--gold); font-size: 1.5rem; margin-bottom: 4px; }
-  .stats-sub { color: var(--mist); font-size: 0.9rem; font-style: italic; margin-bottom: 18px; }
+  .stats-sub { color: var(--shimmer); font-size: 0.9rem; font-style: italic; margin-bottom: 18px; }
   .stats-group { margin-bottom: 22px; }
   .stats-group-title { font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--shimmer); margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
   .stats-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; }
   .stat-box { background: rgba(155,135,212,0.06); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; text-align: center; }
   .stat-box-val { font-family: 'Cinzel', serif; font-size: 1.5rem; font-weight: 700; color: var(--gold); line-height: 1; }
-  .stat-box-label { font-size: 0.7rem; color: var(--mist); margin-top: 5px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .stat-box-label { font-size: 0.7rem; color: var(--shimmer); margin-top: 5px; text-transform: uppercase; letter-spacing: 0.06em; }
   /* Bar chart rows */
   .bar-row { display: grid; grid-template-columns: 54px 1fr 34px; align-items: center; gap: 10px; margin-bottom: 5px; }
   .bar-label { font-size: 0.8rem; color: var(--shimmer); text-align: right; white-space: nowrap; }
@@ -650,6 +650,9 @@
   .thr-summary-item { display: flex; align-items: center; gap: 6px; font-size: 0.95rem; color: var(--parchment); }
   .thr-summary-item img { width: 20px; height: 20px; }
   .thr-summary-item b { color: var(--gold); font-family: 'Cinzel', serif; }
+  .donut-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .donut-cell-label { font-size: 0.75rem; color: var(--shimmer); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; font-family: 'Cinzel', serif; font-weight: 700; }
+  @media (max-width: 540px) { .donut-pair { grid-template-columns: 1fr; gap: 22px; } }
   .modal-overlay.open { display: flex; }
 
   /* AVATAR PICKER */
@@ -1800,35 +1803,27 @@ function buildScatter(cards) {
   for (let c = 0; c <= maxCost; c++) {
     const x = sx(c);
     gridX += `<line x1="${x}" y1="${padT}" x2="${x}" y2="${padT+plotH}" stroke="#2a2640" stroke-width="0.5"/>
-      <text x="${x}" y="${H-padB+16}" fill="#6b6580" font-size="10" text-anchor="middle">${c}</text>`;
+      <text x="${x}" y="${H-padB+16}" fill="#b9b2d4" font-size="10" text-anchor="middle">${c}</text>`;
   }
   let gridY = '';
   for (let t = 0; t <= maxThr; t++) {
     const y = sy(t);
     gridY += `<line x1="${padL}" y1="${y}" x2="${padL+plotW}" y2="${y}" stroke="#2a2640" stroke-width="0.5"/>
-      <text x="${padL-7}" y="${y+3}" fill="#6b6580" font-size="10" text-anchor="end">${t}</text>`;
+      <text x="${padL-7}" y="${y+3}" fill="#b9b2d4" font-size="10" text-anchor="end">${t}</text>`;
   }
 
   return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;">
     ${gridX}${gridY}
-    <text x="${padL+plotW/2}" y="${H-2}" fill="#9a93b5" font-size="11" text-anchor="middle">Mana Cost →</text>
-    <text x="12" y="${padT+plotH/2}" fill="#9a93b5" font-size="11" text-anchor="middle" transform="rotate(-90 12 ${padT+plotH/2})">Threshold →</text>
+    <text x="${padL+plotW/2}" y="${H-2}" fill="#e8e0cc" font-size="11" text-anchor="middle">Mana Cost →</text>
+    <text x="12" y="${padT+plotH/2}" fill="#e8e0cc" font-size="11" text-anchor="middle" transform="rotate(-90 12 ${padT+plotH/2})">Threshold →</text>
     ${dots}
   </svg>`;
 }
 
-// SVG donut: share of total threshold demand by element
-function buildDonut(cards) {
-  const totals = { air:0, earth:0, fire:0, water:0 };
-  cards.forEach(({card, qty}) => {
-    if (!card.thresholds) return;
-    for (const [k,v] of Object.entries(card.thresholds)) {
-      const kk = k.toLowerCase();
-      if (totals[kk] != null) totals[kk] += (v||0) * qty;
-    }
-  });
+// Generic donut renderer from an {air,earth,fire,water} totals object
+function donutFromTotals(totals, emptyMsg, unit) {
   const grand = Object.values(totals).reduce((s,v)=>s+v,0);
-  if (!grand) return '<div class="stats-sub" style="margin:0">No threshold requirements to chart.</div>';
+  if (!grand) return `<div class="stats-sub" style="margin:0">${emptyMsg}</div>`;
 
   const cx = 70, cy = 70, rOuter = 60, rInner = 36;
   let angle = -Math.PI / 2; // start at top
@@ -1843,7 +1838,12 @@ function buildDonut(cards) {
     const x2 = cx + rOuter*Math.cos(a2),   y2 = cy + rOuter*Math.sin(a2);
     const xi2 = cx + rInner*Math.cos(a2),  yi2 = cy + rInner*Math.sin(a2);
     const xi1 = cx + rInner*Math.cos(angle), yi1 = cy + rInner*Math.sin(angle);
-    segs.push(`<path d="M${x1.toFixed(1)} ${y1.toFixed(1)} A${rOuter} ${rOuter} 0 ${large} 1 ${x2.toFixed(1)} ${y2.toFixed(1)} L${xi2.toFixed(1)} ${yi2.toFixed(1)} A${rInner} ${rInner} 0 ${large} 0 ${xi1.toFixed(1)} ${yi1.toFixed(1)} Z" fill="${ELEMENT_COLORS[el]}"><title>${el}: ${val} pips (${Math.round(frac*100)}%)</title></path>`);
+    // Full-circle guard: a single 100% slice can't be drawn as one arc
+    if (frac >= 0.999) {
+      segs.push(`<circle cx="${cx}" cy="${cy}" r="${(rOuter+rInner)/2}" fill="none" stroke="${ELEMENT_COLORS[el]}" stroke-width="${rOuter-rInner}"><title>${el}: ${val} ${unit} (100%)</title></circle>`);
+    } else {
+      segs.push(`<path d="M${x1.toFixed(1)} ${y1.toFixed(1)} A${rOuter} ${rOuter} 0 ${large} 1 ${x2.toFixed(1)} ${y2.toFixed(1)} L${xi2.toFixed(1)} ${yi2.toFixed(1)} A${rInner} ${rInner} 0 ${large} 0 ${xi1.toFixed(1)} ${yi1.toFixed(1)} Z" fill="${ELEMENT_COLORS[el]}"><title>${el}: ${val} ${unit} (${Math.round(frac*100)}%)</title></path>`);
+    }
     legend.push(`<div class="thr-summary-item"><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:${ELEMENT_COLORS[el]}"></span> ${el.charAt(0).toUpperCase()+el.slice(1)} <b>${Math.round(frac*100)}%</b></div>`);
     angle = a2;
   }
@@ -1852,6 +1852,47 @@ function buildDonut(cards) {
     <div style="display:flex;flex-direction:column;gap:8px;">${legend.join('')}</div>
   </div>`;
 }
+
+// Donut: share of total threshold DEMAND by element (whole deck)
+function buildDonut(cards) {
+  const totals = { air:0, earth:0, fire:0, water:0 };
+  cards.forEach(({card, qty}) => {
+    if (!card.thresholds) return;
+    for (const [k,v] of Object.entries(card.thresholds)) {
+      const kk = k.toLowerCase();
+      if (totals[kk] != null) totals[kk] += (v||0) * qty;
+    }
+  });
+  return donutFromTotals(totals, 'No threshold requirements to chart.', 'pips');
+}
+
+// Donut: elemental sources your SITES provide (the Atlas / mana base)
+function buildSiteDonut(atlasEntries) {
+  const totals = { air:0, earth:0, fire:0, water:0 };
+  let siteCount = 0;
+  atlasEntries.forEach(({card, qty}) => {
+    siteCount += qty;
+    // A Site contributes its threshold pips if present; otherwise fall back to its element(s)
+    const t = card.thresholds && Object.keys(card.thresholds).length
+      ? card.thresholds
+      : null;
+    if (t) {
+      for (const [k,v] of Object.entries(t)) {
+        const kk = k.toLowerCase();
+        if (totals[kk] != null) totals[kk] += (v||0) * qty;
+      }
+    } else if (card.element) {
+      // element may be a comma-joined string like "Water" or "Fire, Earth"
+      card.element.split(',').map(s=>s.trim().toLowerCase()).forEach(el => {
+        if (totals[el] != null) totals[el] += qty;
+      });
+    }
+  });
+  const donut = donutFromTotals(totals, 'These Sites provide no elemental thresholds.', 'sources');
+  const note = `<div class="stats-sub" style="margin-top:8px;font-size:0.82rem;color:var(--parchment);font-style:normal;">${siteCount} Site${siteCount===1?'':'s'} in your Atlas — most provide 1 mana each (~${siteCount} mana total).</div>`;
+  return donut + note;
+}
+
 
 function openDeckStats() {
   const body = document.getElementById('stats-body');
@@ -1947,11 +1988,20 @@ function openDeckStats() {
     <div class="stats-group">
       <div class="stats-group-title">Cost × Threshold Map</div>
       ${buildScatter(all)}
-      <div class="stats-sub" style="margin-top:6px;font-size:0.78rem;">Each dot is a card — position shows its cost vs. total threshold, color shows its main element, size shows copies.</div>
+      <div class="stats-sub" style="margin-top:8px;font-size:0.82rem;color:var(--parchment);font-style:normal;">Each dot is a card — position shows its cost vs. total threshold, color shows its main element, size shows copies.</div>
     </div>
     <div class="stats-group">
       <div class="stats-group-title">Elemental Identity</div>
-      ${buildDonut(all)}
+      <div class="donut-pair">
+        <div class="donut-cell">
+          <div class="donut-cell-label">Deck demands</div>
+          ${buildDonut(all)}
+        </div>
+        <div class="donut-cell">
+          <div class="donut-cell-label">Sites provide</div>
+          ${buildSiteDonut(Object.values(deck.atlas))}
+        </div>
+      </div>
     </div>
     <div class="stats-group">
       <div class="stats-group-title">Mana Curve (Spellbook)</div>
