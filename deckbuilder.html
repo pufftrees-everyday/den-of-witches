@@ -487,7 +487,7 @@
   .deck-card-list { display: flex; flex-direction: column; gap: 3px; }
   .sub-section-cards.list-mode { display: flex; flex-direction: column; gap: 3px; }
   .deck-card-row {
-    display: grid; grid-template-columns: auto 1fr auto auto;
+    display: grid; grid-template-columns: auto 1fr auto auto auto;
     align-items: center; gap: 8px;
     background: var(--dusk); border: 1px solid var(--border);
     padding: 4px 9px; border-radius: 3px; cursor: pointer;
@@ -504,6 +504,42 @@
   }
   .dr-qty-btn:hover { background: var(--rune); color: #fff; }
   .dr-del-btn:hover { background: var(--ember); border-color: var(--ember); color: #fff; }
+
+  /* Threshold pills in deck text rows */
+  .dr-thresholds { display: inline-flex; gap: 3px; align-items: center; flex-shrink: 0; }
+  .thr-pill {
+    display: inline-flex; align-items: center; gap: 2px;
+    font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 700;
+    padding: 2px 7px; border-radius: 10px; line-height: 1;
+    border: 1px solid; white-space: nowrap;
+  }
+  .thr-air   { color: #cfe3f0; background: rgba(140,180,210,0.14); border-color: rgba(140,180,210,0.5); }
+  .thr-earth { color: #cdb98a; background: rgba(160,130,70,0.16); border-color: rgba(160,130,70,0.55); }
+  .thr-fire  { color: #e89a86; background: rgba(196,97,74,0.16); border-color: rgba(196,97,74,0.55); }
+  .thr-water { color: #9fc7d6; background: rgba(90,150,176,0.16); border-color: rgba(90,150,176,0.55); }
+  .dr-name-wrap { display: flex; flex-direction: column; min-width: 0; }
+
+  /* Deck panel view toggle (grid/text) */
+  .deck-viewmode { display: inline-flex; border: 2px solid #2a2640; border-radius: 4px; overflow: hidden; margin-top: 8px; width: fit-content; }
+  .dvm-btn { font-size: 0.9rem; line-height: 1; background: #13111e; border: none; color: var(--rune); padding: 4px 10px; cursor: pointer; transition: all 0.15s; }
+  .dvm-btn.active { background: var(--rune); color: #fff; }
+  .dvm-btn:not(.active):hover { background: #1a1728; color: var(--arcane); }
+
+  /* Read-only viewing header */
+  .readonly-header .ro-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .ro-name { font-family: 'Cinzel Decorative', serif; font-size: 1.3rem; color: var(--gold); line-height: 1.1; }
+  .ro-author { font-size: 0.9rem; color: var(--rune); margin-top: 3px; }
+  .ro-author b { color: var(--arcane); }
+  .ro-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  /* READ-ONLY MODE: hide the explorer + divider + editing chrome, deck fills screen */
+  body.viewing-deck .explorer,
+  body.viewing-deck .divider { display: none !important; }
+  body.viewing-deck .app { grid-template-columns: 1fr; }
+  body.viewing-deck #edit-header { display: none !important; }
+  body.viewing-deck .deck-panel { max-width: 1000px; margin: 0 auto; width: 100%; }
+  /* In read-only the deck body centers nicely */
+  body.viewing-deck .deck-body { padding-top: 8px; }
 
   .dvg-card {
     position: relative; border-radius: 4px;
@@ -912,7 +948,27 @@
 
   <!-- RIGHT: DECK PANEL -->
   <div class="deck-panel">
-    <div class="deck-header">
+    <!-- Read-only viewing header (shown when viewing someone else's deck) -->
+    <div class="deck-header readonly-header" id="readonly-header" style="display:none;">
+      <div class="ro-top">
+        <div>
+          <div class="ro-name" id="ro-name">Deck</div>
+          <div class="ro-author" id="ro-author"></div>
+        </div>
+        <div class="ro-actions">
+          <button class="btn btn-primary" id="ro-copy-btn" onclick="copyViewedDeck()">Copy to My Decks</button>
+          <button class="btn btn-ghost" onclick="window.location.href='gallery.html'">← Gallery</button>
+        </div>
+      </div>
+      <div class="deck-stats" id="ro-stats"></div>
+      <div class="deck-viewmode" id="deck-viewmode">
+        <button class="dvm-btn" id="dvm-grid" onclick="setDeckViewMode('grid')" title="Card view" aria-label="Card view">⊞</button>
+        <button class="dvm-btn" id="dvm-list" onclick="setDeckViewMode('list')" title="Text view" aria-label="Text view">☰</button>
+      </div>
+    </div>
+
+    <!-- Editable header (shown when building your own deck) -->
+    <div class="deck-header" id="edit-header">
       <div class="deck-name-row">
         <input type="text" id="deck-name-input" placeholder="Name your deck…">
         <div class="deck-actions">
@@ -925,6 +981,10 @@
       </div>
       <div class="deck-stats" id="deck-stats"></div>
       <div id="deck-visibility" style="display:none;"></div>
+      <div class="deck-viewmode" id="deck-viewmode-edit">
+        <button class="dvm-btn" id="dvm-grid-edit" onclick="setDeckViewMode('grid')" title="Card view" aria-label="Card view">⊞</button>
+        <button class="dvm-btn" id="dvm-list-edit" onclick="setDeckViewMode('list')" title="Text view" aria-label="Text view">☰</button>
+      </div>
     </div>
 
     <div class="deck-body deck-drop-zone" id="deck-body">
@@ -1052,6 +1112,9 @@ let addQty = 1;
 let activeDeckId = null;
 let activeDeckCode = null; // short_code of the current deck if it's a cloud-saved deck
 let activeDeckPublic = false; // whether the current saved deck is public
+let readOnly = false;         // true when viewing a deck you don't own
+let viewDeckAuthor = null;    // author name when viewing someone's deck
+let deckViewMode = localStorage.getItem('grimoire_deck_view') || 'grid'; // grid | list (deck panel display)
 
 const IMAGE_BASE = 'https://pub-5999238092ad418ca60e7a9ad641cf57.r2.dev/';
 
@@ -1576,7 +1639,7 @@ function renderSection(title, section, entries, reqMsg, isOk, req, groups) {
           </div>
           <span class="sub-section-count">${grpQty}</span>
         </div>
-        <div class="sub-section-cards${isCollapsed ? ' hidden' : ''}${viewMode === 'list' ? ' list-mode' : ''}" id="sub-cards-${subKey}">
+        <div class="sub-section-cards${isCollapsed ? ' hidden' : ''}${deckViewMode === 'list' ? ' list-mode' : ''}" id="sub-cards-${subKey}">
           ${cards}
         </div>`;
     }).join('');
@@ -1595,37 +1658,55 @@ function renderSection(title, section, entries, reqMsg, isOk, req, groups) {
       </div>
       <div class="deck-section-body">
         ${reqMsg && !isOk ? `<div class="violation">${reqMsg}</div>` : ''}
-        ${groups ? `<div style="display:flex;flex-direction:column;">${cardsHtml}</div>` : `<div class="${viewMode === 'list' ? 'deck-card-list' : 'deck-card-grid'}">${cardsHtml}</div>`}
+        ${groups ? `<div style="display:flex;flex-direction:column;">${cardsHtml}</div>` : `<div class="${deckViewMode === 'list' ? 'deck-card-list' : 'deck-card-grid'}">${cardsHtml}</div>`}
       </div>
     </div>`;
 }
 
 function renderDeckCard(section, key, card, qty) {
-  if (viewMode === 'list') return renderDeckCardRow(section, key, card, qty);
+  if (deckViewMode === 'list') return renderDeckCardRow(section, key, card, qty);
   const isSite = card.type === 'Site';
-  return `<div class="dvg-card${isSite ? ' is-site' : ''}" onclick="openModal('${escId(card.id)}')">
-    <img src="${getImageUrl(card)}" alt="${card.name}" loading="lazy" onerror="this.style.opacity='0.2'">
-    ${qty > 1 ? `<div class="dvg-qty">×${qty}</div>` : ''}
-    <div class="dvg-controls">
+  const controls = readOnly ? '' : `<div class="dvg-controls">
       ${section !== 'avatar' ? `<button class="qty-btn" onclick="event.stopPropagation();changeQty('${section}','${key}',-1)">−</button>
       <button class="qty-btn" onclick="event.stopPropagation();changeQty('${section}','${key}',1)">+</button>` : ''}
       <button class="del-btn" onclick="event.stopPropagation();removeCard('${section}','${key}')">✕</button>
-    </div>
+    </div>`;
+  return `<div class="dvg-card${isSite ? ' is-site' : ''}" onclick="openModal('${escId(card.id)}')">
+    <img src="${getImageUrl(card)}" alt="${card.name}" loading="lazy" onerror="this.style.opacity='0.2'">
+    ${qty > 1 ? `<div class="dvg-qty">×${qty}</div>` : ''}
+    ${controls}
   </div>`;
+}
+
+// Build threshold pills (e.g. "2 Fire", "1 Water") with element colors
+function thresholdPills(card) {
+  if (!card.thresholds) return '';
+  const map = { air: 'thr-air', earth: 'thr-earth', fire: 'thr-fire', water: 'thr-water' };
+  const pills = Object.entries(card.thresholds)
+    .filter(([, v]) => v > 0)
+    .map(([k, v]) => {
+      const cls = map[k.toLowerCase()] || 'thr-air';
+      const label = k.charAt(0).toUpperCase() + k.slice(1);
+      return `<span class="thr-pill ${cls}">${v} ${label}</span>`;
+    });
+  return pills.length ? `<span class="dr-thresholds">${pills.join('')}</span>` : '';
 }
 
 function renderDeckCardRow(section, key, card, qty) {
   const rarity = card.rarity || '';
   const rarityClass = rarity.toLowerCase();
-  return `<div class="deck-card-row" onclick="openModal('${escId(card.id)}')">
-    <span class="dr-qty">${qty}×</span>
-    <span class="dr-name">${card.name}</span>
-    <span class="db-row-rarity ${rarityClass}">${rarity}</span>
-    <div class="dr-controls">
+  const thr = thresholdPills(card);
+  const controls = readOnly ? '' : `<div class="dr-controls">
       ${section !== 'avatar' ? `<button class="dr-qty-btn" onclick="event.stopPropagation();changeQty('${section}','${key}',-1)">−</button>
       <button class="dr-qty-btn" onclick="event.stopPropagation();changeQty('${section}','${key}',1)">+</button>` : ''}
       <button class="dr-del-btn" onclick="event.stopPropagation();removeCard('${section}','${key}')">✕</button>
-    </div>
+    </div>`;
+  return `<div class="deck-card-row" onclick="openModal('${escId(card.id)}')">
+    <span class="dr-qty">${qty}×</span>
+    <span class="dr-name">${card.name}</span>
+    ${thr}
+    <span class="db-row-rarity ${rarityClass}">${rarity}</span>
+    ${controls}
   </div>`;
 }
 
@@ -2155,12 +2236,27 @@ async function loadSharedDeck(code) {
         const payload = data.deck_data;
         if (!payload.n && data.name) payload.n = data.name;
         const ok = applyDeckPayload(payload);
-        // If the current user owns this deck, claim it so Save updates it
-        // (instead of making a duplicate) and the visibility toggle works.
-        if (ok && currentUser && data.owner_id === currentUser.id) {
+        if (!ok) return false;
+
+        const isOwner = currentUser && data.owner_id === currentUser.id;
+        if (isOwner) {
+          // Owner → editable, claim it so Save updates it
           activeDeckCode = code;
           activeDeckPublic = !!data.is_public;
           renderVisibilityBar();
+          exitReadOnly();
+        } else {
+          // Not the owner → read-only viewing mode
+          // Look up the author's display name
+          let author = 'Anonymous';
+          if (data.owner_id) {
+            try {
+              const { data: prof } = await supa.from('profiles').select('username').eq('id', data.owner_id).single();
+              if (prof && prof.username) author = prof.username;
+              else author = 'Unknown';
+            } catch (e) { author = 'Unknown'; }
+          }
+          enterReadOnly(author);
         }
         return ok;
       }
@@ -2173,16 +2269,81 @@ async function loadSharedDeck(code) {
     }
   }
 
-  // Legacy long-link path: decode base64 blob
+  // Legacy long-link path: decode base64 blob (always read-only — no ownership info)
   try {
     const json = decodeURIComponent(escape(atob(code)));
     const payload = JSON.parse(json);
-    return applyDeckPayload(payload);
+    const ok = applyDeckPayload(payload);
+    if (ok) enterReadOnly('Shared deck');
+    return ok;
   } catch (e) {
     console.warn('Bad share code', e);
     toast('Could not read shared deck link');
     return false;
   }
+}
+
+// ── READ-ONLY VIEWING MODE ──
+function enterReadOnly(author) {
+  readOnly = true;
+  viewDeckAuthor = author;
+  document.body.classList.add('viewing-deck');
+  document.getElementById('readonly-header').style.display = 'block';
+  document.getElementById('edit-header').style.display = 'none';
+  const name = (Object.keys(deck.avatar).length || Object.keys(deck.atlas).length || Object.keys(deck.spellbook).length)
+    ? (document.getElementById('deck-name-input').value || 'Shared Deck')
+    : 'Shared Deck';
+  document.getElementById('ro-name').textContent = name;
+  document.getElementById('ro-author').innerHTML = author ? `by <b>${author}</b>` : '';
+  // Hide the avatar picker if it tried to open
+  closeAvatarPicker();
+  syncDeckViewToggle();
+  renderDeck();
+}
+
+function exitReadOnly() {
+  readOnly = false;
+  viewDeckAuthor = null;
+  document.body.classList.remove('viewing-deck');
+  const ro = document.getElementById('readonly-header');
+  const ed = document.getElementById('edit-header');
+  if (ro) ro.style.display = 'none';
+  if (ed) ed.style.display = 'block';
+}
+
+// Copy the viewed deck into the user's own builder (editable)
+function copyViewedDeck() {
+  // Turn off read-only; the deck cards are already loaded
+  exitReadOnly();
+  activeDeckCode = null;       // fresh — Save will create the user's own copy
+  activeDeckId = null;
+  activeDeckPublic = false;
+  const nameEl = document.getElementById('deck-name-input');
+  if (nameEl && document.getElementById('ro-name')) {
+    nameEl.value = document.getElementById('ro-name').textContent + ' (copy)';
+  }
+  renderDeck();
+  renderCardGrid();
+  renderVisibilityBar();
+  if (currentUser) toast('Copied! Edit and Save it to your account.');
+  else toast('Copied! Sign in to save it to your account.');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── DECK PANEL VIEW MODE (grid / text) ──
+function setDeckViewMode(mode) {
+  deckViewMode = mode;
+  localStorage.setItem('grimoire_deck_view', mode);
+  syncDeckViewToggle();
+  renderDeck();
+}
+
+function syncDeckViewToggle() {
+  [['dvm-grid','dvm-list'],['dvm-grid-edit','dvm-list-edit']].forEach(([g,l]) => {
+    const gb = document.getElementById(g), lb = document.getElementById(l);
+    if (gb) gb.classList.toggle('active', deckViewMode === 'grid');
+    if (lb) lb.classList.toggle('active', deckViewMode === 'list');
+  });
 }
 
 // ── CLEAR ──
@@ -2349,6 +2510,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('search-input').addEventListener('input', filterCards);
   document.addEventListener('keydown', e => { if (e.key==='Escape') { closeModal({}); closeImport({}); closeAvatarPicker(); } });
   setupDivider();
+  syncDeckViewToggle();
   document.querySelector('.card-list').addEventListener('scroll', function() {
     if (visibleCount >= currentCards.length) return;
     if (this.scrollTop + this.clientHeight >= this.scrollHeight - 200) {
