@@ -1154,6 +1154,26 @@
 </div>
 
 <!-- IMPORT MODAL -->
+<div class="modal-overlay" id="export-overlay" onclick="closeExport(event)">
+  <div class="import-modal">
+    <h2>Export Deck</h2>
+    <div id="export-link-block" style="display:none;">
+      <p style="margin-bottom:8px;">Share this deck with its unique link:</p>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="export-link-input" readonly style="flex:1;background:#0b0a0f;border:1px solid var(--border-strong);color:var(--shimmer);font-family:'Crimson Pro',serif;font-size:0.9rem;padding:9px 11px;border-radius:5px;">
+        <button class="btn btn-primary" onclick="copyExportLink()">Copy</button>
+      </div>
+      <div style="height:1px;background:var(--border);margin:16px 0;"></div>
+    </div>
+    <div id="export-nolink-block" style="display:none;">
+      <p style="margin-bottom:14px;color:var(--rune);font-style:italic;font-size:0.88rem;">Save or Share this deck first to get a unique link you can copy.</p>
+    </div>
+    <p style="margin-bottom:10px;">Or download a plain-text decklist:</p>
+    <button class="btn btn-ghost" style="width:100%;" onclick="downloadDeckText()">⬇ Download as .txt</button>
+    <button class="modal-close" onclick="closeExport()">✕</button>
+  </div>
+</div>
+
 <div class="modal-overlay" id="import-overlay" onclick="closeImport(event)">
   <div class="import-modal">
     <h2>Import from Curiosa</h2>
@@ -2321,6 +2341,38 @@ function loadDeck(id) {
 
 // ── EXPORT ──
 function exportDeck() {
+  if (getDeckCounts().total === 0) { toast('Add some cards first'); return; }
+  const base = window.location.origin + window.location.pathname;
+  const linkBlock = document.getElementById('export-link-block');
+  const noLinkBlock = document.getElementById('export-nolink-block');
+  // A unique link exists only when the deck is saved/shared with a code we can reference
+  const code = activeDeckCode || lastSharedCode;
+  if (code) {
+    document.getElementById('export-link-input').value = `${base}?d=${code}`;
+    linkBlock.style.display = 'block';
+    noLinkBlock.style.display = 'none';
+  } else {
+    linkBlock.style.display = 'none';
+    noLinkBlock.style.display = 'block';
+  }
+  document.getElementById('export-overlay').classList.add('open');
+}
+
+function closeExport(e) {
+  if (!e || e.target === document.getElementById('export-overlay')) {
+    document.getElementById('export-overlay').classList.remove('open');
+  }
+}
+
+function copyExportLink() {
+  const val = document.getElementById('export-link-input').value;
+  navigator.clipboard.writeText(val).then(
+    () => toast('Deck link copied!'),
+    () => { document.getElementById('export-link-input').select(); document.execCommand('copy'); toast('Deck link copied!'); }
+  );
+}
+
+function downloadDeckText() {
   const name = document.getElementById('deck-name-input').value.trim() || 'My Deck';
   const lines = [`// ${name}`, ''];
   const avatarEntries = Object.values(deck.avatar);
@@ -3045,7 +3097,7 @@ function setupDivider() {
 
 document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('search-input').addEventListener('input', filterCards);
-  document.addEventListener('keydown', e => { if (e.key==='Escape') { closeModal({}); closeImport({}); closeAvatarPicker(); closeDeckStats(); } });
+  document.addEventListener('keydown', e => { if (e.key==='Escape') { closeModal({}); closeImport({}); closeAvatarPicker(); closeDeckStats(); closeExport({}); } });
   setupDivider();
   syncDeckViewToggle();
   document.querySelector('.card-list').addEventListener('scroll', function() {
