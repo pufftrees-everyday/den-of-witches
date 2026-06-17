@@ -597,6 +597,7 @@
     .deck-card-grid, .sub-section-cards { grid-template-columns: repeat(2, 1fr); }
   }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -604,11 +605,13 @@
   <div class="header-main" style="display:flex;align-items:center;gap:16px;">
     <div class="logo"><a href="index.html" style="color:var(--gold);text-decoration:none;font-family:'Cinzel Decorative',serif;font-weight:700;letter-spacing:0.04em;display:flex;align-items:center;gap:9px;"><img src="icon-192.png" alt="" style="width:30px;height:30px;border-radius:6px;display:block;">Cursed Realm</a></div>
     <a href="collection.html" class="header-link nav-collapsible">My Collection</a>
+    <a href="gallery.html" class="header-link nav-collapsible">Deck Gallery</a>
     <a href="videos.html" class="header-link nav-collapsible">Videos</a>
     <a href="tracker.html" class="header-link nav-collapsible">Life Tracker</a>
     <button class="btn btn-ghost nav-collapsible" onclick="window.location.href='index.html'">My Decks</button>
     <button class="btn btn-primary nav-collapsible" onclick="window.location.href='deckbuilder.html'">✦ New Deck</button>
   </div>
+  <div class="header-nav nav-collapsible" id="auth-bar"></div>
   <div class="header-nav nav-collapsible">
     <a href="https://drive.google.com/file/d/1sgQo0xf0N2teIR0zlyl91g9j6LVncZnr/view" target="_blank" class="header-link">Rulebook</a>
     <a href="https://play.sorcerytcg.com/" target="_blank" class="header-link">Play Network</a>
@@ -619,6 +622,7 @@
 
 <div class="mobile-nav" id="mobile-nav">
   <a href="collection.html" class="header-link">My Collection</a>
+  <a href="gallery.html" class="header-link">Deck Gallery</a>
   <a href="videos.html" class="header-link">Videos</a>
   <a href="tracker.html" class="header-link">Life Tracker</a>
   <a href="index.html" class="header-link">My Decks</a>
@@ -856,24 +860,68 @@
   <div class="import-modal">
     <h2>Share Deck</h2>
     <p>Send this link to a friend — it opens this exact deck in their builder.</p>
-    <textarea id="share-text" readonly style="height:90px;" onclick="this.select()"></textarea>
+    <textarea id="share-text" readonly style="height:70px;" onclick="this.select()"></textarea>
     <div style="display:flex;gap:8px;margin-top:12px;">
       <button class="btn btn-primary" style="flex:1" onclick="copyShareLink()">Copy Link</button>
       <button class="btn btn-ghost" style="flex:1" onclick="closeShare()">Done</button>
     </div>
+
+    <div id="publish-section" style="margin-top:18px;padding-top:16px;border-top:1px solid var(--border);">
+      <!-- Filled by updatePublishSection() -->
+    </div>
+
     <button class="modal-close" onclick="closeShare()">✕</button>
+  </div>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="auth-overlay" onclick="if(event.target===this)closeAuth()">
+  <div class="import-modal" style="max-width:380px;">
+    <h2 id="auth-title">Sign In</h2>
+    <p id="auth-desc">Log in to publish and manage your decks.</p>
+    <div id="auth-msg" style="display:none;font-size:0.85rem;padding:10px;border-radius:4px;margin-bottom:12px;"></div>
+    <div id="auth-field-name" style="display:none;margin-bottom:12px;">
+      <label style="display:block;font-family:'Cinzel',serif;font-size:0.62rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--rune);margin-bottom:6px;">Display Name</label>
+      <input type="text" id="auth-name" placeholder="How you'll appear in the gallery" style="width:100%;background:#0b0a0f;border:1px solid var(--border-strong);color:var(--parchment);font-family:'Crimson Pro',serif;font-size:1rem;padding:9px 12px;border-radius:4px;outline:none;">
+    </div>
+    <div style="margin-bottom:12px;">
+      <label style="display:block;font-family:'Cinzel',serif;font-size:0.62rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--rune);margin-bottom:6px;">Email</label>
+      <input type="email" id="auth-email" placeholder="you@example.com" style="width:100%;background:#0b0a0f;border:1px solid var(--border-strong);color:var(--parchment);font-family:'Crimson Pro',serif;font-size:1rem;padding:9px 12px;border-radius:4px;outline:none;">
+    </div>
+    <div style="margin-bottom:14px;">
+      <label style="display:block;font-family:'Cinzel',serif;font-size:0.62rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--rune);margin-bottom:6px;">Password</label>
+      <input type="password" id="auth-password" placeholder="••••••••" style="width:100%;background:#0b0a0f;border:1px solid var(--border-strong);color:var(--parchment);font-family:'Crimson Pro',serif;font-size:1rem;padding:9px 12px;border-radius:4px;outline:none;">
+    </div>
+    <button class="btn btn-primary" id="auth-submit" style="width:100%;padding:11px;" onclick="submitAuth()">Sign In</button>
+    <div id="auth-toggle-text" style="text-align:center;margin-top:14px;font-size:0.88rem;color:var(--mist);">
+      New here? <a onclick="setAuthMode('signup')" style="color:var(--arcane);cursor:pointer;text-decoration:underline;">Create an account</a>
+    </div>
+    <button class="modal-close" onclick="closeAuth()">✕</button>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
+// ── SUPABASE ──
+const SUPABASE_URL = 'https://nuizkjkcephopnbcmtlz.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_9er9B3YGFuvNO8Y8W6yr2g_sR5tXvKH';
+let supa = null;
+try {
+  if (window.supabase) supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+} catch(e) { console.warn('Supabase init failed', e); }
+
 // ── STATE ──
 let allCards = [];
 let currentCards = [];
 let visibleCount = 200;
 const PAGE_SIZE = 200;
 let viewMode = localStorage.getItem('grimoire_view_mode') || 'grid'; // grid | list
+
+// Auth + sharing state
+let currentUser = null;
+let authMode = 'login';
+let lastSharedCode = null; // short code of the most recently shared deck (for publish)
 
 // deck: { atlas: {key: {card, qty}}, spellbook: {key: {card, qty}}, avatar: {key: {card, qty}} }
 let deck = { avatar: {}, atlas: {}, spellbook: {} };
@@ -921,7 +969,7 @@ async function loadCards() {
     const params = new URLSearchParams(window.location.search);
     const sharedCode = params.get('d');
     const deckId = params.get('deck');
-    if (sharedCode) loadSharedDeck(sharedCode);
+    if (sharedCode) await loadSharedDeck(sharedCode);
     else if (deckId) loadDeck(deckId);
     else renderDeck();
   } catch(e) {
@@ -1444,24 +1492,74 @@ function exportDeck() {
 }
 
 // ── SHARE VIA LINK ──
-function encodeDeck() {
-  // Compact representation: name + arrays of [cardName, qty]
+// Build the compact deck payload (also used for the legacy long-link fallback)
+function buildDeckPayload() {
   const name = document.getElementById('deck-name-input').value.trim() || 'Shared Deck';
   const pack = section => Object.values(deck[section]).map(({card, qty}) => [card.name, qty]);
-  const payload = { n: name, a: pack('avatar'), t: pack('atlas'), s: pack('spellbook') };
-  // JSON → URI-safe base64
-  const json = JSON.stringify(payload);
+  return { n: name, a: pack('avatar'), t: pack('atlas'), s: pack('spellbook') };
+}
+
+function encodeDeck() {
+  const json = JSON.stringify(buildDeckPayload());
   return btoa(unescape(encodeURIComponent(json)));
 }
 
-function shareDeck() {
+// Generate a 5-char short code (lowercase letters + digits)
+function genShortCode() {
+  const chars = 'abcdefghijkmnpqrstuvwxyz23456789'; // no l/0/1/o to avoid confusion
+  let s = '';
+  for (let i = 0; i < 5; i++) s += chars[Math.floor(Math.random() * chars.length)];
+  return s;
+}
+
+async function shareDeck() {
   const total = getDeckCounts().total;
   if (total === 0) { toast('Add some cards first'); return; }
-  const code = encodeDeck();
+
   const base = window.location.origin + window.location.pathname;
-  const link = `${base}?d=${code}`;
-  document.getElementById('share-text').value = link;
-  document.getElementById('share-overlay').classList.add('open');
+  const overlay = document.getElementById('share-overlay');
+  const textEl = document.getElementById('share-text');
+
+  // Open modal immediately with a "generating" state
+  textEl.value = 'Generating link…';
+  lastSharedCode = null;
+  overlay.classList.add('open');
+  updatePublishSection();
+
+  // Try Supabase short link first
+  if (supa) {
+    try {
+      const payload = buildDeckPayload();
+      // Try a few times in case of a code collision
+      for (let attempt = 0; attempt < 5; attempt++) {
+        const code = genShortCode();
+        const row = {
+          short_code: code,
+          name: payload.n,
+          deck_data: payload,
+          is_public: false
+        };
+        // Stamp ownership if logged in (lets them manage/publish it later)
+        if (currentUser) row.owner_id = currentUser.id;
+        const { error } = await supa.from('decks').insert(row);
+        if (!error) {
+          textEl.value = `${base}?d=${code}`;
+          lastSharedCode = code;
+          updatePublishSection();
+          return;
+        }
+        // 23505 = unique violation (code already taken) → retry with a new code
+        if (error.code !== '23505') throw error;
+      }
+      throw new Error('Could not generate a unique code');
+    } catch (e) {
+      console.warn('Supabase share failed, falling back to long link', e);
+      // fall through to legacy long link
+    }
+  }
+
+  // Fallback: legacy long base64 link (works with no backend)
+  textEl.value = `${base}?d=${encodeDeck()}`;
 }
 
 function closeShare(e) {
@@ -1472,8 +1570,9 @@ function closeShare(e) {
 
 function copyShareLink() {
   const ta = document.getElementById('share-text');
-  ta.select();
   const link = ta.value;
+  if (link === 'Generating link…') { toast('Still generating…'); return; }
+  ta.select();
   if (navigator.clipboard) {
     navigator.clipboard.writeText(link).then(() => toast('Link copied!')).catch(() => {
       document.execCommand('copy'); toast('Link copied!');
@@ -1483,32 +1582,203 @@ function copyShareLink() {
   }
 }
 
-function loadSharedDeck(code) {
+// ── PUBLISH TO GALLERY ──
+function updatePublishSection() {
+  const sec = document.getElementById('publish-section');
+  if (!sec) return;
+  if (!supa || !lastSharedCode) {
+    sec.innerHTML = `<div style="font-size:0.85rem;color:var(--mist);font-style:italic;">Want to publish to the public gallery? <a onclick="openAuth('login')" style="color:var(--arcane);cursor:pointer;text-decoration:underline;">Sign in</a> first.</div>`;
+    if (currentUser) sec.innerHTML = '';
+    return;
+  }
+  if (!currentUser) {
+    sec.innerHTML = `<div style="font-size:0.85rem;color:var(--mist);">
+      <b style="color:var(--shimmer);font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;">Publish to Gallery</b><br>
+      <span style="font-style:italic;">Sign in to publish this deck for everyone to browse.</span><br>
+      <button class="btn btn-ghost" style="margin-top:8px;" onclick="openAuth('login')">Sign In to Publish</button>
+    </div>`;
+  } else {
+    sec.innerHTML = `<div style="font-size:0.85rem;color:var(--mist);">
+      <b style="color:var(--shimmer);font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;">Publish to Gallery</b><br>
+      <span style="font-style:italic;">Make this deck public so others can find it in the gallery.</span><br>
+      <button class="btn btn-primary" id="publish-btn" style="margin-top:8px;" onclick="publishCurrentDeck()">Publish to Gallery</button>
+    </div>`;
+  }
+}
+
+async function publishCurrentDeck() {
+  if (!supa || !currentUser || !lastSharedCode) return;
+  const btn = document.getElementById('publish-btn');
+  if (btn) { btn.disabled = true; btn.style.opacity = '0.6'; btn.textContent = 'Publishing…'; }
+  try {
+    // Ensure this deck is owned by the user, then mark public
+    const { error } = await supa.from('decks')
+      .update({ is_public: true, owner_id: currentUser.id })
+      .eq('short_code', lastSharedCode);
+    if (error) throw error;
+    toast('Published to the gallery!');
+    const sec = document.getElementById('publish-section');
+    if (sec) sec.innerHTML = `<div style="font-size:0.9rem;color:var(--sage);font-style:italic;">✓ Published! View it in the <a href="gallery.html" style="color:var(--arcane);text-decoration:underline;">Deck Gallery</a>.</div>`;
+  } catch (e) {
+    toast('Could not publish: ' + (e.message || ''));
+    if (btn) { btn.disabled = false; btn.style.opacity = '1'; btn.textContent = 'Publish to Gallery'; }
+  }
+}
+
+// ── AUTH ──
+function openAuth(mode = 'login') { setAuthMode(mode); document.getElementById('auth-overlay').classList.add('open'); }
+function closeAuth() { document.getElementById('auth-overlay').classList.remove('open'); hideAuthMsg(); }
+
+function setAuthMode(mode) {
+  authMode = mode;
+  const isSignup = mode === 'signup';
+  document.getElementById('auth-title').textContent = isSignup ? 'Create Account' : 'Sign In';
+  document.getElementById('auth-desc').textContent = isSignup
+    ? "Pick a display name — it shows on decks you publish."
+    : 'Log in to publish and manage your decks.';
+  document.getElementById('auth-field-name').style.display = isSignup ? 'block' : 'none';
+  document.getElementById('auth-submit').textContent = isSignup ? 'Create Account' : 'Sign In';
+  document.getElementById('auth-toggle-text').innerHTML = isSignup
+    ? `Already have an account? <a onclick="setAuthMode('login')" style="color:var(--arcane);cursor:pointer;text-decoration:underline;">Sign in</a>`
+    : `New here? <a onclick="setAuthMode('signup')" style="color:var(--arcane);cursor:pointer;text-decoration:underline;">Create an account</a>`;
+  hideAuthMsg();
+}
+
+function showAuthMsg(text, type) {
+  const el = document.getElementById('auth-msg');
+  el.textContent = text;
+  el.style.display = 'block';
+  if (type === 'error') { el.style.background = 'rgba(196,97,74,0.12)'; el.style.border = '1px solid var(--ember)'; el.style.color = 'var(--ember)'; }
+  else { el.style.background = 'rgba(90,138,106,0.12)'; el.style.border = '1px solid var(--sage)'; el.style.color = 'var(--sage)'; }
+}
+function hideAuthMsg() { const el = document.getElementById('auth-msg'); if (el) el.style.display = 'none'; }
+
+async function submitAuth() {
+  if (!supa) { showAuthMsg('Connection unavailable.', 'error'); return; }
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  if (!email || !password) { showAuthMsg('Email and password are required.', 'error'); return; }
+  const btn = document.getElementById('auth-submit');
+  btn.disabled = true; btn.style.opacity = '0.6';
+  try {
+    if (authMode === 'signup') {
+      const displayName = document.getElementById('auth-name').value.trim();
+      if (!displayName) { showAuthMsg('Please choose a display name.', 'error'); btn.disabled=false; btn.style.opacity='1'; return; }
+      const { error } = await supa.auth.signUp({
+        email, password,
+        options: { data: { display_name: displayName }, emailRedirectTo: window.location.origin + '/gallery.html' }
+      });
+      if (error) throw error;
+      showAuthMsg('Account created! Check your email to confirm, then sign in.', 'success');
+      setTimeout(() => setAuthMode('login'), 400);
+    } else {
+      const { error } = await supa.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      closeAuth();
+      toast('Signed in!');
+      await refreshUser();
+      updatePublishSection();
+    }
+  } catch (e) {
+    showAuthMsg(e.message || 'Something went wrong.', 'error');
+  } finally {
+    btn.disabled = false; btn.style.opacity = '1';
+  }
+}
+
+async function logout() {
+  if (supa) await supa.auth.signOut();
+  currentUser = null;
+  renderAuthBar();
+  updatePublishSection();
+  toast('Signed out');
+}
+
+async function refreshUser() {
+  if (!supa) return;
+  const { data } = await supa.auth.getUser();
+  if (data && data.user) {
+    let username = data.user.email;
+    try {
+      const { data: prof } = await supa.from('profiles').select('username').eq('id', data.user.id).single();
+      if (prof && prof.username) username = prof.username;
+    } catch(e) {}
+    currentUser = { id: data.user.id, email: data.user.email, username };
+  } else { currentUser = null; }
+  renderAuthBar();
+}
+
+function renderAuthBar() {
+  const bar = document.getElementById('auth-bar');
+  if (!bar) return;
+  if (currentUser) {
+    bar.innerHTML = `<span class="header-link" style="color:var(--gold);text-transform:none;">⚜ ${currentUser.username}</span>
+      <a href="gallery.html" class="header-link">Gallery</a>
+      <a class="header-link" onclick="logout()" style="cursor:pointer;">Sign Out</a>`;
+  } else {
+    bar.innerHTML = `<a href="gallery.html" class="header-link">Gallery</a>
+      <a class="header-link" onclick="openAuth('login')" style="cursor:pointer;">Sign In</a>`;
+  }
+}
+
+
+// Apply a deck payload object {n,a,t,s} to the builder
+function applyDeckPayload(payload) {
+  const newDeck = { avatar:{}, atlas:{}, spellbook:{} };
+  let matched = 0, missing = 0;
+  const place = (arr, section) => {
+    (arr || []).forEach(([cardName, qty]) => {
+      const card = allCards.find(c => c.name === cardName);
+      if (card) { newDeck[section][String(card.id)] = { card, qty: qty || 1 }; matched++; }
+      else missing++;
+    });
+  };
+  place(payload.a, 'avatar');
+  place(payload.t, 'atlas');
+  place(payload.s, 'spellbook');
+  if (matched === 0) { toast('Shared deck had no matching cards'); return false; }
+  deck = newDeck;
+  document.getElementById('deck-name-input').value = payload.n || 'Shared Deck';
+  renderDeck();
+  renderCardGrid();
+  toast(`Loaded shared deck${missing ? ` (${missing} cards not found)` : ''}`);
+  history.replaceState({}, '', window.location.pathname);
+  return true;
+}
+
+// Load a shared deck — detects short code (Supabase) vs legacy long base64 blob
+async function loadSharedDeck(code) {
+  // Short codes are exactly 5 chars of [a-z0-9]; long links are much longer base64
+  const isShortCode = /^[a-z0-9]{5}$/.test(code);
+
+  if (isShortCode && supa) {
+    try {
+      const { data, error } = await supa
+        .from('decks')
+        .select('deck_data, name')
+        .eq('short_code', code)
+        .single();
+      if (error) throw error;
+      if (data && data.deck_data) {
+        const payload = data.deck_data;
+        if (!payload.n && data.name) payload.n = data.name;
+        return applyDeckPayload(payload);
+      }
+      toast('Shared deck not found');
+      return false;
+    } catch (e) {
+      console.warn('Could not load deck from Supabase', e);
+      toast('Could not load shared deck');
+      return false;
+    }
+  }
+
+  // Legacy long-link path: decode base64 blob
   try {
     const json = decodeURIComponent(escape(atob(code)));
     const payload = JSON.parse(json);
-    const newDeck = { avatar:{}, atlas:{}, spellbook:{} };
-    let matched = 0, missing = 0;
-    const place = (arr, section) => {
-      (arr || []).forEach(([cardName, qty]) => {
-        const card = allCards.find(c => c.name === cardName);
-        if (card) { newDeck[section][String(card.id)] = { card, qty: qty || 1 }; matched++; }
-        else missing++;
-      });
-    };
-    place(payload.a, 'avatar');
-    place(payload.t, 'atlas');
-    place(payload.s, 'spellbook');
-    if (matched === 0) { toast('Shared deck had no matching cards'); return false; }
-    deck = newDeck;
-    document.getElementById('deck-name-input').value = payload.n || 'Shared Deck';
-    renderDeck();
-    renderCardGrid();
-    toast(`Loaded shared deck${missing ? ` (${missing} cards not found)` : ''}`);
-    // Clean the URL so a refresh doesn't reload/clobber edits
-    history.replaceState({}, '', window.location.pathname);
-    return true;
-  } catch(e) {
+    return applyDeckPayload(payload);
+  } catch (e) {
     console.warn('Bad share code', e);
     toast('Could not read shared deck link');
     return false;
@@ -1658,6 +1928,15 @@ document.addEventListener('DOMContentLoaded', () => {
   if (vg && vl) {
     vg.classList.toggle('active', viewMode === 'grid');
     vl.classList.toggle('active', viewMode === 'list');
+  }
+
+  // Auth: render bar and check for an existing session
+  renderAuthBar();
+  refreshUser();
+  if (supa) {
+    supa.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') refreshUser();
+    });
   }
 
   loadCards();

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cursed Realm — Deck Gallery</title>
+<link rel="icon" type="image/png" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #0b0a0f; --abyss: #111018; --dusk: #1a1826; --twilight: #252338;
+    --mist: #3a3658; --rune: #6b5fa0; --arcane: #9b87d4; --shimmer: #c9bfee;
+    --parchment: #e8e0cc; --gold: #c8a96e; --ember: #c4614a; --sage: #5a8a6a;
+    --border: rgba(155, 135, 212, 0.18); --border-strong: rgba(155, 135, 212, 0.35);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--void); color: var(--parchment); font-family: 'Crimson Pro', serif; min-height: 100vh; }
+  a { color: inherit; }
+
+  header {
+    background: linear-gradient(180deg, #0d0b14 0%, var(--void) 100%);
+    border-bottom: 1px solid var(--border); padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(8px);
+  }
+  .logo { font-family: 'Cinzel', serif; font-size: 1.3rem; font-weight: 700; }
+  .header-nav { display: flex; gap: 12px; align-items: center; }
+  .header-link { font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rune); text-decoration: none; transition: color 0.2s; }
+  .header-link:hover { color: var(--arcane); }
+
+  .hamburger { display: none; background: none; border: 1px solid var(--border-strong); color: var(--gold); font-size: 1.3rem; line-height: 1; padding: 4px 12px; border-radius: 4px; cursor: pointer; }
+  .mobile-nav { display: none; position: sticky; top: 60px; z-index: 99; background: #0d0b14; border-bottom: 1px solid var(--border); flex-direction: column; padding: 8px 0; }
+  .mobile-nav.open { display: flex; }
+  .mobile-nav .header-link { padding: 13px 24px; font-size: 0.85rem; border-bottom: 1px solid rgba(155,135,212,0.06); }
+  .mobile-nav-divider { height: 1px; background: var(--border); margin: 4px 16px; }
+  @media (max-width: 820px) {
+    .nav-collapsible { display: none !important; }
+    .hamburger { display: block; }
+    header { padding: 0 16px; }
+  }
+
+  .btn { padding: 7px 16px; font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; border-radius: 4px; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; }
+  .btn-primary { background: var(--rune); border-color: var(--arcane); color: #fff; }
+  .btn-primary:hover { background: var(--arcane); }
+  .btn-ghost { background: transparent; border-color: var(--border-strong); color: var(--rune); }
+  .btn-ghost:hover { color: var(--arcane); border-color: var(--arcane); }
+
+  .page { max-width: 1100px; margin: 0 auto; padding: 28px 24px 60px; }
+
+  .gallery-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
+  .gallery-title { font-family: 'Cinzel Decorative', serif; font-size: 1.8rem; color: var(--gold); display: flex; align-items: center; gap: 12px; }
+  .gallery-title img { width: 34px; height: 34px; border-radius: 7px; }
+  .gallery-sub { color: var(--mist); font-style: italic; font-size: 0.95rem; margin-top: 2px; }
+
+  /* AUTH BAR */
+  .auth-bar { display: flex; align-items: center; gap: 10px; }
+  .auth-user { font-family: 'Cinzel', serif; font-size: 0.8rem; color: var(--arcane); }
+  .auth-user b { color: var(--gold); }
+
+  /* DECK GRID */
+  .deck-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .deck-card {
+    background: var(--dusk); border: 1px solid var(--border); border-radius: 8px;
+    padding: 18px; transition: border-color 0.15s, transform 0.15s;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .deck-card:hover { border-color: var(--border-strong); transform: translateY(-2px); }
+  .deck-card-name { font-family: 'Cinzel', serif; font-size: 1.15rem; font-weight: 700; color: var(--parchment); }
+  .deck-card-author { font-size: 0.85rem; color: var(--rune); }
+  .deck-card-author b { color: var(--arcane); }
+  .deck-card-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 2px; }
+  .deck-chip { font-family: 'Cinzel', serif; font-size: 0.6rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; background: rgba(155,135,212,0.1); border: 1px solid var(--border); color: var(--shimmer); padding: 3px 9px; border-radius: 12px; }
+  .deck-card-actions { display: flex; gap: 8px; margin-top: auto; padding-top: 8px; }
+  .deck-card-actions .btn { flex: 1; text-align: center; }
+
+  .status { text-align: center; color: var(--mist); font-style: italic; padding: 60px 20px; font-size: 1rem; }
+  .empty-cta { text-align: center; padding: 50px 20px; }
+  .empty-cta p { color: var(--mist); font-style: italic; margin-bottom: 16px; }
+
+  /* MODAL (auth) */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(11,10,15,0.85); z-index: 300; align-items: center; justify-content: center; backdrop-filter: blur(4px); padding: 20px; }
+  .modal-overlay.open { display: flex; }
+  .auth-modal { background: var(--dusk); border: 1px solid var(--border-strong); border-radius: 10px; padding: 28px; width: 100%; max-width: 380px; position: relative; }
+  .auth-modal h2 { font-family: 'Cinzel Decorative', serif; color: var(--gold); font-size: 1.4rem; margin-bottom: 6px; }
+  .auth-modal p { color: var(--mist); font-size: 0.9rem; margin-bottom: 18px; }
+  .auth-field { margin-bottom: 14px; }
+  .auth-field label { display: block; font-family: 'Cinzel', serif; font-size: 0.62rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rune); margin-bottom: 6px; }
+  .auth-field input { width: 100%; background: #0b0a0f; border: 1px solid var(--border-strong); color: var(--parchment); font-family: 'Crimson Pro', serif; font-size: 1rem; padding: 9px 12px; border-radius: 4px; outline: none; }
+  .auth-field input:focus { border-color: var(--arcane); }
+  .auth-modal .btn { width: 100%; padding: 11px; margin-top: 4px; }
+  .auth-toggle { text-align: center; margin-top: 16px; font-size: 0.88rem; color: var(--mist); }
+  .auth-toggle a { color: var(--arcane); cursor: pointer; text-decoration: underline; }
+  .auth-msg { font-size: 0.85rem; padding: 10px; border-radius: 4px; margin-bottom: 14px; display: none; }
+  .auth-msg.show { display: block; }
+  .auth-msg.error { background: rgba(196,97,74,0.12); border: 1px solid var(--ember); color: var(--ember); }
+  .auth-msg.success { background: rgba(90,138,106,0.12); border: 1px solid var(--sage); color: var(--sage); }
+  .modal-close { position: absolute; top: 14px; right: 16px; background: none; border: none; color: var(--mist); font-size: 1.3rem; cursor: pointer; }
+  .modal-close:hover { color: var(--ember); }
+
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--dusk); border: 1px solid var(--border-strong); color: var(--parchment); padding: 12px 22px; border-radius: 6px; font-size: 0.95rem; opacity: 0; transition: all 0.3s; z-index: 400; }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<header>
+  <div class="header-main" style="display:flex;align-items:center;gap:16px;">
+    <div class="logo"><a href="index.html" style="color:var(--gold);text-decoration:none;font-family:'Cinzel Decorative',serif;font-weight:700;letter-spacing:0.04em;display:flex;align-items:center;gap:9px;"><img src="icon-192.png" alt="" style="width:30px;height:30px;border-radius:6px;display:block;">Cursed Realm</a></div>
+    <a href="collection.html" class="header-link nav-collapsible">My Collection</a>
+    <a href="gallery.html" class="header-link nav-collapsible" style="color:var(--arcane)">Deck Gallery</a>
+    <a href="videos.html" class="header-link nav-collapsible">Videos</a>
+    <a href="tracker.html" class="header-link nav-collapsible">Life Tracker</a>
+    <button class="btn btn-primary nav-collapsible" onclick="window.location.href='deckbuilder.html'">New Deck</button>
+  </div>
+  <div class="header-nav nav-collapsible" id="auth-bar"></div>
+  <button class="hamburger" onclick="toggleMobileNav()" aria-label="Menu">☰</button>
+</header>
+
+<div class="mobile-nav" id="mobile-nav">
+  <a href="collection.html" class="header-link">My Collection</a>
+  <a href="gallery.html" class="header-link">Deck Gallery</a>
+  <a href="videos.html" class="header-link">Videos</a>
+  <a href="tracker.html" class="header-link">Life Tracker</a>
+  <a href="deckbuilder.html" class="header-link">New Deck</a>
+  <div class="mobile-nav-divider"></div>
+  <div id="mobile-auth"></div>
+</div>
+
+<div class="page">
+  <div class="gallery-head">
+    <div>
+      <div class="gallery-title"><img src="icon-192.png" alt="">Deck Gallery</div>
+      <div class="gallery-sub">Decks published by the Cursed Realm community</div>
+    </div>
+  </div>
+
+  <div id="gallery-content">
+    <div class="status">Summoning decks…</div>
+  </div>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="auth-overlay" onclick="if(event.target===this)closeAuth()">
+  <div class="auth-modal">
+    <button class="modal-close" onclick="closeAuth()">✕</button>
+    <h2 id="auth-title">Sign In</h2>
+    <p id="auth-desc">Log in to publish and manage your decks.</p>
+    <div class="auth-msg" id="auth-msg"></div>
+
+    <div class="auth-field" id="field-name" style="display:none;">
+      <label>Display Name</label>
+      <input type="text" id="auth-name" placeholder="How you'll appear in the gallery" autocomplete="nickname">
+    </div>
+    <div class="auth-field">
+      <label>Email</label>
+      <input type="email" id="auth-email" placeholder="you@example.com" autocomplete="email">
+    </div>
+    <div class="auth-field">
+      <label>Password</label>
+      <input type="password" id="auth-password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+
+    <button class="btn btn-primary" id="auth-submit" onclick="submitAuth()">Sign In</button>
+    <div class="auth-toggle" id="auth-toggle-text">
+      New here? <a onclick="setAuthMode('signup')">Create an account</a>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL = 'https://nuizkjkcephopnbcmtlz.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_9er9B3YGFuvNO8Y8W6yr2g_sR5tXvKH';
+let supa = null;
+try { if (window.supabase) supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e) {}
+
+let currentUser = null;
+let authMode = 'login'; // login | signup
+
+function toggleMobileNav() { document.getElementById('mobile-nav').classList.toggle('open'); }
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+// ── AUTH ──
+function openAuth(mode = 'login') { setAuthMode(mode); document.getElementById('auth-overlay').classList.add('open'); }
+function closeAuth() { document.getElementById('auth-overlay').classList.remove('open'); hideAuthMsg(); }
+
+function setAuthMode(mode) {
+  authMode = mode;
+  const isSignup = mode === 'signup';
+  document.getElementById('auth-title').textContent = isSignup ? 'Create Account' : 'Sign In';
+  document.getElementById('auth-desc').textContent = isSignup
+    ? 'Pick a display name — it shows on decks you publish.'
+    : 'Log in to publish and manage your decks.';
+  document.getElementById('field-name').style.display = isSignup ? 'block' : 'none';
+  document.getElementById('auth-submit').textContent = isSignup ? 'Create Account' : 'Sign In';
+  document.getElementById('auth-password').autocomplete = isSignup ? 'new-password' : 'current-password';
+  document.getElementById('auth-toggle-text').innerHTML = isSignup
+    ? `Already have an account? <a onclick="setAuthMode('login')">Sign in</a>`
+    : `New here? <a onclick="setAuthMode('signup')">Create an account</a>`;
+  hideAuthMsg();
+}
+
+function showAuthMsg(text, type) {
+  const el = document.getElementById('auth-msg');
+  el.textContent = text; el.className = `auth-msg show ${type}`;
+}
+function hideAuthMsg() { document.getElementById('auth-msg').className = 'auth-msg'; }
+
+async function submitAuth() {
+  if (!supa) { showAuthMsg('Connection unavailable. Try again later.', 'error'); return; }
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  if (!email || !password) { showAuthMsg('Email and password are required.', 'error'); return; }
+
+  const btn = document.getElementById('auth-submit');
+  btn.disabled = true; btn.style.opacity = '0.6';
+
+  try {
+    if (authMode === 'signup') {
+      const displayName = document.getElementById('auth-name').value.trim();
+      if (!displayName) { showAuthMsg('Please choose a display name.', 'error'); btn.disabled=false; btn.style.opacity='1'; return; }
+      const { error } = await supa.auth.signUp({
+        email, password,
+        options: { data: { display_name: displayName }, emailRedirectTo: window.location.origin + '/gallery.html' }
+      });
+      if (error) throw error;
+      showAuthMsg('Account created! Check your email to confirm, then sign in.', 'success');
+      setTimeout(() => setAuthMode('login'), 400);
+    } else {
+      const { error } = await supa.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      closeAuth();
+      toast('Signed in!');
+      await refreshUser();
+      loadGallery();
+    }
+  } catch (e) {
+    showAuthMsg(e.message || 'Something went wrong.', 'error');
+  } finally {
+    btn.disabled = false; btn.style.opacity = '1';
+  }
+}
+
+async function logout() {
+  if (supa) await supa.auth.signOut();
+  currentUser = null;
+  renderAuthBar();
+  toast('Signed out');
+  loadGallery();
+}
+
+async function refreshUser() {
+  if (!supa) return;
+  const { data } = await supa.auth.getUser();
+  if (data && data.user) {
+    // fetch profile username
+    let username = data.user.email;
+    try {
+      const { data: prof } = await supa.from('profiles').select('username').eq('id', data.user.id).single();
+      if (prof && prof.username) username = prof.username;
+    } catch(e) {}
+    currentUser = { id: data.user.id, email: data.user.email, username };
+  } else {
+    currentUser = null;
+  }
+  renderAuthBar();
+}
+
+function renderAuthBar() {
+  const bar = document.getElementById('auth-bar');
+  const mob = document.getElementById('mobile-auth');
+  if (currentUser) {
+    bar.innerHTML = `<span class="auth-user">⚜ <b>${currentUser.username}</b></span>
+      <button class="btn btn-ghost" onclick="logout()">Sign Out</button>`;
+    mob.innerHTML = `<a class="header-link" style="color:var(--gold)">${currentUser.username}</a>
+      <a class="header-link" onclick="logout()">Sign Out</a>`;
+  } else {
+    bar.innerHTML = `<button class="btn btn-ghost" onclick="openAuth('login')">Sign In</button>
+      <button class="btn btn-primary" onclick="openAuth('signup')">Sign Up</button>`;
+    mob.innerHTML = `<a class="header-link" onclick="openAuth('login')">Sign In</a>
+      <a class="header-link" onclick="openAuth('signup')">Sign Up</a>`;
+  }
+}
+
+// ── GALLERY ──
+async function loadGallery() {
+  const container = document.getElementById('gallery-content');
+  if (!supa) { container.innerHTML = '<div class="status">Gallery unavailable — could not connect.</div>'; return; }
+  container.innerHTML = '<div class="status">Summoning decks…</div>';
+
+  try {
+    // Fetch public decks, newest first
+    const { data: decks, error } = await supa
+      .from('decks')
+      .select('id, short_code, name, deck_data, owner_id, views, created_at')
+      .eq('is_public', true)
+      .order('created_at', { ascending: false })
+      .limit(100);
+    if (error) throw error;
+
+    if (!decks || !decks.length) {
+      container.innerHTML = `<div class="empty-cta">
+        <p>No decks have been published yet. Be the first!</p>
+        <button class="btn btn-primary" onclick="window.location.href='deckbuilder.html'">Build a Deck</button>
+      </div>`;
+      return;
+    }
+
+    // Resolve author usernames
+    const ownerIds = [...new Set(decks.map(d => d.owner_id).filter(Boolean))];
+    let authors = {};
+    if (ownerIds.length) {
+      const { data: profs } = await supa.from('profiles').select('id, username').in('id', ownerIds);
+      (profs || []).forEach(p => authors[p.id] = p.username);
+    }
+
+    container.innerHTML = `<div class="deck-gallery">${decks.map(d => renderDeckCard(d, authors)).join('')}</div>`;
+  } catch (e) {
+    console.warn(e);
+    container.innerHTML = `<div class="status">Could not load the gallery.<br><small>${e.message || ''}</small></div>`;
+  }
+}
+
+function deckCounts(deckData) {
+  const sum = arr => (arr || []).reduce((s, [, q]) => s + (q || 0), 0);
+  const atlas = sum(deckData.t);
+  const spellbook = sum(deckData.s);
+  const avatar = sum(deckData.a);
+  return { atlas, spellbook, total: atlas + spellbook + avatar };
+}
+
+function avatarName(deckData) {
+  if (deckData.a && deckData.a.length) return deckData.a[0][0];
+  return null;
+}
+
+function renderDeckCard(d, authors) {
+  const author = d.owner_id ? (authors[d.owner_id] || 'Unknown') : 'Anonymous';
+  const counts = deckCounts(d.deck_data || {});
+  const av = avatarName(d.deck_data || {});
+  const isOwner = currentUser && currentUser.id === d.owner_id;
+  return `<div class="deck-card">
+    <div class="deck-card-name">${escapeHtml(d.name || 'Untitled Deck')}</div>
+    <div class="deck-card-author">by <b>${escapeHtml(author)}</b></div>
+    <div class="deck-card-meta">
+      ${av ? `<span class="deck-chip">${escapeHtml(av)}</span>` : ''}
+      <span class="deck-chip">${counts.atlas} Atlas</span>
+      <span class="deck-chip">${counts.spellbook} Spellbook</span>
+    </div>
+    <div class="deck-card-actions">
+      <button class="btn btn-primary" onclick="openDeck('${d.short_code}')">Open</button>
+      ${isOwner ? `<button class="btn btn-ghost" onclick="unpublishDeck('${d.id}')">Unpublish</button>` : ''}
+    </div>
+  </div>`;
+}
+
+function openDeck(shortCode) {
+  window.location.href = `deckbuilder.html?d=${shortCode}`;
+}
+
+async function unpublishDeck(deckId) {
+  if (!supa || !currentUser) return;
+  if (!confirm('Remove this deck from the public gallery?')) return;
+  try {
+    const { error } = await supa.from('decks').update({ is_public: false }).eq('id', deckId);
+    if (error) throw error;
+    toast('Deck unpublished');
+    loadGallery();
+  } catch (e) {
+    toast('Could not unpublish: ' + (e.message || ''));
+  }
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ── INIT ──
+(async function init() {
+  renderAuthBar();
+  await refreshUser();
+  loadGallery();
+  // React to auth state changes (e.g. returning from email confirm)
+  if (supa) {
+    supa.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') refreshUser();
+    });
+  }
+})();
+</script>
+</body>
+</html>
