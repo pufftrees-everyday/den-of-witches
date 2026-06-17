@@ -1920,11 +1920,9 @@ function renderAuthBar() {
   if (!bar) return;
   if (currentUser) {
     bar.innerHTML = `<span class="header-link" style="color:var(--gold);text-transform:none;letter-spacing:0.04em;">${currentUser.username}</span>
-      <a href="gallery.html" class="header-link">Gallery</a>
       <a class="header-link" onclick="logout()" style="cursor:pointer;">Sign Out</a>`;
   } else {
-    bar.innerHTML = `<a href="gallery.html" class="header-link">Gallery</a>
-      <a class="header-link" onclick="openAuth('login')" style="cursor:pointer;">Sign In</a>`;
+    bar.innerHTML = `<a class="header-link" onclick="openAuth('login')" style="cursor:pointer;">Sign In</a>`;
   }
 }
 

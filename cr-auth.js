@@ -141,11 +141,9 @@
     if (!bar) return;
     if (CR.user) {
       bar.innerHTML = `<span class="header-link" style="color:var(--gold);text-transform:none;letter-spacing:0.04em;">${CR.user.username}</span>
-        <a href="gallery.html" class="header-link">Gallery</a>
         <a class="header-link" onclick="CR.logout()" style="cursor:pointer;">Sign Out</a>`;
     } else {
-      bar.innerHTML = `<a href="gallery.html" class="header-link">Gallery</a>
-        <a class="header-link" onclick="CR.openAuth('login')" style="cursor:pointer;">Sign In</a>`;
+      bar.innerHTML = `<a class="header-link" onclick="CR.openAuth('login')" style="cursor:pointer;">Sign In</a>`;
     }
   };
 
