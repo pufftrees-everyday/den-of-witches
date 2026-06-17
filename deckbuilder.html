@@ -215,6 +215,40 @@
 
   .card-list-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
 
+  /* VIEW MODE TOGGLE */
+  .viewmode-toggle { display: flex; border: 2px solid #2a2640; border-radius: 4px; overflow: hidden; flex-shrink: 0; }
+  .viewmode-btn { font-size: 0.95rem; line-height: 1; background: #13111e; border: none; color: var(--rune); padding: 5px 9px; cursor: pointer; transition: all 0.15s; }
+  .viewmode-btn.active { background: var(--rune); color: #fff; }
+  .viewmode-btn:not(.active):hover { background: #1a1728; color: var(--arcane); }
+
+  /* LIST VIEW */
+  .card-list-grid.list-view { display: flex; flex-direction: column; gap: 4px; }
+  .card-list-grid.list-view.sites-only { grid-template-columns: none; }
+  .db-card-row {
+    display: grid; grid-template-columns: 1fr auto auto auto auto;
+    align-items: center; gap: 10px;
+    background: #13111e; border: 1px solid var(--border);
+    border-left: 3px solid var(--border-strong);
+    padding: 8px 12px; border-radius: 3px; cursor: pointer;
+    transition: background 0.12s;
+  }
+  .db-card-row:hover { background: #1a1728; }
+  .db-row-name { font-family: 'Crimson Pro', serif; font-size: 1rem; color: var(--parchment); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .db-row-meta { font-size: 0.74rem; color: var(--mist); white-space: nowrap; }
+  .db-row-meta.set { color: var(--shimmer); }
+  .db-row-rarity { font-family: 'Cinzel', serif; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 7px; border-radius: 10px; white-space: nowrap; }
+  .db-row-rarity.ordinary { background: rgba(140,140,150,0.12); color: #9a9aa5; }
+  .db-row-rarity.exceptional { background: rgba(90,138,176,0.14); color: var(--water); }
+  .db-row-rarity.elite { background: rgba(155,135,212,0.14); color: var(--arcane); }
+  .db-row-rarity.unique { background: rgba(200,169,110,0.14); color: var(--gold); }
+  .db-row-add { font-family: 'Cinzel', serif; font-size: 0.62rem; font-weight: 700; background: var(--rune); border: 1px solid var(--arcane); color: #fff; padding: 4px 10px; border-radius: 3px; cursor: pointer; white-space: nowrap; }
+  .db-row-add:hover { background: var(--arcane); }
+  .db-row-indeck { font-size: 0.7rem; color: var(--gold); white-space: nowrap; min-width: 22px; text-align: center; }
+  @media (max-width: 500px) {
+    .db-card-row { grid-template-columns: 1fr auto auto; }
+    .db-row-meta:not(.set) { display: none; }
+  }
+
   /* Site-only rotation mode */
   .card-list-grid.sites-only { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
   .card-list-grid.sites-only .card-item { aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; overflow: visible; }
@@ -571,6 +605,10 @@
           <svg viewBox="0 0 20 20"><path d="M12.9 14.32a8 8 0 111.41-1.41l4.42 4.41-1.41 1.42-4.42-4.42zM8 14A6 6 0 108 2a6 6 0 000 12z"/></svg>
           <input type="text" id="search-input" placeholder="Search cards…" autocomplete="off">
         </div>
+        <div class="viewmode-toggle">
+          <button class="viewmode-btn active" id="vm-grid" onclick="setViewMode('grid')" title="Grid view" aria-label="Grid view">⊞</button>
+          <button class="viewmode-btn" id="vm-list" onclick="setViewMode('list')" title="List view" aria-label="List view">☰</button>
+        </div>
         <div class="result-count" id="result-count" style="white-space:nowrap;padding:0;margin:0;"></div>
       </div>
     </div>
@@ -802,6 +840,7 @@ let allCards = [];
 let currentCards = [];
 let visibleCount = 200;
 const PAGE_SIZE = 200;
+let viewMode = localStorage.getItem('grimoire_view_mode') || 'grid'; // grid | list
 
 // deck: { atlas: {key: {card, qty}}, spellbook: {key: {card, qty}}, avatar: {key: {card, qty}} }
 let deck = { avatar: {}, atlas: {}, spellbook: {} };
@@ -983,22 +1022,64 @@ function filterCards() {
 function renderCardGrid(append = false) {
   const grid = document.getElementById('card-grid');
   const sitesOnly = activeFilters.type.size === 1 && activeFilters.type.has('Site');
-  grid.classList.toggle('sites-only', sitesOnly);
+  grid.classList.toggle('sites-only', sitesOnly && viewMode === 'grid');
+  grid.classList.toggle('list-view', viewMode === 'list');
   const shown = currentCards.slice(append ? visibleCount - PAGE_SIZE : 0, visibleCount);
-  const html = shown.map(card => {
-    const inDeck = getDeckCountForCard(card.id);
-    return `<div class="card-item" draggable="true" data-card-id="${escId(card.id)}"
-      onclick="openModal('${escId(card.id)}')"
-      ondragstart="onCardDragStart(event,'${escId(card.id)}')"
-      ondragend="onCardDragEnd(event)">
-      <img src="${getImageUrl(card)}" alt="${card.name}" loading="lazy" onerror="this.style.opacity='0.2'" draggable="false">
-      ${inDeck > 0 ? `<div class="in-deck-badge">×${inDeck}</div>` : ''}
-      <div class="card-item-name">${card.name}</div>
-    </div>`;
-  }).join('');
+  const html = shown.map(card => viewMode === 'list'
+    ? renderDbCardRow(card)
+    : renderDbCardItem(card)
+  ).join('');
   if (append) { grid.insertAdjacentHTML('beforeend', html); }
   else { grid.innerHTML = html || '<div class="status">No cards found.</div>'; }
   document.getElementById('result-count').textContent = `${Math.min(visibleCount, currentCards.length)} of ${currentCards.length} cards`;
+}
+
+function renderDbCardItem(card) {
+  const inDeck = getDeckCountForCard(card.id);
+  return `<div class="card-item" draggable="true" data-card-id="${escId(card.id)}"
+    onclick="openModal('${escId(card.id)}')"
+    ondragstart="onCardDragStart(event,'${escId(card.id)}')"
+    ondragend="onCardDragEnd(event)">
+    <img src="${getImageUrl(card)}" alt="${card.name}" loading="lazy" onerror="this.style.opacity='0.2'" draggable="false">
+    ${inDeck > 0 ? `<div class="in-deck-badge">×${inDeck}</div>` : ''}
+    <div class="card-item-name">${card.name}</div>
+  </div>`;
+}
+
+function renderDbCardRow(card) {
+  const inDeck = getDeckCountForCard(card.id);
+  const rarity = card.rarity || '';
+  const rarityClass = rarity.toLowerCase();
+  return `<div class="db-card-row" data-card-id="${escId(card.id)}" onclick="openModal('${escId(card.id)}')">
+    <div class="db-row-name">${card.name}</div>
+    <span class="db-row-meta set">${card.set || ''}</span>
+    <span class="db-row-rarity ${rarityClass}">${rarity}</span>
+    <span class="db-row-meta">${card.type || ''}</span>
+    <span class="db-row-indeck">${inDeck > 0 ? '×'+inDeck : ''}</span>
+    <button class="db-row-add" onclick="event.stopPropagation();quickAddToDeck('${escId(card.id)}')">+ Add</button>
+  </div>`;
+}
+
+function quickAddToDeck(id) {
+  const card = allCards.find(c => c.id === id || c.name === id);
+  if (!card) return;
+  const result = addCardToDeck(card, 1);
+  if (result.ok) {
+    renderDeck();
+    renderCardGrid();
+    toast(result.message);
+  } else {
+    toast(result.message);
+  }
+}
+
+// ── VIEW MODE (grid/list) ──
+function setViewMode(mode) {
+  viewMode = mode;
+  localStorage.setItem('grimoire_view_mode', mode);
+  document.getElementById('vm-grid').classList.toggle('active', mode === 'grid');
+  document.getElementById('vm-list').classList.toggle('active', mode === 'list');
+  renderCardGrid();
 }
 
 function getDeckCountForCard(id) {
@@ -1521,6 +1602,13 @@ document.addEventListener('DOMContentLoaded', () => {
       toast(result.message);
     }
   });
+
+  // Restore saved view mode toggle state
+  const vg = document.getElementById('vm-grid'), vl = document.getElementById('vm-list');
+  if (vg && vl) {
+    vg.classList.toggle('active', viewMode === 'grid');
+    vl.classList.toggle('active', viewMode === 'list');
+  }
 
   loadCards();
 });

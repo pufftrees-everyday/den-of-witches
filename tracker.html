@@ -53,6 +53,19 @@
     flex-direction: column;
     height: 100vh;
     height: 100dvh;
+    /* Respect device safe areas (Android nav bar, iOS home indicator/notch)
+       when running in a browser tab rather than installed standalone */
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-sizing: border-box;
+  }
+  /* When NOT installed (running in a normal browser tab), add a little extra
+     bottom room so the bottom player's controls clear the Android nav buttons.
+     Installed PWAs (standalone) get the full screen with no extra gap. */
+  @media (display-mode: browser) {
+    .tracker {
+      padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 18px);
+    }
   }
 
   /* PLAYER ZONE */
@@ -468,6 +481,12 @@
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     gap: 0;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-sizing: border-box;
+  }
+  @media (display-mode: browser) {
+    .dice-overlay { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 18px); }
   }
   .dice-overlay.hidden { display: none; }
 

@@ -82,7 +82,9 @@
     font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 700;
     letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold);
     flex-shrink: 0;
+    display: flex; align-items: center; gap: 8px;
   }
+  .collection-title img { width: 24px; height: 24px; border-radius: 5px; display: block; }
 
   .collection-stats { display: flex; gap: 10px; flex-wrap: wrap; }
   .cstat { font-size: 0.82rem; background: rgba(155,135,212,0.06); border: 1px solid var(--border); border-radius: 3px; padding: 3px 10px; color: var(--shimmer); white-space: nowrap; }
@@ -123,6 +125,29 @@
   input[type="text"]::placeholder { color: #3a3658; font-style: italic; }
   .clear-all-btn { font-family: 'Cinzel', serif; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; background: #13111e; border: 2px solid #2a2640; color: var(--rune); padding: 7px 14px; cursor: pointer; box-shadow: inset 2px 2px 0 rgba(255,255,255,0.03), inset -2px -2px 0 rgba(0,0,0,0.4); transition: color 0.15s, border-color 0.15s; }
   .clear-all-btn:hover { color: var(--ember); border-color: var(--ember); }
+
+  /* FILTER TOGGLE (collapsible) */
+  .filter-toggle-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    background: #13111e; border: 3px solid #2a2640;
+    border-bottom: none; padding: 10px 16px;
+    cursor: pointer; user-select: none; transition: background 0.15s;
+  }
+  .filter-toggle-bar:hover { background: #1a1728; }
+  .filter-toggle-bar-label {
+    font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--rune);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .filter-toggle-bar-label .filter-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--mist); transition: background 0.2s;
+  }
+  .filter-toggle-bar.has-active .filter-dot { background: var(--arcane); }
+  .filter-toggle-bar .filter-arrow { font-size: 0.7rem; color: var(--mist); transition: transform 0.2s; }
+  .filter-toggle-bar.open .filter-arrow { transform: rotate(180deg); }
+  .filter-stones-panel { display: none; }
+  .filter-stones-panel.open { display: block; }
 
   .filter-stones { display: flex; gap: 0; flex-wrap: nowrap; }
   .filter-stone { flex: 1; background: #1a1826; padding: 12px 14px 16px; border: 3px solid #2a2640; border-right: none; border-top: none; position: relative; box-shadow: inset 3px 3px 0 rgba(255,255,255,0.04), inset -3px -3px 0 rgba(0,0,0,0.35); min-width: 100px; }
@@ -174,6 +199,56 @@
   .card-grid.sites-only { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
   .card-grid.sites-only .card-thumb { aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; }
   .card-grid.sites-only .card-thumb img { position: absolute; width: 75%; aspect-ratio: 3/4; transform: rotate(90deg); object-fit: contain; }
+
+  /* VIEW MODE TOGGLE (grid/list) */
+  .viewmode-toggle { display: flex; gap: 0; border: 2px solid #2a2640; border-radius: 4px; overflow: hidden; flex-shrink: 0; }
+  .viewmode-btn {
+    font-size: 1rem; line-height: 1; background: #13111e; border: none;
+    color: var(--rune); padding: 6px 11px; cursor: pointer; transition: all 0.15s;
+  }
+  .viewmode-btn.active { background: var(--rune); color: #fff; }
+  .viewmode-btn:not(.active):hover { background: #1a1728; color: var(--arcane); }
+
+  /* LIST VIEW */
+  .card-grid.list-view { display: flex; flex-direction: column; gap: 4px; }
+  .card-grid.list-view.sites-only { grid-template-columns: none; }
+  .card-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto auto;
+    align-items: center; gap: 12px;
+    background: #13111e; border: 1px solid var(--border);
+    border-left: 3px solid var(--border-strong);
+    padding: 9px 14px; border-radius: 3px;
+    transition: background 0.12s, border-color 0.12s;
+  }
+  .card-row:hover { background: #1a1728; }
+  .card-row.flag-have { border-left-color: var(--sage); }
+  .card-row.flag-want { border-left-color: var(--ember); }
+  .card-row.flag-have.flag-want { border-left-color: var(--gold); }
+  .row-name { font-family: 'Crimson Pro', serif; font-size: 1.05rem; color: var(--parchment); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row-meta { font-size: 0.78rem; color: var(--mist); white-space: nowrap; }
+  .row-meta.set { color: var(--shimmer); }
+  .row-rarity { font-family: 'Cinzel', serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+  .row-rarity.ordinary { background: rgba(140,140,150,0.12); color: #9a9aa5; }
+  .row-rarity.exceptional { background: rgba(90,138,176,0.14); color: var(--water); }
+  .row-rarity.elite { background: rgba(155,135,212,0.14); color: var(--arcane); }
+  .row-rarity.unique { background: rgba(200,169,110,0.14); color: var(--gold); }
+  .row-price { font-size: 0.85rem; color: var(--gold); white-space: nowrap; min-width: 52px; text-align: right; }
+  .row-flags { display: flex; gap: 5px; }
+  .row-flag-btn {
+    font-family: 'Cinzel', serif; font-size: 0.58rem; font-weight: 600; letter-spacing: 0.05em;
+    background: #0b0a0f; border: 1px solid var(--border); color: var(--rune);
+    padding: 4px 8px; border-radius: 3px; cursor: pointer; white-space: nowrap; transition: all 0.12s;
+  }
+  .row-flag-btn.have.on { background: rgba(90,138,106,0.2); border-color: var(--sage); color: var(--sage); }
+  .row-flag-btn.want.on { background: rgba(196,97,74,0.2); border-color: var(--ember); color: var(--ember); }
+  @media (max-width: 640px) {
+    .card-row { grid-template-columns: 1fr auto; grid-template-areas: "name flags" "meta flags"; gap: 4px 12px; }
+    .row-name { grid-area: name; }
+    .row-set-wrap { grid-area: meta; display: flex; gap: 8px; align-items: center; }
+    .row-rarity, .row-price { display: inline-block; }
+    .row-flags { grid-area: flags; }
+  }
 
   .card-thumb {
     position: relative; cursor: pointer; border-radius: 6px;
@@ -303,7 +378,7 @@
 
   <!-- COLLECTION BAR -->
   <div class="collection-bar">
-    <div class="collection-title">⧫ Collection</div>
+    <div class="collection-title"><img src="icon-192.png" alt="">Collection</div>
     <div class="collection-stats">
       <div class="cstat"><b id="stat-total">0</b> cards</div>
       <div class="cstat have-stat">Have: <b id="stat-have">0</b><span id="stat-have-value" style="color:var(--sage);font-size:0.78rem;"></span></div>
@@ -315,6 +390,10 @@
       <button class="view-btn" onclick="setView('have')">Have</button>
       <button class="view-btn" onclick="setView('want')">Want</button>
       <button class="view-btn" onclick="setView('missing')">Missing</button>
+    </div>
+    <div class="viewmode-toggle">
+      <button class="viewmode-btn active" id="vm-grid" onclick="setViewMode('grid')" title="Grid view" aria-label="Grid view">⊞</button>
+      <button class="viewmode-btn" id="vm-list" onclick="setViewMode('list')" title="List view" aria-label="List view">☰</button>
     </div>
     <div class="collection-actions">
       <button class="btn btn-ghost" onclick="exportWantList()">⬇ Export Want List</button>
@@ -332,6 +411,13 @@
       </div>
       <button class="clear-all-btn" onclick="clearAllFilters()">✕ Clear</button>
     </div>
+
+    <div class="filter-toggle-bar" id="filter-toggle-bar" onclick="toggleFilters()">
+      <div class="filter-toggle-bar-label"><span class="filter-dot"></span>Filters</div>
+      <span class="filter-arrow">▼</span>
+    </div>
+
+    <div class="filter-stones-panel" id="filter-stones-panel">
     <div class="filter-stones">
       <div class="filter-stone">
         <div class="stone-label">Type <button class="stone-clear" onclick="clearGroup('type')">clear</button></div>
@@ -376,6 +462,7 @@
     </div>
     <div class="stone-foundation">
       <div class="active-summary" id="active-summary"></div>
+    </div>
     </div>
   </div>
 
@@ -483,6 +570,7 @@ let currentCards = [];
 let visibleCount = 200;
 const PAGE_SIZE = 200;
 let currentView = 'all'; // all | have | want | missing
+let viewMode = localStorage.getItem('grimoire_view_mode') || 'grid'; // grid | list
 
 const activeFilters = { type: new Set(), set: new Set(), rarity: new Set(), element: new Set() };
 const advFilters = { minionSubtype: new Set(), artifactSubtype: new Set(), siteSubtype: new Set(), keyword: new Set() };
@@ -630,7 +718,8 @@ function getImageUrl(card) {
 function renderCards(cards, append = false) {
   const grid = document.getElementById('card-grid');
   const sitesOnly = activeFilters.type.size === 1 && activeFilters.type.has('Site');
-  grid.classList.toggle('sites-only', sitesOnly);
+  grid.classList.toggle('sites-only', sitesOnly && viewMode === 'grid');
+  grid.classList.toggle('list-view', viewMode === 'list');
 
   if (!append) {
     currentCards = cards;
@@ -641,43 +730,80 @@ function renderCards(cards, append = false) {
 
   const col = getCollection();
   const shown = currentCards.slice(append ? visibleCount - PAGE_SIZE : 0, visibleCount);
-  const html = shown.map(card => {
-    const entry = col[card.id] || {};
-    const have = entry.have || 0;
-    const want = entry.want || 0;
-    const flagClass = (have > 0 && want > 0 ? ' flag-have flag-want' : have > 0 ? ' flag-have' : want > 0 ? ' flag-want' : '');
-    const price = prices[card.name];
-    const priceHtml = price?.market != null
-      ? `<div class="card-price"><span class="price-market">$${price.market.toFixed(2)}</span></div>`
-      : '';
-    const escId = card.id.replace(/'/g, "\\'");
-    return `<div class="card-thumb${flagClass}" data-id="${card.id}" onclick="void(0)">
-      <img src="${getImageUrl(card)}" alt="${card.name}" loading="lazy" onerror="this.style.opacity='0.2'">
-      <div class="flag-badge">
-        ${have > 0 ? `<span class="badge badge-have">Have${have > 1 ? ' ×'+have : ''}</span>` : ''}
-        ${want > 0 ? `<span class="badge badge-want">Want${want > 1 ? ' ×'+want : ''}</span>` : ''}
-      </div>
-      <div class="card-flags">
-        <button class="flag-btn have-btn${have > 0 ? ' on' : ''}" onclick="event.stopPropagation();toggleFlag('${escId}','have')">${have > 0 ? '✓ Have ×'+have : '✓ Have'}</button>
-        <button class="flag-btn want-btn${want > 0 ? ' on' : ''}" onclick="event.stopPropagation();toggleFlag('${escId}','want')">${want > 0 ? '♡ Want ×'+want : '♡ Want'}</button>
-        <div class="qty-have" style="display:${have > 0 ? 'flex' : 'none'}">
-          <button class="qty-mini" onclick="event.stopPropagation();changeQty('${escId}','have',-1)">−</button>
-          <button class="qty-mini" onclick="event.stopPropagation();changeQty('${escId}','have',1)">+</button>
-        </div>
-        <div class="qty-want" style="display:${want > 0 ? 'flex' : 'none'}">
-          <button class="qty-mini" onclick="event.stopPropagation();changeQty('${escId}','want',-1)">−</button>
-          <button class="qty-mini" onclick="event.stopPropagation();changeQty('${escId}','want',1)">+</button>
-        </div>
-      </div>
-      <div class="card-thumb-name">${card.name}</div>
-      <div class="card-thumb-meta">${[card.type, card.rarity, card.set].filter(Boolean).join(' · ')}</div>
-      ${priceHtml}
-    </div>`;
-  }).join('');
+  const html = shown.map(card => viewMode === 'list'
+    ? renderCardRow(card, col)
+    : renderCardThumb(card, col)
+  ).join('');
 
   if (append) { grid.insertAdjacentHTML('beforeend', html); }
   else { grid.innerHTML = html; }
   document.getElementById('result-count').textContent = `Showing ${Math.min(visibleCount, currentCards.length)} of ${currentCards.length} cards`;
+}
+
+function renderCardThumb(card, col) {
+  const entry = col[card.id] || {};
+  const have = entry.have || 0;
+  const want = entry.want || 0;
+  const flagClass = (have > 0 && want > 0 ? ' flag-have flag-want' : have > 0 ? ' flag-have' : want > 0 ? ' flag-want' : '');
+  const price = prices[card.name];
+  const priceHtml = price?.market != null
+    ? `<div class="card-price"><span class="price-market">$${price.market.toFixed(2)}</span></div>`
+    : '';
+  const escId = card.id.replace(/'/g, "\\'");
+  return `<div class="card-thumb${flagClass}" data-id="${card.id}" onclick="void(0)">
+    <img src="${getImageUrl(card)}" alt="${card.name}" loading="lazy" onerror="this.style.opacity='0.2'">
+    <div class="flag-badge">
+      ${have > 0 ? `<span class="badge badge-have">Have${have > 1 ? ' ×'+have : ''}</span>` : ''}
+      ${want > 0 ? `<span class="badge badge-want">Want${want > 1 ? ' ×'+want : ''}</span>` : ''}
+    </div>
+    <div class="card-flags">
+      <button class="flag-btn have-btn${have > 0 ? ' on' : ''}" onclick="event.stopPropagation();toggleFlag('${escId}','have')">${have > 0 ? '✓ Have ×'+have : '✓ Have'}</button>
+      <button class="flag-btn want-btn${want > 0 ? ' on' : ''}" onclick="event.stopPropagation();toggleFlag('${escId}','want')">${want > 0 ? '♡ Want ×'+want : '♡ Want'}</button>
+      <div class="qty-have" style="display:${have > 0 ? 'flex' : 'none'}">
+        <button class="qty-mini" onclick="event.stopPropagation();changeQty('${escId}','have',-1)">−</button>
+        <button class="qty-mini" onclick="event.stopPropagation();changeQty('${escId}','have',1)">+</button>
+      </div>
+      <div class="qty-want" style="display:${want > 0 ? 'flex' : 'none'}">
+        <button class="qty-mini" onclick="event.stopPropagation();changeQty('${escId}','want',-1)">−</button>
+        <button class="qty-mini" onclick="event.stopPropagation();changeQty('${escId}','want',1)">+</button>
+      </div>
+    </div>
+    <div class="card-thumb-name">${card.name}</div>
+    <div class="card-thumb-meta">${[card.type, card.rarity, card.set].filter(Boolean).join(' · ')}</div>
+    ${priceHtml}
+  </div>`;
+}
+
+function renderCardRow(card, col) {
+  const entry = col[card.id] || {};
+  const have = entry.have || 0;
+  const want = entry.want || 0;
+  const flagClass = (have > 0 && want > 0 ? ' flag-have flag-want' : have > 0 ? ' flag-have' : want > 0 ? ' flag-want' : '');
+  const price = prices[card.name];
+  const priceHtml = price?.market != null ? `$${price.market.toFixed(2)}` : '';
+  const rarity = card.rarity || '';
+  const rarityClass = rarity.toLowerCase();
+  const escId = card.id.replace(/'/g, "\\'");
+  return `<div class="card-row${flagClass}" data-id="${card.id}">
+    <div class="row-name">${card.name}</div>
+    <div class="row-set-wrap"><span class="row-meta set">${card.set || ''}</span></div>
+    <span class="row-rarity ${rarityClass}">${rarity}</span>
+    <span class="row-meta">${card.type || ''}</span>
+    <span class="row-price">${priceHtml}</span>
+    <div class="row-flags">
+      <button class="row-flag-btn have${have > 0 ? ' on' : ''}" onclick="event.stopPropagation();toggleFlag('${escId}','have')">Have${have > 1 ? ' ×'+have : ''}</button>
+      <button class="row-flag-btn want${want > 0 ? ' on' : ''}" onclick="event.stopPropagation();toggleFlag('${escId}','want')">Want${want > 1 ? ' ×'+want : ''}</button>
+    </div>
+  </div>`;
+}
+
+// ── VIEW MODE (grid/list) ──
+function setViewMode(mode) {
+  viewMode = mode;
+  localStorage.setItem('grimoire_view_mode', mode);
+  document.getElementById('vm-grid').classList.toggle('active', mode === 'grid');
+  document.getElementById('vm-list').classList.toggle('active', mode === 'list');
+  filterCards();
 }
 
 // ── VIEW ──
@@ -689,11 +815,21 @@ function setView(view) {
 }
 
 // ── FILTERS ──
+function toggleFilters() {
+  document.getElementById('filter-toggle-bar').classList.toggle('open');
+  document.getElementById('filter-stones-panel').classList.toggle('open');
+}
+function updateFilterDot() {
+  const has = Object.values(activeFilters).some(s => s.size > 0);
+  const bar = document.getElementById('filter-toggle-bar');
+  if (bar) bar.classList.toggle('has-active', has);
+}
+
 function toggleChip(btn) {
   const { group, value } = btn.dataset;
   if (activeFilters[group].has(value)) { activeFilters[group].delete(value); btn.classList.remove('active'); }
   else { activeFilters[group].add(value); btn.classList.add('active'); }
-  filterCards(); updateSummary();
+  updateFilterDot(); filterCards(); updateSummary();
 }
 
 function toggleAdvChip(btn) {
@@ -707,7 +843,7 @@ function toggleAdvChip(btn) {
 function clearGroup(group) {
   activeFilters[group].clear();
   document.querySelectorAll(`.stone-option[data-group="${group}"]`).forEach(b => b.classList.remove('active'));
-  filterCards(); updateSummary();
+  updateFilterDot(); filterCards(); updateSummary();
 }
 
 function clearAdvGroup(group) {
@@ -726,7 +862,7 @@ function clearAllFilters() {
   Object.keys(advFilters).forEach(g => advFilters[g].clear());
   document.querySelectorAll('.stone-option.active, .adv-chip.active').forEach(c => c.classList.remove('active'));
   document.getElementById('search-input').value = '';
-  clearRanges(); updateSummary(); updateAdvDot(); filterCards();
+  clearRanges(); updateSummary(); updateAdvDot(); updateFilterDot(); filterCards();
 }
 
 function toggleAdvanced() {
@@ -864,6 +1000,10 @@ window.addEventListener('scroll', () => {
 }, { passive: true });
 
 document.getElementById('search-input').addEventListener('input', filterCards);
+
+// Restore saved view mode toggle state
+document.getElementById('vm-grid').classList.toggle('active', viewMode === 'grid');
+document.getElementById('vm-list').classList.toggle('active', viewMode === 'list');
 
 loadCards();
 </script>
