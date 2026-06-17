@@ -85,14 +85,56 @@
   /* MAIN LAYOUT */
   .app {
     display: grid;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: var(--explorer-width, 33%) 6px 1fr;
     height: calc(100vh - 54px);
     overflow: hidden;
   }
+  /* When the guest banner is showing, shrink the app to make room */
+  body.has-guest-banner .app { height: calc(100vh - 54px - 50px); }
+
+  /* GUEST WARNING BANNER */
+  .guest-banner {
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(196,97,74,0.08);
+    border-bottom: 1px solid rgba(196,97,74,0.35);
+    border-left: 3px solid var(--ember);
+    padding: 9px 20px; height: 50px; box-sizing: border-box;
+  }
+  .guest-banner-icon { color: var(--ember); font-size: 1.05rem; flex-shrink: 0; }
+  .guest-banner-text { font-size: 0.88rem; color: var(--parchment); line-height: 1.35; flex: 1; }
+  .guest-banner-text a { color: var(--gold); cursor: pointer; text-decoration: underline; font-weight: 600; }
+  .guest-banner-text a:hover { color: var(--shimmer); }
+  .guest-banner-close { background: none; border: none; color: var(--mist); font-size: 1.1rem; cursor: pointer; flex-shrink: 0; padding: 0 4px; }
+  .guest-banner-close:hover { color: var(--ember); }
+  @media (max-width: 760px) {
+    .guest-banner { height: auto; }
+    body.has-guest-banner .app { height: auto; }
+  }
+
+  /* Draggable divider between explorer and deck */
+  .divider {
+    background: #2a2640;
+    cursor: col-resize;
+    position: relative;
+    transition: background 0.15s;
+    user-select: none;
+  }
+  .divider:hover, .divider.dragging { background: var(--rune); }
+  .divider::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 2px; height: 36px;
+    background: var(--mist);
+    border-radius: 2px;
+    opacity: 0.6;
+  }
+  .divider:hover::after, .divider.dragging::after { background: var(--shimmer); opacity: 1; }
 
   /* LEFT — CARD EXPLORER */
   .explorer {
-    border-right: 3px solid #2a2640;
+    border-right: none;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -609,6 +651,7 @@
       height: auto;
       overflow: visible;
     }
+    .divider { display: none; }
     .deck-panel { order: 1; }
     .explorer {
       order: 2;
@@ -662,6 +705,13 @@
   <a href="https://drive.google.com/file/d/1sgQo0xf0N2teIR0zlyl91g9j6LVncZnr/view" target="_blank" class="header-link">Rulebook</a>
   <a href="https://play.sorcerytcg.com/" target="_blank" class="header-link">Play Network</a>
   <a href="https://sorcerytcg.com/" target="_blank" class="header-link">Sorcery TCG</a>
+</div>
+
+<!-- GUEST WARNING (shown only when logged out) -->
+<div id="guest-banner" class="guest-banner" style="display:none;">
+  <span class="guest-banner-icon">⚠</span>
+  <span class="guest-banner-text">Decks you build are only saved in this browser and could be lost if you clear your data or switch devices. <a onclick="openAuth('signup')">Create a free account</a> to save them to the cloud and publish to the gallery.</span>
+  <button class="guest-banner-close" onclick="dismissGuestBanner()" title="Dismiss">✕</button>
 </div>
 
 <div class="app">
@@ -820,6 +870,9 @@
       </div>
     </div>
   </div>
+
+  <!-- DRAGGABLE DIVIDER -->
+  <div class="divider" id="divider" title="Drag to resize"></div>
 
   <!-- RIGHT: DECK PANEL -->
   <div class="deck-panel">
@@ -1862,6 +1915,7 @@ async function logout() {
   renderAuthBar();
   updatePublishSection();
   renderVisibilityBar();
+  updateGuestBanner();
   toast('Signed out');
 }
 
@@ -1878,6 +1932,22 @@ async function refreshUser() {
     currentUser = { id: data.user.id, email: data.user.email, username };
   } else { currentUser = null; }
   renderAuthBar();
+  updateGuestBanner();
+}
+
+// ── GUEST WARNING BANNER ──
+function updateGuestBanner() {
+  const banner = document.getElementById('guest-banner');
+  if (!banner) return;
+  const loggedIn = !!currentUser;
+  const dismissed = sessionStorage.getItem('guest_banner_dismissed');
+  const show = !loggedIn && !dismissed;
+  banner.style.display = show ? 'flex' : 'none';
+  document.body.classList.toggle('has-guest-banner', show);
+}
+function dismissGuestBanner() {
+  sessionStorage.setItem('guest_banner_dismissed', '1');
+  updateGuestBanner();
 }
 
 // On first login, offer to push local saved decks to the cloud (local wins)
@@ -2101,9 +2171,73 @@ function toggleMobileNav() {
 }
 
 // ── INIT ──
+// ── RESIZABLE DIVIDER (desktop) ──
+function setupDivider() {
+  const app = document.querySelector('.app');
+  const divider = document.getElementById('divider');
+  if (!app || !divider) return;
+
+  // Restore saved width
+  const saved = localStorage.getItem('grimoire_explorer_width');
+  if (saved) app.style.setProperty('--explorer-width', saved);
+
+  let dragging = false;
+
+  function onMove(clientX) {
+    const rect = app.getBoundingClientRect();
+    let px = clientX - rect.left;
+    // Clamp so neither side gets too small (min 280px explorer, min 320px deck)
+    const min = 280;
+    const max = rect.width - 320;
+    px = Math.max(min, Math.min(max, px));
+    app.style.setProperty('--explorer-width', px + 'px');
+  }
+
+  divider.addEventListener('mousedown', (e) => {
+    // Only on desktop layout (divider visible)
+    if (getComputedStyle(divider).display === 'none') return;
+    dragging = true;
+    divider.classList.add('dragging');
+    document.body.style.cursor = 'col-resize';
+    e.preventDefault();
+  });
+  window.addEventListener('mousemove', (e) => { if (dragging) onMove(e.clientX); });
+  window.addEventListener('mouseup', () => {
+    if (!dragging) return;
+    dragging = false;
+    divider.classList.remove('dragging');
+    document.body.style.cursor = '';
+    // Persist the chosen width
+    const w = getComputedStyle(app).getPropertyValue('--explorer-width').trim();
+    if (w) localStorage.setItem('grimoire_explorer_width', w);
+  });
+
+  // Touch support (for hybrid/touch laptops)
+  divider.addEventListener('touchstart', (e) => {
+    if (getComputedStyle(divider).display === 'none') return;
+    dragging = true; divider.classList.add('dragging');
+  }, { passive: true });
+  window.addEventListener('touchmove', (e) => {
+    if (dragging && e.touches[0]) onMove(e.touches[0].clientX);
+  }, { passive: true });
+  window.addEventListener('touchend', () => {
+    if (!dragging) return;
+    dragging = false; divider.classList.remove('dragging');
+    const w = getComputedStyle(app).getPropertyValue('--explorer-width').trim();
+    if (w) localStorage.setItem('grimoire_explorer_width', w);
+  });
+
+  // Double-click the divider to reset to default
+  divider.addEventListener('dblclick', () => {
+    app.style.setProperty('--explorer-width', '33%');
+    localStorage.removeItem('grimoire_explorer_width');
+  });
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('search-input').addEventListener('input', filterCards);
   document.addEventListener('keydown', e => { if (e.key==='Escape') { closeModal({}); closeImport({}); } });
+  setupDivider();
   document.querySelector('.card-list').addEventListener('scroll', function() {
     if (visibleCount >= currentCards.length) return;
     if (this.scrollTop + this.clientHeight >= this.scrollHeight - 200) {

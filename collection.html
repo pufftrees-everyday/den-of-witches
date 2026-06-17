@@ -82,6 +82,21 @@
   /* PAGE */
   .page { padding: 24px; }
 
+  /* GUEST WARNING BANNER */
+  .guest-banner {
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(196,97,74,0.08);
+    border: 1px solid rgba(196,97,74,0.35);
+    border-left: 3px solid var(--ember);
+    border-radius: 6px; padding: 12px 16px; margin-bottom: 18px;
+  }
+  .guest-banner-icon { color: var(--ember); font-size: 1.1rem; flex-shrink: 0; }
+  .guest-banner-text { font-size: 0.92rem; color: var(--parchment); line-height: 1.4; flex: 1; }
+  .guest-banner-text a { color: var(--gold); cursor: pointer; text-decoration: underline; font-weight: 600; }
+  .guest-banner-text a:hover { color: var(--shimmer); }
+  .guest-banner-close { background: none; border: none; color: var(--mist); font-size: 1.1rem; cursor: pointer; flex-shrink: 0; padding: 0 4px; }
+  .guest-banner-close:hover { color: var(--ember); }
+
   /* COLLECTION HEADER BAR */
   .collection-bar {
     display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
@@ -416,6 +431,13 @@
 </div>
 
 <div class="page">
+
+  <!-- GUEST WARNING (shown only when logged out) -->
+  <div id="guest-banner" class="guest-banner" style="display:none;">
+    <span class="guest-banner-icon">⚠</span>
+    <span class="guest-banner-text">Your collection is only saved in this browser and could be lost if you clear your data or switch devices. <a onclick="CR && CR.openAuth('signup')">Create a free account</a> to save it to the cloud and access it anywhere.</span>
+    <button class="guest-banner-close" onclick="dismissGuestBanner()" title="Dismiss">✕</button>
+  </div>
 
   <!-- COLLECTION BAR -->
   <div class="collection-bar">
@@ -1092,20 +1114,36 @@ loadCards();
 
 // ── AUTH + CLOUD SYNC INIT ──
 async function initCollectionSync() {
-  if (!window.CR) { collectionCache = getLocalCollection(); return; }
+  if (!window.CR) { collectionCache = getLocalCollection(); updateGuestBanner(); return; }
   CR.onAuthChange = handleAuthChange;
   await CR.refreshUser();
   CR.renderAuthBar('auth-bar');
+  updateGuestBanner();
   await hydrateCollection();
   if (CR.supa) {
     CR.supa.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') CR.refreshUser().then(() => CR.renderAuthBar('auth-bar'));
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') CR.refreshUser().then(() => { CR.renderAuthBar('auth-bar'); updateGuestBanner(); });
     });
   }
 }
 
+// ── GUEST WARNING BANNER ──
+function updateGuestBanner() {
+  const banner = document.getElementById('guest-banner');
+  if (!banner) return;
+  const loggedIn = window.CR && CR.user;
+  const dismissed = sessionStorage.getItem('guest_banner_dismissed');
+  banner.style.display = (!loggedIn && !dismissed) ? 'flex' : 'none';
+}
+function dismissGuestBanner() {
+  sessionStorage.setItem('guest_banner_dismissed', '1');
+  const b = document.getElementById('guest-banner');
+  if (b) b.style.display = 'none';
+}
+
 async function handleAuthChange(kind) {
   CR.renderAuthBar('auth-bar');
+  updateGuestBanner();
   if (kind === 'login') {
     await maybeMigrateCollection();
     await hydrateCollection();
