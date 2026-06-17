@@ -221,6 +221,13 @@
   .element-chip:hover img { filter: none; }
   .element-chip.active { background: var(--rune); border-color: var(--arcane); color: #fff; }
   .element-chip.active img { filter: none; }
+  .element-lock-btn {
+    font-family: 'Cinzel', serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.05em;
+    padding: 4px 11px; border: 1px solid #2a2640; border-radius: 2px;
+    background: #13111e; color: var(--rune); cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  }
+  .element-lock-btn:hover { border-color: var(--arcane); color: var(--arcane); }
+  .element-lock-btn.active { background: var(--gold); border-color: var(--gold); color: #1a1410; }
 
   .result-count { font-size: 0.75rem; color: var(--mist); font-style: italic; padding: 2px 0; }
 
@@ -948,6 +955,7 @@
         <button class="element-chip" data-group="element" data-value="Water" onclick="toggleChip(this)" title="Water">
           <img src="water.png" alt="Water"><span>Water</span>
         </button>
+        <button class="element-lock-btn" id="element-lock-btn" onclick="toggleElementLock()" title="Element Lock: only show cards whose elements are all within your selection">🔒 Element Lock</button>
       </div>
       <div class="filter-row">
         <button class="filter-chip" data-group="type" data-value="Avatar" onclick="toggleChip(this)">Avatar</button>
@@ -1362,6 +1370,13 @@ function setBadge(setName) {
 
 // ── FILTERS ──
 const activeFilters = { type: new Set(), set: new Set(), rarity: new Set(), element: new Set() };
+let elementLock = false; // when true, a card's elements must ALL be within the selected set
+
+// Parse a card's elements into a lowercased array (e.g. "Fire, Water" → ['fire','water'])
+function cardElements(card) {
+  if (!card.element) return [];
+  return card.element.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+}
 const advFilters = { minionSubtype: new Set(), artifactSubtype: new Set(), siteSubtype: new Set(), keyword: new Set() };
 
 // Track collapsed state for deck sections
@@ -1379,6 +1394,9 @@ function clearAllFilters() {
   Object.keys(activeFilters).forEach(g => activeFilters[g].clear());
   Object.keys(advFilters).forEach(g => advFilters[g].clear());
   document.querySelectorAll('.filter-chip.active, .adv-chip.active, .element-chip.active').forEach(c => c.classList.remove('active'));
+  elementLock = false;
+  const lockBtn = document.getElementById('element-lock-btn');
+  if (lockBtn) lockBtn.classList.remove('active');
   clearRanges();
   updateFilterDot();
   updateAdvDot();
@@ -1386,7 +1404,7 @@ function clearAllFilters() {
 }
 
 function updateFilterDot() {
-  const hasActive = Object.values(activeFilters).some(s => s.size > 0);
+  const hasActive = Object.values(activeFilters).some(s => s.size > 0) || elementLock;
   document.getElementById('filter-toggle-bar').classList.toggle('has-active', hasActive);
 }
 
@@ -1403,6 +1421,14 @@ function toggleSubSection(section, type) {
   if (arrow) arrow.classList.toggle('collapsed', subCollapsed[key]);
   const cards = document.getElementById('sub-cards-' + key);
   if (cards) cards.classList.toggle('hidden', subCollapsed[key]);
+}
+
+function toggleElementLock() {
+  elementLock = !elementLock;
+  const btn = document.getElementById('element-lock-btn');
+  if (btn) btn.classList.toggle('active', elementLock);
+  updateFilterDot();
+  filterCards();
 }
 
 function toggleChip(btn) {
@@ -1456,7 +1482,22 @@ function filterCards() {
     if (activeFilters.type.size && !activeFilters.type.has(c.type)) return false;
     if (activeFilters.set.size && !activeFilters.set.has(c.set)) return false;
     if (activeFilters.rarity.size && !activeFilters.rarity.has(c.rarity)) return false;
-    if (activeFilters.element.size && ![...activeFilters.element].some(el => (c.element||'').toLowerCase().includes(el.toLowerCase()))) return false;
+    // Element filter — two modes:
+    //  • normal (OR): card has at least one selected element
+    //  • locked (subset): card's elements are ALL within the selected set
+    if (elementLock) {
+      const els = cardElements(c);
+      const sel = [...activeFilters.element].map(e => e.toLowerCase());
+      if (sel.length === 0) {
+        // Lock on, nothing selected → only colorless / no-element cards
+        if (els.length > 0) return false;
+      } else {
+        // Every element on the card must be in the selected set
+        if (!els.every(e => sel.includes(e))) return false;
+      }
+    } else if (activeFilters.element.size) {
+      if (![...activeFilters.element].some(el => (c.element||'').toLowerCase().includes(el.toLowerCase()))) return false;
+    }
     const sub = c.subTypes || '';
     if (advFilters.minionSubtype.size && ![...advFilters.minionSubtype].some(s => sub.includes(s))) return false;
     if (advFilters.artifactSubtype.size && ![...advFilters.artifactSubtype].some(s => sub.includes(s))) return false;

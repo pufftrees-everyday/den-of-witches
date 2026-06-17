@@ -348,6 +348,13 @@
   }
   .stone-option:hover { color: #fff; background: rgba(155,135,212,0.1); }
   .stone-option.active { color: #fff; }
+  .element-lock-btn {
+    margin-top: 6px; font-family: 'Cinzel', serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em;
+    padding: 7px 12px; border: 1px solid var(--border-strong); border-radius: 4px;
+    background: transparent; color: var(--rune); cursor: pointer; transition: all 0.15s; width: 100%; text-align: left;
+  }
+  .element-lock-btn:hover { border-color: var(--arcane); color: var(--arcane); }
+  .element-lock-btn.active { background: var(--gold); border-color: var(--gold); color: #1a1410; }
 
   .rune-mark {
     width: 17px; height: 17px; flex-shrink: 0;
@@ -745,6 +752,7 @@
               <button class="stone-option" data-group="element" data-value="Earth" onclick="toggleChip(this)"><span class="rune-mark">✦</span>Earth</button>
               <button class="stone-option" data-group="element" data-value="Fire" onclick="toggleChip(this)"><span class="rune-mark">✦</span>Fire</button>
               <button class="stone-option" data-group="element" data-value="Water" onclick="toggleChip(this)"><span class="rune-mark">✦</span>Water</button>
+              <button class="element-lock-btn" id="element-lock-btn" onclick="toggleElementLock()" title="Element Lock: only show cards whose elements are all within your selection">🔒 Element Lock</button>
             </div>
           </div>
         </div>
@@ -1036,6 +1044,17 @@ function setViewMode(mode) {
 
 // FILTERS
 const activeFilters = { type: new Set(), set: new Set(), rarity: new Set(), element: new Set() };
+let elementLock = false;
+function cardElements(card) {
+  if (!card.element) return [];
+  return card.element.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+}
+function toggleElementLock() {
+  elementLock = !elementLock;
+  const btn = document.getElementById('element-lock-btn');
+  if (btn) btn.classList.toggle('active', elementLock);
+  filterCards();
+}
 
 function toggleFilters() {
   const bar = document.getElementById('filter-toggle-bar');
@@ -1208,7 +1227,12 @@ function filterCards() {
     if (activeFilters.type.size && !activeFilters.type.has(c.type)) return false;
     if (activeFilters.set.size && !activeFilters.set.has(c.set)) return false;
     if (activeFilters.rarity.size && !activeFilters.rarity.has(c.rarity)) return false;
-    if (activeFilters.element.size && ![...activeFilters.element].some(el => (c.element||'').includes(el))) return false;
+    if (elementLock) {
+      const els = cardElements(c);
+      const sel = [...activeFilters.element].map(e => e.toLowerCase());
+      if (sel.length === 0) { if (els.length > 0) return false; }
+      else if (!els.every(e => sel.includes(e))) return false;
+    } else if (activeFilters.element.size && ![...activeFilters.element].some(el => (c.element||'').includes(el))) return false;
 
     // Subtype filters — any selected subtype must appear in card's subTypes
     const sub = c.subTypes || '';
