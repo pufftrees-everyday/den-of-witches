@@ -505,18 +505,10 @@
   .dr-qty-btn:hover { background: var(--rune); color: #fff; }
   .dr-del-btn:hover { background: var(--ember); border-color: var(--ember); color: #fff; }
 
-  /* Threshold pills in deck text rows */
-  .dr-thresholds { display: inline-flex; gap: 3px; align-items: center; flex-shrink: 0; }
-  .thr-pill {
-    display: inline-flex; align-items: center; gap: 2px;
-    font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 700;
-    padding: 2px 7px; border-radius: 10px; line-height: 1;
-    border: 1px solid; white-space: nowrap;
-  }
-  .thr-air   { color: #cfe3f0; background: rgba(140,180,210,0.14); border-color: rgba(140,180,210,0.5); }
-  .thr-earth { color: #cdb98a; background: rgba(160,130,70,0.16); border-color: rgba(160,130,70,0.55); }
-  .thr-fire  { color: #e89a86; background: rgba(196,97,74,0.16); border-color: rgba(196,97,74,0.55); }
-  .thr-water { color: #9fc7d6; background: rgba(90,150,176,0.16); border-color: rgba(90,150,176,0.55); }
+  /* Threshold element symbols in deck text rows */
+  .dr-thresholds { display: inline-flex; gap: 6px; align-items: center; flex-shrink: 0; }
+  .thr-group { display: inline-flex; gap: 1px; align-items: center; }
+  .thr-icon { width: 17px; height: 17px; object-fit: contain; vertical-align: middle; display: inline-block; }
   .dr-name-wrap { display: flex; flex-direction: column; min-width: 0; }
 
   /* Deck panel view toggle (grid/text) */
@@ -1678,18 +1670,23 @@ function renderDeckCard(section, key, card, qty) {
   </div>`;
 }
 
-// Build threshold pills (e.g. "2 Fire", "1 Water") with element colors
+// Build threshold display using repeated element symbols (e.g. 🔥🔥 for 2 fire)
 function thresholdPills(card) {
   if (!card.thresholds) return '';
-  const map = { air: 'thr-air', earth: 'thr-earth', fire: 'thr-fire', water: 'thr-water' };
-  const pills = Object.entries(card.thresholds)
+  // Map element name → image file (Air uses wind.png)
+  const imgMap = { air: 'wind.png', earth: 'earth.png', fire: 'fire.png', water: 'water.png' };
+  const groups = Object.entries(card.thresholds)
     .filter(([, v]) => v > 0)
     .map(([k, v]) => {
-      const cls = map[k.toLowerCase()] || 'thr-air';
-      const label = k.charAt(0).toUpperCase() + k.slice(1);
-      return `<span class="thr-pill ${cls}">${v} ${label}</span>`;
-    });
-  return pills.length ? `<span class="dr-thresholds">${pills.join('')}</span>` : '';
+      const file = imgMap[k.toLowerCase()];
+      if (!file) return '';
+      // Repeat the symbol once per threshold pip
+      const icons = Array.from({ length: v }, () =>
+        `<img src="${file}" alt="${k}" class="thr-icon">`).join('');
+      return `<span class="thr-group">${icons}</span>`;
+    })
+    .filter(Boolean);
+  return groups.length ? `<span class="dr-thresholds">${groups.join('')}</span>` : '';
 }
 
 function renderDeckCardRow(section, key, card, qty) {
