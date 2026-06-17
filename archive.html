@@ -100,8 +100,26 @@
   .arch-el-lock { font-family: 'Cinzel', serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.05em; padding: 0 11px; height: 34px; border: 1px solid #2a2640; border-radius: 4px; background: #13111e; color: var(--rune); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
   .arch-el-lock:hover { border-color: var(--arcane); color: var(--arcane); }
   .arch-el-lock.active { background: var(--gold); border-color: var(--gold); color: #1a1410; }
-  .arch-select { background: #0b0a0f; border: 1px solid var(--border-strong); color: var(--parchment); font-family: 'Crimson Pro', serif; font-size: 0.92rem; padding: 7px 10px; border-radius: 5px; outline: none; cursor: pointer; max-width: 180px; }
-  .arch-select:focus { border-color: var(--rune); }
+  .arch-input { background: #0b0a0f; border: 1px solid var(--border-strong); color: var(--parchment); font-family: 'Crimson Pro', serif; font-size: 0.92rem; padding: 7px 11px; border-radius: 5px; outline: none; width: 150px; }
+  .arch-input:focus { border-color: var(--rune); }
+  .arch-input::placeholder { color: var(--mist); font-style: italic; }
+  .arch-input-wrap { display: flex; align-items: center; gap: 6px; }
+  .arch-browse-btn { font-family: 'Cinzel', serif; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 7px 11px; border: 1px solid var(--border-strong); border-radius: 5px; background: transparent; color: var(--arcane); cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+  .arch-browse-btn:hover { border-color: var(--arcane); background: rgba(155,135,212,0.12); color: var(--shimmer); }
+  /* Avatar browser modal */
+  .avatar-browser-overlay { display: none; position: fixed; inset: 0; background: rgba(11,10,15,0.86); z-index: 300; align-items: flex-start; justify-content: center; backdrop-filter: blur(4px); overflow-y: auto; padding: 5vh 16px; }
+  .avatar-browser-overlay.open { display: flex; }
+  .avatar-browser { background: var(--dusk); border: 1px solid var(--border-strong); border-radius: 10px; padding: 20px; width: 100%; max-width: 720px; }
+  .avatar-browser-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .avatar-browser-head h2 { font-family: 'Cinzel Decorative', serif; color: var(--gold); font-size: 1.3rem; }
+  .avatar-browser-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; max-height: 64vh; overflow-y: auto; }
+  .avatar-pick { background: #13111e; border: 1px solid var(--border); border-radius: 8px; padding: 8px; cursor: pointer; transition: all 0.15s; display: flex; flex-direction: column; gap: 5px; text-align: center; }
+  .avatar-pick:hover { border-color: var(--arcane); transform: translateY(-2px); }
+  .avatar-pick-img { width: 100%; aspect-ratio: 3/4; border-radius: 5px; overflow: hidden; background: #0b0a0f; }
+  .avatar-pick-img img { width: 100%; height: 100%; object-fit: cover; object-position: center 15%; display: block; }
+  .avatar-pick-noimg { display: flex; align-items: center; justify-content: center; color: var(--mist); font-size: 1.6rem; }
+  .avatar-pick-name { font-family: 'Cinzel', serif; font-size: 0.7rem; font-weight: 600; color: var(--parchment); line-height: 1.2; }
+  .avatar-pick-count { font-family: 'Crimson Pro', serif; font-size: 0.7rem; font-style: italic; color: var(--rune); }
   .arch-clear-btn { font-family: 'Cinzel', serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 7px 14px; border: 1px solid rgba(196,97,74,0.4); border-radius: 5px; background: transparent; color: var(--ember); cursor: pointer; transition: all 0.15s; }
   .arch-clear-btn:hover { background: rgba(196,97,74,0.12); }
   .arch-result-count { font-family: 'Crimson Pro', serif; font-style: italic; font-size: 0.88rem; color: var(--mist); margin-left: auto; white-space: nowrap; }
@@ -112,23 +130,25 @@
   }
   .deck-card:hover { border-color: var(--border-strong); transform: translateY(-2px); }
   /* Avatar art banner (Sorcery card art sits in the upper portion of the card) */
-  .deck-card-avatar { width: 100%; height: 150px; overflow: hidden; background: #0b0a0f; position: relative; }
-  .deck-card-avatar img { width: 100%; height: auto; object-fit: cover; object-position: center 18%; display: block; }
-  .deck-card-avatar::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 55%, var(--dusk)); pointer-events: none; }
+  .deck-card-avatar { width: 100%; height: 210px; overflow: hidden; background: #0b0a0f; position: relative; }
+  .deck-card-avatar img { width: 100%; height: auto; object-fit: cover; object-position: center 22%; display: block; }
+  .deck-card-avatar::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 60%, var(--dusk)); pointer-events: none; }
   .deck-card-body { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
   .deck-card.has-avatar .deck-card-body { padding-top: 12px; }
   .deck-card-name { font-family: 'Cinzel', serif; font-size: 1.15rem; font-weight: 700; color: var(--parchment); line-height: 1.25; }
   .deck-card-author { font-size: 0.85rem; color: var(--rune); }
   .deck-card-author b { color: var(--arcane); }
   .deck-card-avatar-name { font-family: 'Crimson Pro', serif; font-style: italic; font-size: 0.85rem; color: var(--gold); }
-  /* Element balance bar */
-  .el-bar { display: flex; width: 100%; height: 10px; border-radius: 5px; overflow: hidden; margin-top: 4px; border: 1px solid rgba(0,0,0,0.3); }
-  .el-seg { height: 100%; }
-  .el-labels { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 2px; }
-  .el-label { display: inline-flex; align-items: center; gap: 5px; font-family: 'Crimson Pro', serif; font-size: 0.8rem; color: var(--shimmer); }
-  .el-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
   .deck-card-actions { display: flex; gap: 8px; margin-top: auto; padding-top: 10px; }
   .deck-card-actions .btn { flex: 1; text-align: center; }
+  /* Element balance section (bottom of card) */
+  .el-section { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+  .el-section-title { font-family: 'Cinzel', serif; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rune); margin-bottom: 7px; }
+  .el-bar { display: flex; width: 100%; height: 11px; border-radius: 6px; overflow: hidden; border: 1px solid rgba(0,0,0,0.3); }
+  .el-seg { height: 100%; }
+  .el-labels { display: flex; flex-wrap: wrap; gap: 10px 14px; margin-top: 8px; }
+  .el-label { display: inline-flex; align-items: center; gap: 5px; font-family: 'Crimson Pro', serif; font-size: 0.82rem; color: var(--shimmer); }
+  .el-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
 
   .status { text-align: center; color: var(--mist); font-style: italic; padding: 60px 20px; font-size: 1rem; }
   .empty-cta { text-align: center; padding: 50px 20px; }
@@ -232,14 +252,29 @@
     </div>
     <div class="arch-filter-group">
       <span class="arch-filter-label">Avatar</span>
-      <select id="filter-avatar" class="arch-select" onchange="applyArchiveFilters()"><option value="">All Avatars</option></select>
+      <div class="arch-input-wrap">
+        <input type="text" id="filter-avatar" class="arch-input" placeholder="Any avatar…" oninput="applyArchiveFilters()" autocomplete="off">
+        <button class="arch-browse-btn" onclick="openAvatarBrowser()" title="Browse all avatars">Browse</button>
+      </div>
     </div>
     <div class="arch-filter-group">
       <span class="arch-filter-label">Creator</span>
-      <select id="filter-creator" class="arch-select" onchange="applyArchiveFilters()"><option value="">All Creators</option></select>
+      <input type="text" id="filter-creator" class="arch-input" placeholder="Any creator…" oninput="applyArchiveFilters()" autocomplete="off">
     </div>
     <button class="arch-clear-btn" onclick="clearArchiveFilters()">Clear</button>
     <span class="arch-result-count" id="archive-result-count"></span>
+  </div>
+
+  <!-- AVATAR BROWSER MODAL -->
+  <div class="avatar-browser-overlay" id="avatar-browser" onclick="if(event.target===this)closeAvatarBrowser()">
+    <div class="avatar-browser">
+      <div class="avatar-browser-head">
+        <h2>Choose an Avatar</h2>
+        <button class="modal-close" onclick="closeAvatarBrowser()">✕</button>
+      </div>
+      <input type="text" id="avatar-browser-search" class="arch-input" placeholder="Search avatars…" oninput="renderAvatarBrowser()" autocomplete="off" style="width:100%;margin-bottom:14px;">
+      <div class="avatar-browser-grid" id="avatar-browser-grid"></div>
+    </div>
   </div>
 
   <div id="gallery-content">
@@ -561,24 +596,54 @@ function renderGallery(decks) {
   container.innerHTML = `<div class="deck-gallery">${decks.map(d => renderDeckCard(d, galleryAuthors)).join('')}</div>`;
 }
 
+let archiveAvatars = []; // unique avatar names present in published decks (with deck count)
+
 function populateArchiveFilters() {
-  // Avatars present across decks
-  const avatars = new Set();
-  galleryDecks.forEach(d => { const av = avatarName(d.deck_data || {}); if (av) avatars.add(av); });
-  const avSel = document.getElementById('filter-avatar');
-  if (avSel) {
-    avSel.innerHTML = '<option value="">All Avatars</option>' +
-      [...avatars].sort().map(a => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('');
-  }
-  // Creators present
-  const creators = new Set();
-  galleryDecks.forEach(d => { const c = galleryAuthors[d.owner_id]; if (c) creators.add(c); });
-  const crSel = document.getElementById('filter-creator');
-  if (crSel) {
-    crSel.innerHTML = '<option value="">All Creators</option>' +
-      [...creators].sort((a,b) => a.localeCompare(b)).map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
-  }
+  // Build unique avatar list (name → count of decks using it)
+  const counts = {};
+  galleryDecks.forEach(d => {
+    const av = avatarName(d.deck_data || {});
+    if (av) counts[av] = (counts[av] || 0) + 1;
+  });
+  archiveAvatars = Object.entries(counts)
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 }
+
+// ── AVATAR BROWSER ──
+function openAvatarBrowser() {
+  document.getElementById('avatar-browser-search').value = '';
+  renderAvatarBrowser();
+  document.getElementById('avatar-browser').classList.add('open');
+}
+function closeAvatarBrowser() {
+  document.getElementById('avatar-browser').classList.remove('open');
+}
+function renderAvatarBrowser() {
+  const grid = document.getElementById('avatar-browser-grid');
+  const q = (document.getElementById('avatar-browser-search').value || '').trim().toLowerCase();
+  const list = archiveAvatars.filter(a => !q || a.name.toLowerCase().includes(q));
+  if (!list.length) {
+    grid.innerHTML = `<div class="status" style="grid-column:1/-1;">No avatars found.</div>`;
+    return;
+  }
+  grid.innerHTML = list.map(a => {
+    const slug = cardSlugMap[a.name.toLowerCase()];
+    const img = slug ? `${IMAGE_BASE}${slug}.png` : null;
+    return `<button class="avatar-pick" onclick="pickAvatarFilter('${escapeJs(a.name)}')" title="${escapeHtml(a.name)}">
+      ${img ? `<div class="avatar-pick-img"><img src="${img}" alt="${escapeHtml(a.name)}" loading="lazy" onerror="this.parentElement.style.background='#13111e'"></div>` : `<div class="avatar-pick-img avatar-pick-noimg">?</div>`}
+      <div class="avatar-pick-name">${escapeHtml(a.name)}</div>
+      <div class="avatar-pick-count">${a.count} deck${a.count !== 1 ? 's' : ''}</div>
+    </button>`;
+  }).join('');
+}
+function pickAvatarFilter(name) {
+  document.getElementById('filter-avatar').value = name;
+  closeAvatarBrowser();
+  applyArchiveFilters();
+}
+// Escape a string for safe use inside a single-quoted JS attribute
+function escapeJs(s) { return String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
 
 function toggleArchiveElement(el) {
   const v = el.toLowerCase();
@@ -610,10 +675,10 @@ function applyArchiveFilters() {
 
     // Text search
     if (q && !(name.includes(q) || author.includes(q) || av.includes(q))) return false;
-    // Avatar dropdown
-    if (avatarF && av !== avatarF) return false;
-    // Creator dropdown
-    if (creatorF && author !== creatorF) return false;
+    // Avatar text (contains)
+    if (avatarF && !av.includes(avatarF)) return false;
+    // Creator text (contains)
+    if (creatorF && !author.includes(creatorF)) return false;
 
     // Element filter (only if we have card element data)
     const haveElementData = Object.keys(cardElementMap).length > 0;
@@ -674,9 +739,13 @@ function renderDeckCard(d, authors) {
       `<div class="el-seg" style="width:${b.pct.toFixed(1)}%;background:${ELEMENT_COLORS[b.el]};" title="${b.el.charAt(0).toUpperCase()+b.el.slice(1)} ${Math.round(b.pct)}%"></div>`
     ).join('');
     const labels = breakdown.map(b =>
-      `<span class="el-label"><span class="el-dot" style="background:${ELEMENT_COLORS[b.el]};"></span>${Math.round(b.pct)}%</span>`
+      `<span class="el-label"><span class="el-dot" style="background:${ELEMENT_COLORS[b.el]};"></span>${b.el.charAt(0).toUpperCase()+b.el.slice(1)} ${Math.round(b.pct)}%</span>`
     ).join('');
-    barHtml = `<div class="el-bar">${segs}</div><div class="el-labels">${labels}</div>`;
+    barHtml = `<div class="el-section">
+      <div class="el-section-title">Element Balance</div>
+      <div class="el-bar">${segs}</div>
+      <div class="el-labels">${labels}</div>
+    </div>`;
   }
 
   const avatarBlock = avImg
@@ -689,11 +758,11 @@ function renderDeckCard(d, authors) {
       <div class="deck-card-name">${escapeHtml(d.name || 'Untitled Deck')}</div>
       <div class="deck-card-author">by <b>${escapeHtml(author)}</b></div>
       ${av ? `<div class="deck-card-avatar-name">${escapeHtml(av)}</div>` : ''}
-      ${barHtml}
       <div class="deck-card-actions">
         <button class="btn btn-primary" onclick="openDeck('${d.short_code}')">Open</button>
         ${isOwner ? `<button class="btn btn-ghost" onclick="unpublishDeck('${d.id}')">Unpublish</button>` : ''}
       </div>
+      ${barHtml}
     </div>
   </div>`;
 }
@@ -730,6 +799,9 @@ function escapeHtml(s) {
       if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') refreshUser();
     });
   }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeAvatarBrowser();
+  });
 })();
 
 function toggleMoreMenu(e){
