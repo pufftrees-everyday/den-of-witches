@@ -615,6 +615,41 @@
 
   /* MODAL */
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(11,10,15,0.85); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+
+  /* DECK STATS MODAL */
+  .stats-modal {
+    background: var(--dusk); border: 1px solid var(--border-strong); border-radius: 10px;
+    padding: 26px 28px; width: 100%; max-width: 560px; max-height: 86vh; overflow-y: auto;
+    position: relative;
+  }
+  .stats-modal h2 { font-family: 'Cinzel Decorative', serif; color: var(--gold); font-size: 1.5rem; margin-bottom: 4px; }
+  .stats-sub { color: var(--mist); font-size: 0.9rem; font-style: italic; margin-bottom: 18px; }
+  .stats-group { margin-bottom: 22px; }
+  .stats-group-title { font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--shimmer); margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+  .stats-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; }
+  .stat-box { background: rgba(155,135,212,0.06); border: 1px solid var(--border); border-radius: 6px; padding: 10px 12px; text-align: center; }
+  .stat-box-val { font-family: 'Cinzel', serif; font-size: 1.5rem; font-weight: 700; color: var(--gold); line-height: 1; }
+  .stat-box-label { font-size: 0.7rem; color: var(--mist); margin-top: 5px; text-transform: uppercase; letter-spacing: 0.06em; }
+  /* Bar chart rows */
+  .bar-row { display: grid; grid-template-columns: 54px 1fr 34px; align-items: center; gap: 10px; margin-bottom: 5px; }
+  .bar-label { font-size: 0.8rem; color: var(--shimmer); text-align: right; white-space: nowrap; }
+  .bar-track { background: #0b0a0f; border-radius: 3px; height: 17px; overflow: hidden; border: 1px solid var(--border); }
+  .bar-fill { height: 100%; border-radius: 2px; transition: width 0.4s; min-width: 2px; }
+  .bar-fill.cost { background: linear-gradient(90deg, var(--rune), var(--arcane)); }
+  .bar-fill.air { background: #8cb4d2; }
+  .bar-fill.earth { background: #a08246; }
+  .bar-fill.fire { background: var(--ember); }
+  .bar-fill.water { background: #5a96b0; }
+  .bar-fill.type { background: linear-gradient(90deg, #6b5fa0, #9b87d4); }
+  .bar-fill.rarity-ordinary { background: #8c8c96; }
+  .bar-fill.rarity-exceptional { background: #5a8ab0; }
+  .bar-fill.rarity-elite { background: var(--arcane); }
+  .bar-fill.rarity-unique { background: var(--gold); }
+  .bar-val { font-size: 0.78rem; color: var(--parchment); text-align: left; }
+  .thr-summary { display: flex; gap: 14px; flex-wrap: wrap; }
+  .thr-summary-item { display: flex; align-items: center; gap: 6px; font-size: 0.95rem; color: var(--parchment); }
+  .thr-summary-item img { width: 20px; height: 20px; }
+  .thr-summary-item b { color: var(--gold); font-family: 'Cinzel', serif; }
   .modal-overlay.open { display: flex; }
 
   /* AVATAR PICKER */
@@ -985,6 +1020,7 @@
           <div class="ro-author" id="ro-author"></div>
         </div>
         <div class="ro-actions">
+          <button class="btn btn-ghost" onclick="openDeckStats()">Stats</button>
           <button class="btn btn-primary" id="ro-copy-btn" onclick="copyViewedDeck()">Copy to My Decks</button>
           <button class="btn btn-ghost" onclick="window.location.href='gallery.html'">← Gallery</button>
         </div>
@@ -1003,6 +1039,7 @@
         <div class="deck-actions">
           <button class="btn btn-ghost" onclick="saveDeck()">Save</button>
           <button class="btn btn-primary" onclick="shareDeck()">Share</button>
+          <button class="btn btn-ghost" onclick="openDeckStats()">Stats</button>
           <button class="btn btn-ghost" onclick="openImport()">Import</button>
           <button class="btn btn-ghost" onclick="exportDeck()">Export</button>
           <button class="btn btn-danger" onclick="clearDeck()">Clear</button>
@@ -1064,6 +1101,14 @@
       <button class="btn btn-ghost" style="flex:1" onclick="closeImport()">Cancel</button>
     </div>
     <button class="modal-close" onclick="closeImport()">✕</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="stats-overlay" onclick="if(event.target===this)closeDeckStats()">
+  <div class="stats-modal">
+    <button class="modal-close" onclick="closeDeckStats()">✕</button>
+    <h2 id="stats-title">Deck Statistics</h2>
+    <div id="stats-body"></div>
   </div>
 </div>
 
@@ -1683,9 +1728,8 @@ function renderDeck() {
   // Avatar section
   body.innerHTML += renderSection('Avatar', 'avatar', avatarEntries, avatarOk ? '' : 'Need exactly 1 Avatar', avatarOk, '1');
 
-  // Atlas section
-  const atlasByType = groupByType(atlasEntries);
-  body.innerHTML += renderSection('Atlas', 'atlas', atlasEntries, atlasOk ? '' : `${atlasCount}/30 Sites (need ${Math.max(0,30-atlasCount)} more)`, atlasOk, '30+', atlasByType);
+  // Atlas section — all Atlas cards are Sites, so no sub-grouping needed
+  body.innerHTML += renderSection('Atlas', 'atlas', atlasEntries, atlasOk ? '' : `${atlasCount}/30 Sites (need ${Math.max(0,30-atlasCount)} more)`, atlasOk, '30+');
 
   // Spellbook section
   const spellbookByType = groupByType(spellbookEntries);
@@ -1699,6 +1743,122 @@ function groupByType(entries) {
     (groups[t] = groups[t] || []).push({key, card, qty});
   });
   return groups;
+}
+
+// ── DECK STATS ──
+function openDeckStats() {
+  const body = document.getElementById('stats-body');
+  const all = [...Object.values(deck.avatar), ...Object.values(deck.atlas), ...Object.values(deck.spellbook)];
+  const spells = Object.values(deck.spellbook); // mana curve is most meaningful for spells
+
+  if (!all.length) {
+    body.innerHTML = '<div class="stats-sub">This deck is empty — add some cards to see statistics.</div>';
+    document.getElementById('stats-overlay').classList.add('open');
+    return;
+  }
+
+  const totalCards = all.reduce((s, e) => s + e.qty, 0);
+  const atlasCount = Object.values(deck.atlas).reduce((s,e)=>s+e.qty,0);
+  const spellCount = spells.reduce((s,e)=>s+e.qty,0);
+
+  // Mana curve (spellbook spells with a cost)
+  const curve = {}; let costSum = 0, costCards = 0;
+  spells.forEach(({card, qty}) => {
+    if (card.cost == null || card.cost === '') return;
+    const c = Math.min(Number(card.cost), 7); // bucket 7+ together
+    const key = c >= 7 ? '7+' : String(c);
+    curve[key] = (curve[key] || 0) + qty;
+    costSum += Number(card.cost) * qty; costCards += qty;
+  });
+  const avgCost = costCards ? (costSum / costCards).toFixed(1) : '—';
+
+  // Threshold totals (sum across all cards × qty)
+  const thr = { air:0, earth:0, fire:0, water:0 };
+  all.forEach(({card, qty}) => {
+    if (!card.thresholds) return;
+    for (const [k,v] of Object.entries(card.thresholds)) {
+      const kk = k.toLowerCase();
+      if (thr[kk] != null) thr[kk] += (v||0); // count distinct pips, not × qty (identity of deck)
+    }
+  });
+
+  // Type distribution (spellbook)
+  const typeCount = {};
+  spells.forEach(({card, qty}) => { const t = card.type || 'Other'; typeCount[t] = (typeCount[t]||0) + qty; });
+
+  // Rarity distribution (whole deck)
+  const rarityCount = {};
+  all.forEach(({card, qty}) => { const r = card.rarity || 'Unknown'; rarityCount[r] = (rarityCount[r]||0) + qty; });
+
+  // Build HTML
+  const curveKeys = ['0','1','2','3','4','5','6','7+'];
+  const curveMax = Math.max(1, ...curveKeys.map(k => curve[k]||0));
+  const curveBars = curveKeys.map(k => {
+    const v = curve[k] || 0;
+    return `<div class="bar-row">
+      <span class="bar-label">${k} cost</span>
+      <div class="bar-track"><div class="bar-fill cost" style="width:${(v/curveMax*100)}%"></div></div>
+      <span class="bar-val">${v}</span>
+    </div>`;
+  }).join('');
+
+  const imgMap = { air:'wind.png', earth:'earth.png', fire:'fire.png', water:'water.png' };
+  const thrHtml = Object.entries(thr).filter(([,v])=>v>0).map(([k,v]) =>
+    `<div class="thr-summary-item"><img src="${imgMap[k]}" alt="${k}"> <b>${v}</b> ${k.charAt(0).toUpperCase()+k.slice(1)}</div>`
+  ).join('') || '<div class="stats-sub" style="margin:0">No threshold requirements.</div>';
+
+  const typeMax = Math.max(1, ...Object.values(typeCount));
+  const typeOrder = ['Minion','Magic','Artifact','Aura','Other'];
+  const typeBars = Object.entries(typeCount)
+    .sort((a,b) => (typeOrder.indexOf(a[0]) - typeOrder.indexOf(b[0])))
+    .map(([t,v]) => `<div class="bar-row">
+      <span class="bar-label">${t}</span>
+      <div class="bar-track"><div class="bar-fill type" style="width:${(v/typeMax*100)}%"></div></div>
+      <span class="bar-val">${v}</span>
+    </div>`).join('');
+
+  const rarOrder = ['Ordinary','Exceptional','Elite','Unique'];
+  const rarMax = Math.max(1, ...Object.values(rarityCount));
+  const rarBars = rarOrder.filter(r=>rarityCount[r]).map(r => `<div class="bar-row">
+      <span class="bar-label">${r}</span>
+      <div class="bar-track"><div class="bar-fill rarity-${r.toLowerCase()}" style="width:${(rarityCount[r]/rarMax*100)}%"></div></div>
+      <span class="bar-val">${rarityCount[r]}</span>
+    </div>`).join('');
+
+  const name = readOnly ? (document.getElementById('ro-name').textContent) : (document.getElementById('deck-name-input').value || 'Untitled Deck');
+
+  body.innerHTML = `
+    <div class="stats-sub">${name}</div>
+    <div class="stats-group">
+      <div class="stats-summary">
+        <div class="stat-box"><div class="stat-box-val">${totalCards}</div><div class="stat-box-label">Total Cards</div></div>
+        <div class="stat-box"><div class="stat-box-val">${atlasCount}</div><div class="stat-box-label">Atlas (Sites)</div></div>
+        <div class="stat-box"><div class="stat-box-val">${spellCount}</div><div class="stat-box-label">Spellbook</div></div>
+        <div class="stat-box"><div class="stat-box-val">${avgCost}</div><div class="stat-box-label">Avg. Cost</div></div>
+      </div>
+    </div>
+    <div class="stats-group">
+      <div class="stats-group-title">Mana Curve (Spellbook)</div>
+      ${curveBars}
+    </div>
+    <div class="stats-group">
+      <div class="stats-group-title">Threshold Requirements</div>
+      <div class="thr-summary">${thrHtml}</div>
+    </div>
+    <div class="stats-group">
+      <div class="stats-group-title">Spell Types</div>
+      ${typeBars || '<div class="stats-sub" style="margin:0">No spells yet.</div>'}
+    </div>
+    <div class="stats-group">
+      <div class="stats-group-title">Rarity Breakdown</div>
+      ${rarBars}
+    </div>`;
+
+  document.getElementById('stats-overlay').classList.add('open');
+}
+
+function closeDeckStats() {
+  document.getElementById('stats-overlay').classList.remove('open');
 }
 
 function renderSection(title, section, entries, reqMsg, isOk, req, groups) {
@@ -2604,7 +2764,7 @@ function setupDivider() {
 
 document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('search-input').addEventListener('input', filterCards);
-  document.addEventListener('keydown', e => { if (e.key==='Escape') { closeModal({}); closeImport({}); closeAvatarPicker(); } });
+  document.addEventListener('keydown', e => { if (e.key==='Escape') { closeModal({}); closeImport({}); closeAvatarPicker(); closeDeckStats(); } });
   setupDivider();
   syncDeckViewToggle();
   document.querySelector('.card-list').addEventListener('scroll', function() {
