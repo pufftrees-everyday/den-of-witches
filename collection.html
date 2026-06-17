@@ -262,6 +262,21 @@
   .row-name { font-family: 'Crimson Pro', serif; font-size: 0.95rem; color: var(--parchment); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
   .row-meta { font-size: 0.7rem; color: var(--mist); white-space: nowrap; }
   .row-meta.set { color: var(--shimmer); }
+
+  /* Set badges (lettered, color-coded) */
+  .set-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.6rem;
+    letter-spacing: 0.02em; min-width: 20px; height: 18px; padding: 0 5px;
+    border-radius: 9px; border: 1px solid; white-space: nowrap; line-height: 1;
+  }
+  .set-alpha  { color: #d8b878; background: rgba(200,169,110,0.15); border-color: rgba(200,169,110,0.55); }
+  .set-beta   { color: #c2c2cc; background: rgba(180,180,195,0.13); border-color: rgba(180,180,195,0.5); }
+  .set-arth   { color: #7fb88a; background: rgba(90,160,110,0.15); border-color: rgba(90,160,110,0.55); }
+  .set-gothic { color: #b49ce0; background: rgba(155,135,212,0.16); border-color: rgba(155,135,212,0.55); }
+  .set-dragon { color: #e0907c; background: rgba(196,97,74,0.16); border-color: rgba(196,97,74,0.55); }
+  .set-promo  { color: #88b4d8; background: rgba(120,160,200,0.15); border-color: rgba(120,160,200,0.55); }
+  .set-other  { color: var(--mist); background: rgba(120,110,150,0.12); border-color: rgba(120,110,150,0.4); }
   .row-rarity { font-family: 'Cinzel', serif; font-size: 0.55rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 1px 6px; border-radius: 8px; white-space: nowrap; }
   .row-rarity.ordinary { background: rgba(140,140,150,0.12); color: #9a9aa5; }
   .row-rarity.exceptional { background: rgba(90,138,176,0.14); color: var(--water); }
@@ -813,6 +828,22 @@ function getImageUrl(card) {
   return `${IMAGE_BASE}${(card.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'')}.png`;
 }
 
+// Map a set name to a compact lettered, color-coded badge
+function setBadge(setName) {
+  if (!setName) return '';
+  const map = {
+    'Alpha':              { l: 'α',  c: 'set-alpha' },
+    'Beta':               { l: 'β',  c: 'set-beta' },
+    'Arthurian Legends':  { l: 'AL', c: 'set-arth' },
+    'Gothic':             { l: 'G',  c: 'set-gothic' },
+    'Dragonlord':         { l: 'DL', c: 'set-dragon' },
+    'Promotional':        { l: 'P',  c: 'set-promo' },
+    'Promo':              { l: 'P',  c: 'set-promo' },
+  };
+  const b = map[setName] || { l: setName.slice(0, 2).toUpperCase(), c: 'set-other' };
+  return `<span class="set-badge ${b.c}" title="${setName}">${b.l}</span>`;
+}
+
 // ── RENDER ──
 function renderCards(cards, append = false) {
   const grid = document.getElementById('card-grid');
@@ -885,7 +916,7 @@ function renderCardRow(card, col) {
   const escId = card.id.replace(/'/g, "\\'");
   return `<div class="card-row${flagClass}" data-id="${card.id}">
     <div class="row-name">${card.name}</div>
-    <div class="row-set-wrap"><span class="row-meta set">${card.set || ''}</span></div>
+    <div class="row-set-wrap"><span class="row-meta set">${setBadge(card.set)}</span></div>
     <span class="row-rarity ${rarityClass}">${rarity}</span>
     <span class="row-meta">${card.type || ''}</span>
     <span class="row-price">${priceHtml}</span>

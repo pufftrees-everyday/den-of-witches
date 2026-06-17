@@ -296,6 +296,21 @@
   .db-row-name { font-family: 'Crimson Pro', serif; font-size: 0.92rem; color: var(--parchment); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
   .db-row-meta { font-size: 0.68rem; color: var(--mist); white-space: nowrap; }
   .db-row-meta.set { color: var(--shimmer); }
+
+  /* Set badges (lettered, color-coded) */
+  .set-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.6rem;
+    letter-spacing: 0.02em; min-width: 20px; height: 18px; padding: 0 5px;
+    border-radius: 9px; border: 1px solid; white-space: nowrap; line-height: 1;
+  }
+  .set-alpha  { color: #d8b878; background: rgba(200,169,110,0.15); border-color: rgba(200,169,110,0.55); }
+  .set-beta   { color: #c2c2cc; background: rgba(180,180,195,0.13); border-color: rgba(180,180,195,0.5); }
+  .set-arth   { color: #7fb88a; background: rgba(90,160,110,0.15); border-color: rgba(90,160,110,0.55); }
+  .set-gothic { color: #b49ce0; background: rgba(155,135,212,0.16); border-color: rgba(155,135,212,0.55); }
+  .set-dragon { color: #e0907c; background: rgba(196,97,74,0.16); border-color: rgba(196,97,74,0.55); }
+  .set-promo  { color: #88b4d8; background: rgba(120,160,200,0.15); border-color: rgba(120,160,200,0.55); }
+  .set-other  { color: var(--mist); background: rgba(120,110,150,0.12); border-color: rgba(120,110,150,0.4); }
   .db-row-rarity { font-family: 'Cinzel', serif; font-size: 0.52rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 1px 6px; border-radius: 8px; white-space: nowrap; }
   .db-row-rarity.ordinary { background: rgba(140,140,150,0.12); color: #9a9aa5; }
   .db-row-rarity.exceptional { background: rgba(90,138,176,0.14); color: var(--water); }
@@ -608,6 +623,16 @@
   .ap-card-info { padding: 9px 10px; }
   .ap-card-name { font-family: 'Cinzel', serif; font-size: 0.8rem; font-weight: 600; color: var(--parchment); line-height: 1.2; }
   .ap-card-el { font-size: 0.72rem; color: var(--rune); margin-top: 3px; }
+
+  /* Floating large preview on hover */
+  #avatar-preview {
+    display: none; position: fixed; z-index: 400; pointer-events: none;
+    width: 300px; border-radius: 12px; overflow: hidden;
+    border: 2px solid var(--gold); box-shadow: 0 12px 40px rgba(0,0,0,0.7);
+    background: var(--void);
+  }
+  #avatar-preview img { width: 100%; display: block; }
+  @media (max-width: 820px) { #avatar-preview { display: none !important; } }
   @media (max-width: 600px) {
     .ap-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; padding: 8px 14px 24px; }
     .ap-title { font-size: 1.4rem; }
@@ -769,7 +794,7 @@
 <div class="avatar-picker" id="avatar-picker">
   <div class="ap-header">
     <div class="ap-title">Choose Your Avatar</div>
-    <div class="ap-sub">Your Avatar sets your elemental identity — pick one to begin your deck.</div>
+    <div class="ap-sub">Pick an Avatar to begin your deck.</div>
   </div>
   <div class="ap-search-row">
     <input type="text" class="ap-search" id="ap-search" placeholder="Search avatars…" oninput="filterAvatarPicker()" autocomplete="off">
@@ -1167,6 +1192,22 @@ function getImageUrl(card) {
 
 function escId(id) { return String(id).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
 
+// Map a set name to a compact lettered, color-coded badge
+function setBadge(setName) {
+  if (!setName) return '';
+  const map = {
+    'Alpha':              { l: 'α',  c: 'set-alpha' },
+    'Beta':               { l: 'β',  c: 'set-beta' },
+    'Arthurian Legends':  { l: 'AL', c: 'set-arth' },
+    'Gothic':             { l: 'G',  c: 'set-gothic' },
+    'Dragonlord':         { l: 'DL', c: 'set-dragon' },
+    'Promotional':        { l: 'P',  c: 'set-promo' },
+    'Promo':              { l: 'P',  c: 'set-promo' },
+  };
+  const b = map[setName] || { l: setName.slice(0, 2).toUpperCase(), c: 'set-other' };
+  return `<span class="set-badge ${b.c}" title="${setName}">${b.l}</span>`;
+}
+
 // ── FILTERS ──
 const activeFilters = { type: new Set(), set: new Set(), rarity: new Set() };
 const advFilters = { minionSubtype: new Set(), artifactSubtype: new Set(), siteSubtype: new Set(), keyword: new Set() };
@@ -1316,7 +1357,7 @@ function renderDbCardRow(card) {
   const rarityClass = rarity.toLowerCase();
   return `<div class="db-card-row" data-card-id="${escId(card.id)}" onclick="openModal('${escId(card.id)}')">
     <div class="db-row-name">${card.name}</div>
-    <span class="db-row-meta set">${card.set || ''}</span>
+    <span class="db-row-meta set">${setBadge(card.set)}</span>
     <span class="db-row-rarity ${rarityClass}">${rarity}</span>
     <span class="db-row-meta">${card.type || ''}</span>
     <span class="db-row-indeck">${inDeck > 0 ? '×'+inDeck : ''}</span>
@@ -1442,6 +1483,7 @@ function openAvatarPicker() {
 function closeAvatarPicker() {
   const picker = document.getElementById('avatar-picker');
   if (picker) picker.classList.remove('open');
+  hideAvatarPreview();
 }
 
 function skipAvatarPicker() {
@@ -1455,8 +1497,12 @@ function renderAvatarPicker(list) {
   if (!list.length) { grid.innerHTML = '<div class="status" style="grid-column:1/-1">No avatars found.</div>'; return; }
   grid.innerHTML = list.map(card => {
     const el = card.element || '';
-    return `<div class="ap-card" onclick="pickAvatar('${escId(card.id)}')">
-      <img src="${getImageUrl(card)}" alt="${card.name}" loading="lazy" onerror="this.style.opacity='0.25'">
+    const img = getImageUrl(card);
+    return `<div class="ap-card" onclick="pickAvatar('${escId(card.id)}')"
+        onmouseenter="showAvatarPreview('${img}', event)"
+        onmousemove="moveAvatarPreview(event)"
+        onmouseleave="hideAvatarPreview()">
+      <img src="${img}" alt="${card.name}" loading="lazy" onerror="this.style.opacity='0.25'">
       <div class="ap-card-info">
         <div class="ap-card-name">${card.name}</div>
         ${el ? `<div class="ap-card-el">${el}</div>` : ''}
@@ -1480,10 +1526,45 @@ function pickAvatar(id) {
   // Clear any existing avatar, then set this one
   deck.avatar = {};
   deck.avatar[String(card.id)] = { card, qty: 1 };
+  hideAvatarPreview();
   closeAvatarPicker();
   renderDeck();
   renderCardGrid();
   toast(`${card.name} set as your Avatar!`);
+}
+
+// ── AVATAR HOVER PREVIEW ──
+function showAvatarPreview(imgUrl, e) {
+  let prev = document.getElementById('avatar-preview');
+  if (!prev) {
+    prev = document.createElement('div');
+    prev.id = 'avatar-preview';
+    prev.innerHTML = '<img alt="">';
+    document.body.appendChild(prev);
+  }
+  prev.querySelector('img').src = imgUrl;
+  prev.style.display = 'block';
+  moveAvatarPreview(e);
+}
+
+function moveAvatarPreview(e) {
+  const prev = document.getElementById('avatar-preview');
+  if (!prev || prev.style.display === 'none') return;
+  const pad = 20;
+  const pw = 300, ph = 420; // approx preview size
+  let x = e.clientX + pad;
+  let y = e.clientY + pad;
+  // Keep it on-screen: flip left/up if near edges
+  if (x + pw > window.innerWidth) x = e.clientX - pw - pad;
+  if (y + ph > window.innerHeight) y = window.innerHeight - ph - 10;
+  if (y < 10) y = 10;
+  prev.style.left = x + 'px';
+  prev.style.top = y + 'px';
+}
+
+function hideAvatarPreview() {
+  const prev = document.getElementById('avatar-preview');
+  if (prev) prev.style.display = 'none';
 }
 
 function getDeckSection(card) {

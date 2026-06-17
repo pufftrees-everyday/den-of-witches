@@ -519,6 +519,43 @@
   .card-grid.sites-only .card-thumb { aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; }
   .card-grid.sites-only .card-thumb img { position: absolute; width: 75%; aspect-ratio: 3/4; transform: rotate(90deg); object-fit: contain; }
 
+  /* VIEW MODE TOGGLE (grid/text) */
+  .viewmode-toggle { display: inline-flex; border: 2px solid #2a2640; border-radius: 4px; overflow: hidden; margin-left: auto; flex-shrink: 0; }
+  .viewmode-btn { font-size: 1rem; line-height: 1; background: #13111e; border: none; color: var(--rune); padding: 5px 11px; cursor: pointer; transition: all 0.15s; }
+  .viewmode-btn.active { background: var(--rune); color: #fff; }
+  .viewmode-btn:not(.active):hover { background: #1a1728; color: var(--arcane); }
+
+  /* LIST (TEXT) VIEW */
+  .card-grid.list-view { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 10px; }
+  .card-grid.list-view.sites-only { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .card-row {
+    display: grid; grid-template-columns: 1fr auto auto auto;
+    align-items: center; gap: 10px;
+    background: var(--dusk); border: 1px solid var(--border);
+    border-left: 3px solid var(--border-strong);
+    padding: 6px 11px; border-radius: 3px; cursor: pointer;
+    transition: background 0.12s; min-width: 0;
+  }
+  .card-row:hover { background: #1a1728; }
+  .cr-name { font-family: 'Crimson Pro', serif; font-size: 0.98rem; color: var(--parchment); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .cr-meta { font-size: 0.72rem; color: var(--mist); white-space: nowrap; }
+  .cr-rarity { font-family: 'Cinzel', serif; font-size: 0.55rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 1px 6px; border-radius: 8px; white-space: nowrap; }
+  .cr-rarity.ordinary { background: rgba(140,140,150,0.12); color: #9a9aa5; }
+  .cr-rarity.exceptional { background: rgba(90,138,176,0.14); color: #6f9ec4; }
+  .cr-rarity.elite { background: rgba(155,135,212,0.14); color: var(--arcane); }
+  .cr-rarity.unique { background: rgba(200,169,110,0.14); color: var(--gold); }
+  @media (max-width: 760px) { .card-grid.list-view { grid-template-columns: 1fr; } }
+
+  /* Set badges */
+  .set-badge { display: inline-flex; align-items: center; justify-content: center; font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.6rem; letter-spacing: 0.02em; min-width: 20px; height: 18px; padding: 0 5px; border-radius: 9px; border: 1px solid; white-space: nowrap; line-height: 1; }
+  .set-alpha  { color: #d8b878; background: rgba(200,169,110,0.15); border-color: rgba(200,169,110,0.55); }
+  .set-beta   { color: #c2c2cc; background: rgba(180,180,195,0.13); border-color: rgba(180,180,195,0.5); }
+  .set-arth   { color: #7fb88a; background: rgba(90,160,110,0.15); border-color: rgba(90,160,110,0.55); }
+  .set-gothic { color: #b49ce0; background: rgba(155,135,212,0.16); border-color: rgba(155,135,212,0.55); }
+  .set-dragon { color: #e0907c; background: rgba(196,97,74,0.16); border-color: rgba(196,97,74,0.55); }
+  .set-promo  { color: #88b4d8; background: rgba(120,160,200,0.15); border-color: rgba(120,160,200,0.55); }
+  .set-other  { color: var(--mist); background: rgba(120,110,150,0.12); border-color: rgba(120,110,150,0.4); }
+
   .add-btn { position: absolute; top: 6px; right: 6px; width: 28px; height: 28px; background: rgba(11,10,15,0.85); border: 1px solid var(--border-strong); border-radius: 50%; color: var(--arcane); font-size: 1.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: opacity 0.15s, background 0.15s; }
   .card-thumb:hover .add-btn { opacity: 1; }
   .add-btn:hover { background: var(--rune); color: #fff; }
@@ -794,6 +831,10 @@
       <button class="sort-btn active" id="sort-random" onclick="setSort('random')">⤮ Random</button>
       <button class="sort-btn" id="sort-az" onclick="setSort('az')">A–Z <span class="sort-dir" id="dir-az">↓</span></button>
       <button class="sort-btn" id="sort-cost" onclick="setSort('cost')">Mana Cost <span class="sort-dir" id="dir-cost">↓</span></button>
+      <div class="viewmode-toggle">
+        <button class="viewmode-btn active" id="vm-grid" onclick="setViewMode('grid')" title="Card view" aria-label="Card view">⊞</button>
+        <button class="viewmode-btn" id="vm-list" onclick="setViewMode('list')" title="Text view" aria-label="Text view">☰</button>
+      </div>
     </div>
     <div id="card-grid" class="card-grid">
       <div class="status"><span class="loading-rune">⧫</span>Consulting the arcane archives…</div>
@@ -822,6 +863,7 @@
 let allCards = [];
 let currentCards = [];
 let visibleCount = 200;
+let viewMode = localStorage.getItem('grimoire_view_mode') || 'grid'; // grid | list
 let deck = {};
 let currentModalCard = null;
 let activeDeckId = null;
@@ -879,25 +921,59 @@ function renderCards(cards, append = false) {
   const grid = document.getElementById('card-grid');
   // Apply site-only rotation mode when Site is the only active type filter
   const sitesOnly = activeFilters.type.size === 1 && activeFilters.type.has('Site');
+  grid.classList.toggle('list-view', viewMode === 'list');
   if (!append) {
     currentCards = cards;
     visibleCount = PAGE_SIZE;
-    grid.classList.toggle('sites-only', sitesOnly);
+    grid.classList.toggle('sites-only', sitesOnly && viewMode === 'grid');
     if (!cards.length) { grid.innerHTML = '<div class="status" style="padding:40px 0">No cards match your search.</div>'; return; }
     grid.innerHTML = '';
   } else {
-    grid.classList.toggle('sites-only', sitesOnly);
+    grid.classList.toggle('sites-only', sitesOnly && viewMode === 'grid');
   }
   const shown = currentCards.slice(append ? visibleCount - PAGE_SIZE : 0, visibleCount);
-  const html = shown.map(card => `
-    <div class="card-thumb" onclick="openModal('${escId(card.id)}')">
-      <img src="${getImageUrl(card)}" alt="${card.name}" loading="lazy" onerror="this.style.opacity='0'">
-      <div class="card-thumb-name">${card.name}</div>
-      <div class="card-thumb-meta">${[card.type, card.rarity, card.set].filter(Boolean).join(' · ')}</div>
-    </div>`).join('');
+  const html = shown.map(card => viewMode === 'list' ? renderCardRow(card) : renderCardThumb(card)).join('');
   if (append) { grid.insertAdjacentHTML('beforeend', html); }
   else { grid.innerHTML = html; }
   document.getElementById('result-count').textContent = `Showing ${Math.min(visibleCount, currentCards.length)} of ${currentCards.length} cards`;
+}
+
+function renderCardThumb(card) {
+  return `<div class="card-thumb" onclick="openModal('${escId(card.id)}')">
+      <img src="${getImageUrl(card)}" alt="${card.name}" loading="lazy" onerror="this.style.opacity='0'">
+      <div class="card-thumb-name">${card.name}</div>
+      <div class="card-thumb-meta">${[card.type, card.rarity, card.set].filter(Boolean).join(' · ')}</div>
+    </div>`;
+}
+
+function renderCardRow(card) {
+  const rarity = card.rarity || '';
+  return `<div class="card-row" onclick="openModal('${escId(card.id)}')">
+      <div class="cr-name">${card.name}</div>
+      <span class="cr-meta">${setBadge(card.set)}</span>
+      <span class="cr-rarity ${rarity.toLowerCase()}">${rarity}</span>
+      <span class="cr-meta">${card.type || ''}</span>
+    </div>`;
+}
+
+function setBadge(setName) {
+  if (!setName) return '';
+  const map = {
+    'Alpha': { l: 'α', c: 'set-alpha' }, 'Beta': { l: 'β', c: 'set-beta' },
+    'Arthurian Legends': { l: 'AL', c: 'set-arth' }, 'Gothic': { l: 'G', c: 'set-gothic' },
+    'Dragonlord': { l: 'DL', c: 'set-dragon' }, 'Promotional': { l: 'P', c: 'set-promo' },
+    'Promo': { l: 'P', c: 'set-promo' },
+  };
+  const b = map[setName] || { l: setName.slice(0, 2).toUpperCase(), c: 'set-other' };
+  return `<span class="set-badge ${b.c}" title="${setName}">${b.l}</span>`;
+}
+
+function setViewMode(mode) {
+  viewMode = mode;
+  localStorage.setItem('grimoire_view_mode', mode);
+  document.getElementById('vm-grid').classList.toggle('active', mode === 'grid');
+  document.getElementById('vm-list').classList.toggle('active', mode === 'list');
+  filterCards();
 }
 
 // FILTERS
@@ -1318,6 +1394,8 @@ function toast(msg) {
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeModal({});closeImport({});} });
 
 // INIT
+document.getElementById('vm-grid').classList.toggle('active', viewMode === 'grid');
+document.getElementById('vm-list').classList.toggle('active', viewMode === 'list');
 renderMyDecks();
 loadCards();
 
