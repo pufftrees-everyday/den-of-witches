@@ -137,6 +137,20 @@
   .view-btn:hover { color: var(--arcane); background: rgba(155,135,212,0.06); }
   .view-btn.active { background: var(--rune); color: #fff; }
 
+  /* Section switcher — make the three vault sections pop distinctly from Card Search */
+  .section-switcher { border-color: var(--border-strong); }
+  .section-switcher .view-btn { padding: 7px 16px; font-size: 0.68rem; }
+  /* Card Search active = neutral arcane */
+  #sec-search.active { background: var(--rune); color: #fff; }
+  /* Collection active = sage */
+  #sec-collection.active { background: var(--sage); color: #fff; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15), 0 0 12px rgba(90,138,106,0.4); }
+  /* Wants active = ember */
+  #sec-wants.active { background: var(--ember); color: #fff; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15), 0 0 12px rgba(196,97,74,0.4); }
+  /* Trade Binders active = arcane purple */
+  #sec-trade.active { background: var(--arcane); color: #1a1410; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2), 0 0 12px rgba(155,135,212,0.45); }
+  /* When a vault section (not search) is active, give the whole switcher a lifted look */
+  body.in-vault-section .section-switcher { box-shadow: 0 0 0 1px var(--border-strong); }
+
   /* STONEWORK FILTER */
   .search-bar {
     margin-bottom: 16px;
@@ -234,6 +248,19 @@
   /* Card toolbar (view + foil) sitting right above the grid */
   .vault-card-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); }
   .vault-toolbar-right { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  /* Section statistics panel */
+  .section-stats { margin-top: 18px; background: linear-gradient(180deg, rgba(37,35,56,0.5), rgba(17,16,24,0.5)); border: 1px solid var(--border-strong); border-radius: 8px; padding: 16px 18px; }
+  .ss-head { border-left: 3px solid var(--rune); padding-left: 10px; margin-bottom: 14px; }
+  .ss-title { font-family: 'Cinzel', serif; font-size: 0.95rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+  .ss-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
+  .ss-stat { background: rgba(11,10,15,0.4); border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; text-align: center; }
+  .ss-num { font-family: 'Cinzel', serif; font-size: 1.5rem; font-weight: 700; color: var(--gold); line-height: 1.1; }
+  .ss-num .ss-sub { font-size: 0.75rem; color: var(--rune); font-weight: 400; }
+  .ss-lbl { font-size: 0.72rem; color: var(--rune); letter-spacing: 0.05em; text-transform: uppercase; margin-top: 5px; }
+  .ss-sets { margin-top: 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .ss-sets-label { font-family: 'Cinzel', serif; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rune); }
+  .ss-pill { display: inline-flex; align-items: center; gap: 5px; background: rgba(11,10,15,0.5); border: 1px solid var(--border); border-radius: 4px; padding: 4px 9px; font-size: 0.8rem; color: var(--shimmer); }
+  .ss-pill b { color: var(--gold); }
   .vault-sort-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .vault-sort-label { font-family: 'Cinzel', serif; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rune); margin-right: 2px; }
   .vault-sort-btn { display: inline-flex; align-items: center; gap: 5px; background: #13111e; border: 1px solid var(--border-strong); border-radius: 2px; color: var(--shimmer); font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.04em; padding: 5px 11px; cursor: pointer; transition: all 0.15s; }
@@ -531,11 +558,10 @@
       <button class="view-btn active" id="sec-search" onclick="setView('search')">Card Search</button>
       <button class="view-btn" id="sec-collection" onclick="setView('all')">Collection</button>
       <button class="view-btn" id="sec-wants" onclick="setView('want')">Wants</button>
-      <button class="view-btn" id="sec-trade" onclick="setView('trade')">Trade Binder</button>
+      <button class="view-btn" id="sec-trade" onclick="setView('trade')">Trade Binders</button>
     </div>
     <div class="collection-actions">
       <button class="btn btn-ghost" id="export-btn" onclick="exportCurrentSection()">⬇ Export</button>
-      <button class="btn btn-ghost" onclick="clearCollection()">Clear All Flags</button>
     </div>
   </div>
 
@@ -691,6 +717,9 @@
       </div>
     </div>
   </div>
+
+  <!-- Section statistics (Collection / Wants / Trade Binders) -->
+  <div id="section-stats" class="section-stats" style="display:none;"></div>
 
   <!-- Card toolbar: sits right above the card grid -->
   <div class="vault-card-toolbar">
@@ -928,6 +957,10 @@ function updateStats() {
       : '';
     totalEl.style.display = totalHaveVal > 0 ? '' : 'none';
   }
+  // Keep the section stats panel live as cards are added/removed
+  if (typeof currentView !== 'undefined' && currentView !== 'search') {
+    renderSectionStats(currentView);
+  }
 }
 
 // ── LOAD CARDS ──
@@ -1014,7 +1047,7 @@ function emptyStateMessage() {
   const msgs = {
     all:   { icon: '📚', title: 'Your Collection is empty', body: 'Head to <b>Card Search</b> and tap <span style="color:var(--sage)">✓ Have</span> on cards you own to add them here.' },
     want:  { icon: '🔍', title: 'Your Wants list is empty', body: 'In <b>Card Search</b>, tap <span style="color:var(--ember)">♡ Want</span> on cards you’re hunting for and they’ll appear here.' },
-    trade: { icon: '⇄', title: 'Your Trade Binder is empty', body: 'In <b>Card Search</b>, tap <span style="color:var(--arcane)">⇄ Trade</span> on cards you’re willing to trade away.' },
+    trade: { icon: '⇄', title: 'Your Trade Binders are empty', body: 'In <b>Card Search</b>, tap <span style="color:var(--arcane)">⇄ Trade</span> on cards you’re willing to trade away.' },
   };
   const m = msgs[currentView];
   if (!m) return '<div class="status" style="padding:48px 0">No cards to show.</div>';
@@ -1152,6 +1185,7 @@ function setFinish(mode) {
   document.getElementById('finish-foil').classList.toggle('active', mode === 'foil');
   document.body.classList.toggle('foil-mode', mode === 'foil');
   updateStats();
+  renderSectionStats(currentView);
   filterCards();
 }
 
@@ -1165,10 +1199,63 @@ function setView(view) {
   // Update export button label to match the section
   const exportBtn = document.getElementById('export-btn');
   if (exportBtn) {
-    const label = view === 'want' ? '⬇ Export Wants' : view === 'trade' ? '⬇ Export Trade Binder' : '⬇ Export Collection';
+    const label = view === 'want' ? '⬇ Export Wants' : view === 'trade' ? '⬇ Export Trade Binders' : '⬇ Export Collection';
     exportBtn.textContent = label;
   }
+  // Card Search hides the stats panel; the three vault sections show it
+  const inVaultSection = (view !== 'search');
+  document.body.classList.toggle('in-vault-section', inVaultSection);
+  renderSectionStats(view);
   filterCards();
+}
+
+// Build a statistics panel for the active vault section (Collection/Wants/Trade Binders)
+function renderSectionStats(view) {
+  const panel = document.getElementById('section-stats');
+  if (!panel) return;
+  if (view === 'search') { panel.style.display = 'none'; panel.innerHTML = ''; return; }
+
+  const flag = view === 'want' ? 'want' : view === 'trade' ? 'trade' : 'have';
+  const foilFlag = flag + 'Foil';
+  const col = getCollection();
+
+  let stdCount = 0, foilCount = 0, uniqueCount = 0, totalVal = 0;
+  const setCounts = {}; const elemCounts = {};
+  allCards.forEach(c => {
+    const e = col[c.id]; if (!e) return;
+    const std = e[flag] || 0, foil = e[foilFlag] || 0;
+    if (std === 0 && foil === 0) return;
+    uniqueCount++;
+    stdCount += std; foilCount += foil;
+    totalVal += (prices[c.name]?.market || 0) * std + (foilPrices[c.name]?.market || 0) * foil;
+    const set = c.set || 'Unknown'; setCounts[set] = (setCounts[set] || 0) + std + foil;
+    const els = (c.element || '').split(',').map(s => s.trim()).filter(Boolean);
+    els.forEach(el => { elemCounts[el] = (elemCounts[el] || 0) + std + foil; });
+  });
+  const totalCards = stdCount + foilCount;
+
+  const sectionName = view === 'want' ? 'Wants' : view === 'trade' ? 'Trade Binders' : 'Collection';
+  const accent = view === 'want' ? 'var(--ember)' : view === 'trade' ? 'var(--arcane)' : 'var(--sage)';
+
+  if (totalCards === 0) { panel.style.display = 'none'; panel.innerHTML = ''; return; }
+
+  // Top sets (by count)
+  const topSets = Object.entries(setCounts).sort((a,b) => b[1]-a[1]).slice(0, 5);
+  const setsHtml = topSets.map(([s,n]) => `<span class="ss-pill">${setBadge ? setBadge(s) : s} <b>${n}</b></span>`).join('');
+
+  panel.style.display = '';
+  panel.innerHTML = `
+    <div class="ss-head" style="border-color:${accent}">
+      <span class="ss-title" style="color:${accent}">${sectionName} Stats</span>
+    </div>
+    <div class="ss-grid">
+      <div class="ss-stat"><div class="ss-num">${totalVal > 0 ? '$'+totalVal.toFixed(2) : '—'}</div><div class="ss-lbl">Total Value</div></div>
+      <div class="ss-stat"><div class="ss-num">${totalCards}</div><div class="ss-lbl">Total Cards</div></div>
+      <div class="ss-stat"><div class="ss-num">${uniqueCount}</div><div class="ss-lbl">Unique Cards</div></div>
+      <div class="ss-stat"><div class="ss-num">${stdCount} <span class="ss-sub">std</span> / ${foilCount} <span class="ss-sub" style="color:var(--arcane)">foil</span></div><div class="ss-lbl">Standard vs Foil</div></div>
+    </div>
+    ${setsHtml ? `<div class="ss-sets"><span class="ss-sets-label">Top Sets</span>${setsHtml}</div>` : ''}
+  `;
 }
 
 // ── FILTERS ──
@@ -1376,21 +1463,13 @@ function exportList(flag, filename, title) {
 
 function exportWantList() { exportList('want', 'want_list.txt', 'Sorcery TCG — Want List'); }
 function exportHaveList() { exportList('have', 'have_list.txt', 'Sorcery TCG — Have List'); }
-function exportTradeList() { exportList('trade', 'trade_binder.txt', 'Sorcery TCG — Trade Binder'); }
+function exportTradeList() { exportList('trade', 'trade_binder.txt', 'Sorcery TCG — Trade Binders'); }
 // Export whichever section the user is currently viewing
 function exportCurrentSection() {
   if (currentView === 'want') return exportWantList();
   if (currentView === 'trade') return exportTradeList();
   // 'all' (Collection) and 'search' both export the owned collection
   return exportHaveList();
-}
-
-function clearCollection() {
-  if (!confirm('Clear ALL flags — Collection, Wants, and Trade Binder? This cannot be undone.')) return;
-  localStorage.removeItem('grimoire_collection');
-  updateStats();
-  filterCards();
-  toast('Collection cleared');
 }
 
 // ── TOAST ──
