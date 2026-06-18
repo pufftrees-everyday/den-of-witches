@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cursed Realm — The Archive</title>
+<title>Cursed Realm — My Decks</title>
 <meta name="description" content="Browse and search decks published by the Sorcery: Contested Realm community.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://cursedrealm.org/archive.html">
-<meta property="og:title" content="The Archive — Cursed Realm">
+<meta property="og:title" content="My Decks — Cursed Realm">
 <meta property="og:description" content="Browse and search decks published by the Sorcery: Contested Realm community.">
 <meta property="og:image" content="https://cursedrealm.org/social-banner.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:site_name" content="Cursed Realm">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="The Archive — Cursed Realm">
+<meta name="twitter:title" content="My Decks — Cursed Realm">
 <meta name="twitter:description" content="Browse and search decks published by the Sorcery: Contested Realm community.">
 <meta name="twitter:image" content="https://cursedrealm.org/social-banner.png">
 <meta name="theme-color" content="#0b0a0f">
@@ -139,8 +139,25 @@
   .deck-card-author { font-size: 0.85rem; color: var(--rune); }
   .deck-card-author b { color: var(--arcane); }
   .deck-card-avatar-name { font-family: 'Crimson Pro', serif; font-style: italic; font-size: 0.85rem; color: var(--gold); }
-  .deck-card-actions { display: flex; gap: 8px; margin-top: auto; padding-top: 10px; }
+  .deck-card-actions { display: flex; gap: 8px; margin-top: auto; padding-top: 10px; align-items: center; }
   .deck-card-actions .btn { flex: 1; text-align: center; }
+  .deck-card-link { background: none; border: 1px solid var(--border-strong); border-radius: 5px; color: var(--arcane); cursor: pointer; padding: 7px 10px; font-size: 0.95rem; flex: 0 0 auto; }
+  .deck-card-link:hover { background: rgba(155,135,212,0.12); }
+  .deck-card-del { position: absolute; top: 9px; right: 9px; z-index: 3; width: 28px; height: 28px; border-radius: 50%; border: none; background: rgba(11,10,15,0.72); color: var(--ember); font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.15s; }
+  .deck-card:hover .deck-card-del { opacity: 1; }
+  .deck-pub-badge { font-family: 'Cinzel', serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--sage); border: 1px solid var(--sage); border-radius: 3px; padding: 1px 6px; vertical-align: middle; margin-left: 4px; }
+  /* Delete confirm modal */
+  .deck-del-overlay { display: none; position: fixed; inset: 0; background: rgba(11,10,15,0.82); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+  .deck-del-overlay.open { display: flex; }
+  .deck-del-box { background: var(--dusk); border: 1px solid var(--border-strong); border-radius: 10px; max-width: 400px; width: 100%; padding: 28px 26px 22px; text-align: center; box-shadow: 0 12px 40px rgba(0,0,0,0.6); }
+  .deck-del-icon { font-size: 2.4rem; color: var(--ember); margin-bottom: 10px; }
+  .deck-del-title { font-family: 'Cinzel', serif; font-size: 1.3rem; font-weight: 700; color: var(--parchment); margin-bottom: 10px; }
+  .deck-del-msg { font-family: 'Crimson Pro', serif; font-size: 0.98rem; color: var(--rune); line-height: 1.55; margin-bottom: 22px; }
+  .deck-del-msg b { color: var(--shimmer); }
+  .deck-del-actions { display: flex; gap: 12px; justify-content: center; }
+  .deck-del-actions .btn { min-width: 120px; }
+  .deck-del-confirm { background: var(--ember); border: 1px solid var(--ember); color: #fff; }
+  .deck-del-confirm:hover { background: #d8745c; border-color: #d8745c; }
   /* Element balance section (bottom of card) */
   .el-section { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
   .el-section-title { font-family: 'Cinzel', serif; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rune); margin-bottom: 7px; }
@@ -228,13 +245,14 @@
 <div class="page">
   <div class="gallery-head">
     <div>
-      <div class="gallery-title"><img src="icon-192.png" alt="">The Archive</div>
-      <div class="gallery-sub">Welcome to the Archive of the Cursed Realm — a living library of decks made public by their creators. Browse the strategies of fellow Sorcerers, study their elemental designs, and carry any deck back to your own workshop to make it your own.</div>
+      <div class="gallery-title"><img src="icon-192.png" alt="">My Decks</div>
+      <div class="gallery-sub">Your personal workshop — every deck you've saved, all in one place. Open one to keep building, view it in its full glory, or start something new.</div>
     </div>
+    <button class="btn btn-primary" onclick="window.location.href='deckbuilder.html'" style="flex-shrink:0;">+ New Deck</button>
   </div>
 
   <div style="margin-bottom:14px;">
-    <input type="text" id="gallery-search" placeholder="Search decks by name, author, or avatar…" oninput="filterGallery()"
+    <input type="text" id="gallery-search" placeholder="Search your decks by name or avatar…" oninput="filterGallery()"
       style="width:100%;background:#0b0a0f;border:1px solid var(--border-strong);color:var(--parchment);font-family:'Crimson Pro',serif;font-size:1.05rem;padding:11px 16px;border-radius:6px;outline:none;">
   </div>
 
@@ -257,10 +275,6 @@
         <button class="arch-browse-btn" onclick="openAvatarBrowser()" title="Browse all avatars">Browse</button>
       </div>
     </div>
-    <div class="arch-filter-group">
-      <span class="arch-filter-label">Creator</span>
-      <input type="text" id="filter-creator" class="arch-input" placeholder="Any creator…" oninput="applyArchiveFilters()" autocomplete="off">
-    </div>
     <button class="arch-clear-btn" onclick="clearArchiveFilters()">Clear</button>
     <span class="arch-result-count" id="archive-result-count"></span>
   </div>
@@ -274,6 +288,19 @@
       </div>
       <input type="text" id="avatar-browser-search" class="arch-input" placeholder="Search avatars…" oninput="renderAvatarBrowser()" autocomplete="off" style="width:100%;margin-bottom:14px;">
       <div class="avatar-browser-grid" id="avatar-browser-grid"></div>
+    </div>
+  </div>
+
+  <!-- DELETE CONFIRM MODAL -->
+  <div class="deck-del-overlay" id="deck-del-overlay" onclick="if(event.target===this)closeDeckDelete()">
+    <div class="deck-del-box">
+      <div class="deck-del-icon">⚠</div>
+      <div class="deck-del-title">Delete this deck?</div>
+      <div class="deck-del-msg" id="deck-del-msg">This will permanently delete the deck. This cannot be undone.</div>
+      <div class="deck-del-actions">
+        <button class="btn btn-ghost" onclick="closeDeckDelete()">Cancel</button>
+        <button class="btn deck-del-confirm" onclick="confirmDeckDelete()">Delete deck</button>
+      </div>
     </div>
   </div>
 
@@ -548,34 +575,41 @@ function avatarImageUrl(deckData) {
 
 async function loadGallery() {
   const container = document.getElementById('gallery-content');
-  if (!supa) { container.innerHTML = '<div class="status">The Archive is unavailable — could not connect.</div>'; return; }
-  container.innerHTML = '<div class="status">Summoning decks…</div>';
+  if (!supa) { container.innerHTML = '<div class="status">My Decks is unavailable — could not connect.</div>'; return; }
+  container.innerHTML = '<div class="status">Summoning your decks…</div>';
+
+  // Must be logged in to have saved decks
+  if (!currentUser) {
+    container.innerHTML = `<div class="empty-cta">
+      <p>Sign in to see the decks you've saved.</p>
+      <button class="btn btn-primary" onclick="openAuth('login')">Sign In</button>
+      <p style="margin-top:14px;color:var(--rune);font-size:0.9rem;">No account yet? You can still build a deck and save it locally.</p>
+      <button class="btn btn-ghost" onclick="window.location.href='deckbuilder.html'">Build a Deck</button>
+    </div>`;
+    return;
+  }
 
   try {
     const { data: decks, error } = await supa
       .from('decks')
-      .select('id, short_code, name, deck_data, owner_id, views, created_at')
-      .eq('is_public', true)
-      .order('created_at', { ascending: false })
-      .limit(200);
+      .select('id, short_code, name, deck_data, owner_id, is_public, views, created_at, updated_at')
+      .eq('owner_id', currentUser.id)
+      .order('updated_at', { ascending: false })
+      .limit(500);
     if (error) throw error;
 
     if (!decks || !decks.length) {
       galleryDecks = [];
       container.innerHTML = `<div class="empty-cta">
-        <p>No decks have been published yet. Be the first!</p>
-        <button class="btn btn-primary" onclick="window.location.href='deckbuilder.html'">Build a Deck</button>
+        <p>You haven't saved any decks yet.</p>
+        <button class="btn btn-primary" onclick="window.location.href='deckbuilder.html'">Build Your First Deck</button>
       </div>`;
       return;
     }
 
-    // Resolve author usernames
-    const ownerIds = [...new Set(decks.map(d => d.owner_id).filter(Boolean))];
+    // All decks are the current user's — author label is "You"
     galleryAuthors = {};
-    if (ownerIds.length) {
-      const { data: profs } = await supa.from('profiles').select('id, username').in('id', ownerIds);
-      (profs || []).forEach(p => galleryAuthors[p.id] = p.username);
-    }
+    decks.forEach(d => { if (d.owner_id) galleryAuthors[d.owner_id] = 'You'; });
 
     galleryDecks = decks;
     await loadCardElements();
@@ -583,7 +617,7 @@ async function loadGallery() {
     applyArchiveFilters();
   } catch (e) {
     console.warn(e);
-    container.innerHTML = `<div class="status">Could not load the Archive.<br><small>${e.message || ''}</small></div>`;
+    container.innerHTML = `<div class="status">Could not load your decks.<br><small>${e.message || ''}</small></div>`;
   }
 }
 
@@ -726,10 +760,11 @@ function avatarName(deckData) {
 }
 
 function renderDeckCard(d, authors) {
-  const author = d.owner_id ? (authors[d.owner_id] || 'Unknown') : 'Anonymous';
   const av = avatarName(d.deck_data || {});
   const avImg = avatarImageUrl(d.deck_data || {});
-  const isOwner = currentUser && currentUser.id === d.owner_id;
+  const dd = d.deck_data || {};
+  const qty = ['a','t','s'].reduce((s,k)=>s+(dd[k]||[]).reduce((a,[,q])=>a+(q||0),0),0);
+  const date = d.updated_at ? new Date(d.updated_at).toLocaleDateString() : '';
 
   // Element balance color bar
   const breakdown = deckElementBreakdown(d.deck_data || {});
@@ -752,36 +787,55 @@ function renderDeckCard(d, authors) {
     ? `<div class="deck-card-avatar"><img src="${avImg}" alt="${escapeHtml(av || '')}" loading="lazy" onerror="this.parentElement.style.display='none'"></div>`
     : '';
 
+  const pubBadge = d.is_public ? `<span class="deck-pub-badge">Public</span>` : '';
+
   return `<div class="deck-card${avImg ? ' has-avatar' : ''}">
+    <button class="deck-card-del" onclick="event.stopPropagation();askDeleteDeck('${d.short_code}', ${JSON.stringify(d.name||'').replace(/"/g,'&quot;')})" title="Delete deck">✕</button>
     ${avatarBlock}
     <div class="deck-card-body">
-      <div class="deck-card-name">${escapeHtml(d.name || 'Untitled Deck')}</div>
-      <div class="deck-card-author">by <b>${escapeHtml(author)}</b></div>
+      <div class="deck-card-name">${escapeHtml(d.name || 'Untitled Deck')} ${pubBadge}</div>
+      <div class="deck-card-author">${qty} cards${date ? ' · '+date : ''}</div>
       ${av ? `<div class="deck-card-avatar-name">${escapeHtml(av)}</div>` : ''}
       <div class="deck-card-actions">
-        <button class="btn btn-primary" onclick="openDeck('${d.short_code}')">Open</button>
-        ${isOwner ? `<button class="btn btn-ghost" onclick="unpublishDeck('${d.id}')">Unpublish</button>` : ''}
+        <button class="btn btn-primary" onclick="window.location.href='deckbuilder.html?d=${d.short_code}'">Edit</button>
+        <button class="btn btn-ghost" onclick="window.location.href='deckbuilder.html?d=${d.short_code}&view=1'">View</button>
+        <button class="deck-card-link" onclick="event.stopPropagation();copyDeckLink('${d.short_code}')" title="Copy share link">🔗</button>
       </div>
       ${barHtml}
     </div>
   </div>`;
 }
 
-function openDeck(shortCode) {
-  window.location.href = `deckbuilder.html?d=${shortCode}`;
+function copyDeckLink(shortCode) {
+  const url = `${window.location.origin}/deckbuilder.html?d=${shortCode}`;
+  navigator.clipboard.writeText(url).then(
+    () => toast('Deck link copied!'),
+    () => window.prompt('Copy this deck link:', url)
+  );
 }
 
-async function unpublishDeck(deckId) {
-  if (!supa || !currentUser) return;
-  if (!confirm('Remove this deck from the public Archive?')) return;
+// Styled delete confirmation
+let pendingDeckDelete = null;
+function askDeleteDeck(shortCode, name) {
+  pendingDeckDelete = shortCode;
+  const msg = document.getElementById('deck-del-msg');
+  if (msg) msg.innerHTML = name
+    ? `You're about to permanently delete <b>${escapeHtml(name)}</b>. This cannot be undone.`
+    : `This will permanently delete the deck. This cannot be undone.`;
+  document.getElementById('deck-del-overlay').classList.add('open');
+}
+function closeDeckDelete() {
+  pendingDeckDelete = null;
+  document.getElementById('deck-del-overlay').classList.remove('open');
+}
+async function confirmDeckDelete() {
+  if (!pendingDeckDelete || !supa || !currentUser) { closeDeckDelete(); return; }
   try {
-    const { error } = await supa.from('decks').update({ is_public: false }).eq('id', deckId);
-    if (error) throw error;
-    toast('Deck unpublished');
+    await supa.from('decks').delete().eq('short_code', pendingDeckDelete).eq('owner_id', currentUser.id);
+    toast('Deck deleted');
+    closeDeckDelete();
     loadGallery();
-  } catch (e) {
-    toast('Could not unpublish: ' + (e.message || ''));
-  }
+  } catch (e) { toast('Could not delete'); closeDeckDelete(); }
 }
 
 function escapeHtml(s) {
@@ -796,11 +850,11 @@ function escapeHtml(s) {
   // React to auth state changes (e.g. returning from email confirm)
   if (supa) {
     supa.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') refreshUser();
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') refreshUser().then(() => { renderAuthBar(); loadGallery(); });
     });
   }
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeAvatarBrowser();
+    if (e.key === 'Escape') { closeAvatarBrowser(); closeDeckDelete(); }
   });
 })();
 

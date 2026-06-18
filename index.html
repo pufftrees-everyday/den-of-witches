@@ -693,7 +693,7 @@
   .more-item:hover { background: rgba(155,135,212,0.12); color: var(--shimmer); }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="cr-auth.js?v=7"></script>
+<script src="cr-auth.js?v=8"></script>
 </head>
 <body>
 
@@ -701,7 +701,7 @@
   <div class="header-main" style="display:flex;align-items:center;gap:16px;">
     <div class="logo"><a href="index.html" style="color:var(--gold);text-decoration:none;font-family:'Cinzel Decorative',serif;font-weight:700;letter-spacing:0.04em;display:flex;align-items:center;gap:9px;"><img src="icon-192.png" alt="" style="width:30px;height:30px;border-radius:6px;display:block;">Cursed Realm</a></div>
         <a href="collection.html" class="header-link nav-collapsible">My Vault</a>
-    <button class="btn btn-ghost nav-collapsible" onclick="toggleMyDecks()">My Decks</button>
+    <button class="btn btn-ghost nav-collapsible" onclick="window.location.href='decks.html'">My Decks</button>
     <button class="btn btn-primary nav-collapsible" onclick="window.location.href='deckbuilder.html'">New Deck</button>
     <a href="archive.html" class="header-link nav-collapsible">The Archive</a>
     <div class="more-menu">
@@ -725,7 +725,7 @@
   <div class="mobile-auth" id="mobile-auth"></div>
   <div class="mobile-nav-divider"></div>
     <a href="collection.html" class="header-link">My Vault</a>
-  <a href="#" class="header-link" onclick="event.preventDefault();toggleMobileNav();toggleMyDecks();">My Decks</a>
+  <a href="decks.html" class="header-link">My Decks</a>
   <a href="deckbuilder.html" class="header-link">New Deck</a>
   <a href="archive.html" class="header-link">The Archive</a>
   <div class="mobile-nav-divider"></div>
@@ -738,17 +738,6 @@
 </div>
 
 <div class="page">
-
-  <!-- MY DECKS -->
-  <div id="my-decks-section" style="display:none;margin-bottom:32px;">
-    <div class="section-title my-decks-header">
-      <span>My Decks</span>
-      <button class="my-decks-collapse" onclick="hideMyDecks()" title="Hide My Decks">Hide ▲</button>
-    </div>
-    <div class="decks-grid" id="decks-grid"></div>
-    <div id="my-decks-more" style="text-align:center;margin-top:18px;display:none;"></div>
-  </div>
-
 
   <!-- CARD EXPLORER -->
   <div id="card-explorer-section">
@@ -1370,37 +1359,12 @@ function closeImport() {}
 function runImport() {}
 
 
-// MY DECKS
+// MY DECKS now lives on its own page
 async function toggleMyDecks() {
-  const s = document.getElementById('my-decks-section');
-  const grid = document.getElementById('decks-grid');
-  const wasHidden = s.style.display === 'none' || !s.style.display;
-  // Always reveal it (the user clicked expecting to see their decks)
-  s.style.display = 'block';
-  if (wasHidden) {
-    // Show an immediate loading placeholder so the section isn't empty while we fetch
-    if (grid && !grid.children.length) {
-      grid.innerHTML = '<div class="status" style="grid-column:1/-1;padding:30px 0;">Summoning your decks…</div>';
-    }
-    await renderMyDecks();
-  }
-  scrollMyDecksIntoView();
+  window.location.href = 'decks.html';
 }
-
-// Scroll so the My Decks section is comfortably visible, accounting for the
-// sticky header, and only if it isn't already fully in view (avoids the jarring
-// "page shifts down, header disappears" jump when it's already near the top).
-function scrollMyDecksIntoView() {
-  const s = document.getElementById('my-decks-section');
-  if (!s) return;
-  const header = document.querySelector('header');
-  const headerH = header ? header.offsetHeight : 0;
-  const rect = s.getBoundingClientRect();
-  // If the section's top is already visible below the header, don't scroll at all.
-  if (rect.top >= headerH && rect.top < window.innerHeight * 0.6) return;
-  const targetY = window.scrollY + rect.top - headerH - 12; // 12px breathing room under header
-  window.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' });
-}
+function hideMyDecks() { /* deprecated: My Decks moved to decks.html */ }
+function scrollMyDecksIntoView() { /* deprecated */ }
 
 function hideMyDecks() {
   const s = document.getElementById('my-decks-section');
@@ -1487,6 +1451,7 @@ function renderDeckCardGraphic(d) {
 
 async function renderMyDecks() {
   const grid = document.getElementById('decks-grid');
+  if (!grid) return; // My Decks now lives on decks.html; nothing to render here
 
   // If logged in, show cloud decks as Archive-style graphic cards
   if (window.CR && CR.user) {
@@ -1717,25 +1682,17 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeModal({});clo
 // INIT
 document.getElementById('vm-grid').classList.toggle('active', viewMode === 'grid');
 document.getElementById('vm-list').classList.toggle('active', viewMode === 'list');
-renderMyDecks();
 loadCards();
-
-// If arriving from another page's "My Decks" link, open the section automatically
-if (new URLSearchParams(window.location.search).get('decks') === '1') {
-  // Defer so layout + auth settle first
-  setTimeout(() => { toggleMyDecks(); }, 300);
-}
 
 // Auth: render bar, refresh session, re-render decks once known
 (async function initIndexAuth() {
   if (!window.CR) return;
-  CR.onAuthChange = () => { CR.renderAuthBar('auth-bar'); renderMyDecks(); };
+  CR.onAuthChange = () => { CR.renderAuthBar('auth-bar'); };
   await CR.refreshUser();
   CR.renderAuthBar('auth-bar');
-  renderMyDecks();
   if (CR.supa) {
     CR.supa.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') CR.refreshUser().then(() => { CR.renderAuthBar('auth-bar'); renderMyDecks(); });
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') CR.refreshUser().then(() => { CR.renderAuthBar('auth-bar'); });
     });
   }
 })();
