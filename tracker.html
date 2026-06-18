@@ -299,7 +299,7 @@
       linear-gradient(180deg, rgba(37,35,56,0.6) 0%, rgba(11,10,15,0.7) 100%);
     box-shadow: inset 0 2px 8px rgba(0,0,0,0.5), 0 -1px 0 rgba(255,255,255,0.04);
     flex-shrink: 0;
-    height: 165px;
+    height: 185px;
     position: relative;
     z-index: 4;
   }
@@ -338,7 +338,7 @@
 
   .resource-value {
     font-family: 'Cinzel', serif;
-    font-size: 2.1rem;
+    font-size: 2.7rem;
     font-weight: 700;
     color: var(--parchment);
     line-height: 1;
@@ -350,20 +350,21 @@
     color: var(--mist);
   }
 
-  /* Up/down arrows for resources */
+  /* Up/down arrows for resources — large tap targets */
   .res-arrow {
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--mist);
-    font-size: 0.95rem;
+    color: var(--rune);
+    font-size: 1.5rem;
     cursor: pointer;
-    padding: 3px 0;
+    padding: 10px 0;
     transition: color 0.1s, background 0.1s;
     line-height: 1;
+    -webkit-tap-highlight-color: transparent;
   }
-  .res-arrow:active { color: var(--arcane); background: rgba(155,135,212,0.12); }
+  .res-arrow:active { color: var(--arcane); background: rgba(155,135,212,0.18); }
 
   /* Resource mini controls (legacy, unused now) */
   .resource-controls { display: none; }
@@ -460,21 +461,23 @@
      numbers always clear the center bar.
      ============================================================ */
   @media (max-height: 820px) {
-    .resource-bar { height: 140px; }
-    .resource-icon img { width: 36px; height: 36px; }
-    .resource-icon svg { width: 32px; height: 32px; }
-    .resource-value { font-size: 1.85rem; }
+    .resource-bar { height: 150px; }
+    .resource-icon img { width: 34px; height: 34px; }
+    .resource-icon svg { width: 30px; height: 30px; }
+    .resource-value { font-size: 2.3rem; }
+    .res-arrow { font-size: 1.35rem; padding: 7px 0; }
     .life-number { font-size: 4.2rem; }
   }
   @media (max-height: 720px) {
     .center-bar { height: 44px; gap: 12px; }
     .center-logo { font-size: 0.75rem; }
     .center-logo img { width: 18px; height: 18px; }
-    .resource-bar { height: 120px; }
-    .resource-icon img { width: 30px; height: 30px; }
-    .resource-icon svg { width: 28px; height: 28px; }
-    .resource-icon .el-name { font-size: 0.52rem; }
-    .resource-value { font-size: 1.6rem; }
+    .resource-bar { height: 126px; }
+    .resource-icon img { width: 28px; height: 28px; }
+    .resource-icon svg { width: 26px; height: 26px; }
+    .resource-icon .el-name { font-size: 0.5rem; }
+    .resource-value { font-size: 2rem; }
+    .res-arrow { font-size: 1.2rem; padding: 5px 0; }
     .life-number { font-size: 3.6rem; }
     .life-label { font-size: 0.58rem; }
   }
@@ -482,11 +485,12 @@
     .center-bar { height: 40px; gap: 8px; }
     .center-btn { padding: 5px 9px; font-size: 0.56rem; }
     .quick-die-btn { width: 32px; height: 32px; }
-    .resource-bar { height: 104px; }
-    .resource-icon img { width: 26px; height: 26px; }
-    .resource-icon svg { width: 24px; height: 24px; }
-    .resource-value { font-size: 1.4rem; }
-    .res-arrow { font-size: 0.85rem; padding: 2px 0; }
+    .resource-bar { height: 106px; }
+    .resource-icon img { width: 24px; height: 24px; }
+    .resource-icon svg { width: 22px; height: 22px; }
+    .resource-icon .el-name { font-size: 0.46rem; }
+    .resource-value { font-size: 1.75rem; }
+    .res-arrow { font-size: 1.05rem; padding: 4px 0; }
     .life-number { font-size: 3rem; }
   }
   /* Very narrow widths: tighten the center bar so buttons don't wrap */
