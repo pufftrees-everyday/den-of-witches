@@ -233,6 +233,13 @@
   .result-count { font-size: 0.82rem; color: var(--rune); font-style: italic; margin-bottom: 14px; }
   /* Card toolbar (view + foil) sitting right above the grid */
   .vault-card-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); }
+  .vault-toolbar-right { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .vault-sort-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .vault-sort-label { font-family: 'Cinzel', serif; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rune); margin-right: 2px; }
+  .vault-sort-btn { display: inline-flex; align-items: center; gap: 5px; background: #13111e; border: 1px solid var(--border-strong); border-radius: 2px; color: var(--shimmer); font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.04em; padding: 5px 11px; cursor: pointer; transition: all 0.15s; }
+  .vault-sort-btn:hover { border-color: var(--arcane); }
+  .vault-sort-btn.active { background: var(--gold); border-color: var(--gold); color: #1a1410; }
+  .vault-sort-btn .vsort-dir { font-size: 0.7rem; }
 
   /* CARD GRID */
   .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
@@ -687,16 +694,24 @@
 
   <!-- Card toolbar: sits right above the card grid -->
   <div class="vault-card-toolbar">
-    <div class="finish-toggle">
-      <button class="finish-btn active" id="finish-standard" onclick="setFinish('standard')">Standard</button>
-      <button class="finish-btn" id="finish-foil" onclick="setFinish('foil')">Foil</button>
+    <div class="vault-sort-row">
+      <span class="vault-sort-label">Sort</span>
+      <button class="vault-sort-btn active" id="vault-sort-az" onclick="setVaultSort('az')">A–Z <span class="vsort-dir" id="vsort-dir-az">↓</span></button>
+      <button class="vault-sort-btn" id="vault-sort-cost" onclick="setVaultSort('cost')">Mana Cost <span class="vsort-dir" id="vsort-dir-cost"></span></button>
+      <button class="vault-sort-btn" id="vault-sort-price" onclick="setVaultSort('price')" title="Sort by market price">$$$ <span class="vsort-dir" id="vsort-dir-price"></span></button>
     </div>
-    <div class="viewmode-wrap">
-      <span class="viewmode-label">Change View</span>
-      <div class="viewmode-toggle">
-        <button class="viewmode-btn" id="vm-list" onclick="setViewMode('list')" title="Text view" aria-label="Text view">☰</button>
-        <button class="viewmode-btn active" id="vm-grid" onclick="setViewMode('grid')" title="Card view" aria-label="Card view">⊞</button>
-        <button class="viewmode-btn" id="vm-large" onclick="setViewMode('large')" title="Large card view" aria-label="Large card view">⊡</button>
+    <div class="vault-toolbar-right">
+      <div class="finish-toggle">
+        <button class="finish-btn active" id="finish-standard" onclick="setFinish('standard')">Standard</button>
+        <button class="finish-btn" id="finish-foil" onclick="setFinish('foil')">Foil</button>
+      </div>
+      <div class="viewmode-wrap">
+        <span class="viewmode-label">Change View</span>
+        <div class="viewmode-toggle">
+          <button class="viewmode-btn active" id="vm-list" onclick="setViewMode('list')" title="Text view" aria-label="Text view">☰</button>
+          <button class="viewmode-btn" id="vm-grid" onclick="setViewMode('grid')" title="Card view" aria-label="Card view">⊞</button>
+          <button class="viewmode-btn" id="vm-large" onclick="setViewMode('large')" title="Large card view" aria-label="Large card view">⊡</button>
+        </div>
       </div>
     </div>
   </div>
@@ -717,7 +732,7 @@ let currentCards = [];
 let visibleCount = 200;
 const PAGE_SIZE = 200;
 let currentView = 'search'; // search (Card Search, all cards) | all (Collection, owned) | want | trade | have | missing
-let viewMode = localStorage.getItem('grimoire_view_mode') || 'grid'; // grid | list
+let viewMode = localStorage.getItem('grimoire_vault_view_mode') || 'list'; // list | grid | large — default text view to distinguish the Vault from the card explorer
 
 const activeFilters = { type: new Set(), set: new Set(), rarity: new Set(), element: new Set() };
 let elementLock = false;
@@ -1122,7 +1137,7 @@ function rarityAbbr(r) {
 // ── VIEW MODE (grid/list) ──
 function setViewMode(mode) {
   viewMode = mode;
-  localStorage.setItem('grimoire_view_mode', mode);
+  localStorage.setItem('grimoire_vault_view_mode', mode);
   document.getElementById('vm-grid').classList.toggle('active', mode === 'grid');
   document.getElementById('vm-list').classList.toggle('active', mode === 'list');
   const lg = document.getElementById('vm-large');
@@ -1273,7 +1288,44 @@ function filterCards() {
     if (powMax !== null && (c.attack == null || c.attack > powMax)) return false;
     return true;
   });
-  renderCards(filtered);
+  renderCards(sortVaultCards(filtered));
+}
+
+// ── SORT ──
+let vaultSort = 'az';      // 'az' | 'cost' | 'price'
+let vaultSortRev = false;  // reverse direction
+
+function sortVaultCards(cards) {
+  const sorted = [...cards];
+  if (vaultSort === 'cost') {
+    sorted.sort((a, b) => {
+      const ca = (a.cost == null ? 999 : a.cost), cb = (b.cost == null ? 999 : b.cost);
+      return ca - cb || a.name.localeCompare(b.name);
+    });
+  } else if (vaultSort === 'price') {
+    const pof = (c) => (finishMode === 'foil' ? foilPrices[c.name]?.market : prices[c.name]?.market) || 0;
+    sorted.sort((a, b) => (pof(b) - pof(a)) || a.name.localeCompare(b.name)); // high → low by default
+  } else {
+    sorted.sort((a, b) => a.name.localeCompare(b.name));
+  }
+  if (vaultSortRev) sorted.reverse();
+  return sorted;
+}
+
+function setVaultSort(mode) {
+  if (vaultSort === mode) { vaultSortRev = !vaultSortRev; }
+  else { vaultSort = mode; vaultSortRev = false; }
+  ['az','cost','price'].forEach(m => {
+    const btn = document.getElementById('vault-sort-' + m);
+    if (btn) btn.classList.toggle('active', vaultSort === m);
+  });
+  // Direction arrows
+  const dirs = { az: document.getElementById('vsort-dir-az'), cost: document.getElementById('vsort-dir-cost'), price: document.getElementById('vsort-dir-price') };
+  Object.entries(dirs).forEach(([m, el]) => {
+    if (!el) return;
+    el.textContent = (vaultSort === m) ? (vaultSortRev ? '↑' : '↓') : '';
+  });
+  filterCards();
 }
 
 // ── EXPORTS ──
