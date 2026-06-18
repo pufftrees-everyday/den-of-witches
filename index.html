@@ -372,6 +372,46 @@
   }
   .clear-all-btn:hover { color: var(--ember); border-color: var(--ember); }
 
+  /* INVOKE button + active bar */
+  .invoke-btn {
+    font-family: 'Cinzel', serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; background: linear-gradient(180deg, #2a2548, #1a1730);
+    border: 2px solid var(--rune); color: var(--shimmer); padding: 6px 14px; cursor: pointer;
+    flex-shrink: 0; border-radius: 3px; transition: all 0.15s;
+    box-shadow: inset 0 0 8px rgba(155,135,212,0.15);
+  }
+  .invoke-btn:hover { border-color: var(--arcane); color: #fff; box-shadow: inset 0 0 12px rgba(155,135,212,0.3), 0 0 10px rgba(155,135,212,0.25); }
+  .invoke-active-bar { display: flex; align-items: center; gap: 10px; margin-top: 10px; padding: 8px 12px; background: rgba(155,135,212,0.08); border: 1px solid var(--rune); border-radius: 4px; flex-wrap: wrap; }
+  .invoke-active-label { font-family: 'Cinzel', serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--arcane); }
+  .invoke-active-bar code { font-family: 'Courier New', monospace; font-size: 0.85rem; color: var(--shimmer); background: rgba(11,10,15,0.5); padding: 2px 8px; border-radius: 3px; flex: 1; min-width: 120px; }
+  .invoke-edit, .invoke-clear { background: none; border: 1px solid var(--border-strong); border-radius: 3px; color: var(--rune); cursor: pointer; padding: 3px 9px; font-size: 0.72rem; font-family: 'Cinzel', serif; }
+  .invoke-edit:hover { color: var(--arcane); border-color: var(--arcane); }
+  .invoke-clear:hover { color: var(--ember); border-color: var(--ember); }
+
+  /* INVOKE modal */
+  .invoke-overlay { display: none; position: fixed; inset: 0; background: rgba(11,10,15,0.85); backdrop-filter: blur(5px); z-index: 1000; align-items: flex-start; justify-content: center; padding: 40px 20px; overflow-y: auto; }
+  .invoke-overlay.open { display: flex; }
+  .invoke-box { background: var(--dusk); border: 1px solid var(--border-strong); border-radius: 12px; max-width: 640px; width: 100%; padding: 26px 28px; box-shadow: 0 16px 50px rgba(0,0,0,0.6); }
+  .invoke-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .invoke-title { font-family: 'Cinzel Decorative', serif; font-size: 1.4rem; font-weight: 700; color: var(--arcane); }
+  .invoke-x { background: none; border: none; color: var(--rune); font-size: 1.2rem; cursor: pointer; padding: 4px 8px; }
+  .invoke-x:hover { color: var(--ember); }
+  .invoke-intro { font-family: 'Crimson Pro', serif; font-size: 0.95rem; color: var(--rune); line-height: 1.5; margin: 0 0 16px; }
+  .invoke-intro b { color: var(--shimmer); }
+  .invoke-input-row { display: flex; gap: 10px; margin-bottom: 8px; }
+  #invoke-input { flex: 1; background: #0b0a0f; border: 1px solid var(--border-strong); border-radius: 5px; color: var(--parchment); font-family: 'Courier New', monospace; font-size: 1rem; padding: 11px 14px; }
+  #invoke-input:focus { outline: none; border-color: var(--arcane); box-shadow: 0 0 10px rgba(155,135,212,0.25); }
+  .invoke-error { color: var(--ember); font-size: 0.85rem; min-height: 18px; margin-bottom: 6px; }
+  .invoke-cheat { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 6px 0 18px; padding: 16px; background: rgba(11,10,15,0.4); border: 1px solid var(--border); border-radius: 8px; }
+  .invoke-cheat-h { font-family: 'Cinzel', serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+  .invoke-cheat-row { font-family: 'Crimson Pro', serif; font-size: 0.88rem; color: var(--shimmer); padding: 3px 0; line-height: 1.4; }
+  .invoke-cheat-row code { font-family: 'Courier New', monospace; font-size: 0.82rem; color: var(--arcane); background: rgba(155,135,212,0.1); padding: 1px 6px; border-radius: 3px; margin-right: 5px; }
+  .invoke-dim { color: var(--mist); font-size: 0.8rem; font-style: italic; }
+  .invoke-examples { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .invoke-example { font-family: 'Courier New', monospace; font-size: 0.8rem; background: rgba(155,135,212,0.08); border: 1px solid var(--border-strong); border-radius: 4px; color: var(--shimmer); padding: 5px 10px; cursor: pointer; transition: all 0.15s; }
+  .invoke-example:hover { border-color: var(--arcane); background: rgba(155,135,212,0.18); }
+  @media (max-width: 600px) { .invoke-cheat { grid-template-columns: 1fr; } }
+
   .stone-options { display: flex; flex-direction: column; gap: 2px; }
 
   .stone-option {
@@ -748,7 +788,15 @@
           <svg viewBox="0 0 20 20"><path d="M12.9 14.32a8 8 0 111.41-1.41l4.42 4.41-1.41 1.42-4.42-4.42zM8 14A6 6 0 108 2a6 6 0 000 12z"/></svg>
           <input type="text" id="search-input" placeholder="Search cards…" autocomplete="off">
         </div>
+        <button class="invoke-btn" onclick="openInvoke()" title="Advanced search syntax">✦ Invoke</button>
         <button class="clear-all-btn" onclick="clearAllFilters()">✕ Clear all</button>
+      </div>
+
+      <div id="invoke-active-bar" class="invoke-active-bar" style="display:none;">
+        <span class="invoke-active-label">✦ Invoke:</span>
+        <code id="invoke-active-query"></code>
+        <button class="invoke-edit" onclick="openInvoke()">Edit</button>
+        <button class="invoke-clear" onclick="clearInvoke()">✕</button>
       </div>
 
       <!-- COLLAPSIBLE FILTERS TOGGLE -->
@@ -970,6 +1018,60 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- INVOKE (advanced search) MODAL -->
+<div class="invoke-overlay" id="invoke-overlay" onclick="if(event.target===this)closeInvoke()">
+  <div class="invoke-box">
+    <div class="invoke-head">
+      <div class="invoke-title">✦ Invoke — Advanced Search</div>
+      <button class="invoke-x" onclick="closeInvoke()">✕</button>
+    </div>
+    <p class="invoke-intro">Conjure precise queries with a powerful search syntax. Combine terms freely — they all must match unless you use <b>OR</b>.</p>
+    <div class="invoke-input-row">
+      <input type="text" id="invoke-input" placeholder="e.g.  e:water c>=2 c<4 water>=1 t:magic" autocomplete="off" spellcheck="false"
+        onkeydown="if(event.key==='Enter')runInvoke()">
+      <button class="btn btn-primary" onclick="runInvoke()">Invoke</button>
+    </div>
+    <div id="invoke-error" class="invoke-error"></div>
+
+    <div class="invoke-cheat">
+      <div class="invoke-cheat-col">
+        <div class="invoke-cheat-h">Elements & Type</div>
+        <div class="invoke-cheat-row"><code>e:water</code> element is water</div>
+        <div class="invoke-cheat-row"><code>e:water,fire</code> water or fire</div>
+        <div class="invoke-cheat-row"><code>t:magic</code> type is Magic</div>
+        <div class="invoke-cheat-row"><code>t:minion</code> <span class="invoke-dim">(aliases: type:)</span></div>
+        <div class="invoke-cheat-row"><code>sub:beast</code> subtype contains beast</div>
+        <div class="invoke-cheat-h" style="margin-top:12px;">Thresholds</div>
+        <div class="invoke-cheat-row"><code>water>=1</code> needs 1+ water threshold</div>
+        <div class="invoke-cheat-row"><code>fire=2</code> exactly 2 fire</div>
+        <div class="invoke-cheat-row"><span class="invoke-dim">also: earth, air (or wt, ft, et, at)</span></div>
+      </div>
+      <div class="invoke-cheat-col">
+        <div class="invoke-cheat-h">Numbers</div>
+        <div class="invoke-cheat-row"><code>c>=2</code> cost 2 or more</div>
+        <div class="invoke-cheat-row"><code>c&lt;4</code> cost under 4 <span class="invoke-dim">(cost:)</span></div>
+        <div class="invoke-cheat-row"><code>pow>=3</code> power/attack <span class="invoke-dim">(atk:)</span></div>
+        <div class="invoke-cheat-row"><code>def&lt;=2</code> defence</div>
+        <div class="invoke-cheat-row"><code>life=1</code> life</div>
+        <div class="invoke-cheat-h" style="margin-top:12px;">Other</div>
+        <div class="invoke-cheat-row"><code>r:unique</code> rarity <span class="invoke-dim">(rarity:)</span></div>
+        <div class="invoke-cheat-row"><code>s:alpha</code> set name <span class="invoke-dim">(set:)</span></div>
+        <div class="invoke-cheat-row"><code>o:"draw a card"</code> rules text <span class="invoke-dim">(text:)</span></div>
+        <div class="invoke-cheat-row"><code>-t:site</code> NOT a site</div>
+        <div class="invoke-cheat-row"><code>e:water OR e:fire</code> either</div>
+      </div>
+    </div>
+
+    <div class="invoke-examples">
+      <div class="invoke-cheat-h">Try these:</div>
+      <button class="invoke-example" onclick="useInvokeExample(this)">e:water c>=2 c&lt;4 water>=1 t:magic</button>
+      <button class="invoke-example" onclick="useInvokeExample(this)">t:minion pow>=4 e:fire</button>
+      <button class="invoke-example" onclick="useInvokeExample(this)">o:"flying" -e:earth</button>
+      <button class="invoke-example" onclick="useInvokeExample(this)">r:unique c&lt;=3</button>
+    </div>
+  </div>
+</div>
 
 <!-- DELETE CONFIRMATION MODAL -->
 <div class="confirm-overlay" id="delete-confirm-overlay">
@@ -1242,6 +1344,10 @@ function clearAllFilters() {
   Object.keys(advFilters).forEach(g => advFilters[g].clear());
   document.querySelectorAll('.stone-option.active, .adv-chip.active').forEach(c => c.classList.remove('active'));
   document.getElementById('search-input').value = '';
+  // Also clear any active Invoke query
+  invokeQuery = null; invokeQueryRaw = '';
+  const iab = document.getElementById('invoke-active-bar'); if (iab) iab.style.display = 'none';
+  const ii = document.getElementById('invoke-input'); if (ii) ii.value = '';
   clearRanges();
   updateAdvToggleDot();
   updateFilterDot();
@@ -1283,6 +1389,188 @@ function updateSummary() {
 }
 
 // FILTER
+// ════════════════════════════════════════════════════════════
+//  INVOKE — advanced search query engine
+// ════════════════════════════════════════════════════════════
+let invokeQuery = null; // parsed AST (array of OR-groups) or null when inactive
+
+// Field aliases → canonical
+const INVOKE_FIELDS = {
+  e: 'element', element: 'element', color: 'element',
+  t: 'type', type: 'type',
+  sub: 'subtype', subtype: 'subtype',
+  c: 'cost', cost: 'cost', cmc: 'cost', mv: 'cost',
+  pow: 'attack', power: 'attack', atk: 'attack', attack: 'attack',
+  def: 'defence', defence: 'defence', defense: 'defence', tou: 'defence', toughness: 'defence',
+  life: 'life',
+  r: 'rarity', rarity: 'rarity',
+  s: 'set', set: 'set', e_set: 'set',
+  o: 'text', text: 'text', oracle: 'text', rules: 'text',
+  // thresholds
+  water: 'th_water', wt: 'th_water',
+  fire: 'th_fire', ft: 'th_fire',
+  earth: 'th_earth', et: 'th_earth',
+  air: 'th_air', at: 'th_air',
+};
+const INVOKE_NUMERIC = new Set(['cost','attack','defence','life','th_water','th_fire','th_earth','th_air']);
+
+// Tokenize: split on spaces but keep quoted strings together
+function invokeTokenize(str) {
+  const tokens = []; let i = 0;
+  while (i < str.length) {
+    while (i < str.length && str[i] === ' ') i++;
+    if (i >= str.length) break;
+    let tok = ''; let inQuote = false;
+    // capture leading -, field:, operator, then value (which may be quoted)
+    while (i < str.length && (str[i] !== ' ' || inQuote)) {
+      const ch = str[i];
+      if (ch === '"') { inQuote = !inQuote; i++; continue; }
+      tok += ch; i++;
+    }
+    if (tok) tokens.push(tok);
+  }
+  return tokens;
+}
+
+// Parse one token into a predicate object
+function invokeParseToken(raw) {
+  let negate = false;
+  let tok = raw;
+  if (tok.startsWith('-')) { negate = true; tok = tok.slice(1); }
+
+  // find field + operator
+  const m = tok.match(/^([a-z_]+)\s*(>=|<=|!=|=|:|>|<)\s*(.*)$/i);
+  if (!m) {
+    // bare word → name contains
+    return { field: 'name', op: ':', value: tok.toLowerCase(), negate };
+  }
+  const rawField = m[1].toLowerCase();
+  let op = m[2];
+  const value = m[3];
+  const field = INVOKE_FIELDS[rawField];
+  if (!field) {
+    // unknown field → treat whole thing as a name search
+    return { field: 'name', op: ':', value: tok.toLowerCase(), negate };
+  }
+  if (op === ':') op = (INVOKE_NUMERIC.has(field)) ? '=' : ':';
+  return { field, op, value: value.toLowerCase(), negate };
+}
+
+// Parse full query string into OR-groups of AND-predicates
+function invokeParse(str) {
+  const tokens = invokeTokenize(str.trim());
+  if (!tokens.length) return null;
+  const orGroups = [[]];
+  for (const t of tokens) {
+    if (t.toLowerCase() === 'or') { orGroups.push([]); continue; }
+    if (t.toLowerCase() === 'and') continue; // implicit
+    orGroups[orGroups.length - 1].push(invokeParseToken(t));
+  }
+  return orGroups.filter(g => g.length);
+}
+
+function invokeCardValue(card, field) {
+  switch (field) {
+    case 'name': return (card.name || '').toLowerCase();
+    case 'element': return (card.element || '').toLowerCase();
+    case 'type': return (card.type || '').toLowerCase();
+    case 'subtype': return (card.subTypes || '').toLowerCase();
+    case 'rarity': return (card.rarity || '').toLowerCase();
+    case 'set': return (card.set || '').toLowerCase();
+    case 'text': return (card.rules_text || '').toLowerCase();
+    case 'cost': return card.cost;
+    case 'attack': return card.attack;
+    case 'defence': return card.defence;
+    case 'life': return card.life;
+    case 'th_water': return (card.thresholds || {}).water || 0;
+    case 'th_fire': return (card.thresholds || {}).fire || 0;
+    case 'th_earth': return (card.thresholds || {}).earth || 0;
+    case 'th_air': return (card.thresholds || {}).air || 0;
+    default: return null;
+  }
+}
+
+function invokeMatchPredicate(card, pred) {
+  const cv = invokeCardValue(card, pred.field);
+  let result;
+  if (INVOKE_NUMERIC.has(pred.field)) {
+    const target = parseFloat(pred.value);
+    const num = (cv == null ? null : Number(cv));
+    if (isNaN(target)) result = false;
+    else if (num == null) result = false;
+    else switch (pred.op) {
+      case '>': result = num > target; break;
+      case '<': result = num < target; break;
+      case '>=': result = num >= target; break;
+      case '<=': result = num <= target; break;
+      case '!=': result = num !== target; break;
+      default: result = num === target;
+    }
+  } else {
+    const text = cv || '';
+    if (pred.field === 'element' && pred.value.includes(',')) {
+      // comma = OR list for elements
+      const opts = pred.value.split(',').map(s => s.trim()).filter(Boolean);
+      result = opts.some(o => text.includes(o));
+    } else if (pred.op === '=') {
+      result = text === pred.value;
+    } else {
+      result = text.includes(pred.value);
+    }
+  }
+  return pred.negate ? !result : result;
+}
+
+function invokeMatch(card, ast) {
+  // ast = array of OR-groups; each group = AND of predicates
+  return ast.some(group => group.every(p => invokeMatchPredicate(card, p)));
+}
+
+// ── Modal controls ──
+function openInvoke() {
+  const ov = document.getElementById('invoke-overlay');
+  const input = document.getElementById('invoke-input');
+  document.getElementById('invoke-error').textContent = '';
+  // Pre-fill with the active query if editing
+  if (invokeQueryRaw) input.value = invokeQueryRaw;
+  ov.classList.add('open');
+  const isTouch = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+  if (!isTouch) setTimeout(() => input.focus(), 80);
+}
+function closeInvoke() { document.getElementById('invoke-overlay').classList.remove('open'); }
+function useInvokeExample(btn) {
+  document.getElementById('invoke-input').value = btn.textContent;
+  document.getElementById('invoke-input').focus();
+}
+let invokeQueryRaw = '';
+function runInvoke() {
+  const raw = document.getElementById('invoke-input').value.trim();
+  const errEl = document.getElementById('invoke-error');
+  if (!raw) { clearInvoke(); closeInvoke(); return; }
+  try {
+    const ast = invokeParse(raw);
+    if (!ast || !ast.length) { clearInvoke(); closeInvoke(); return; }
+    invokeQuery = ast;
+    invokeQueryRaw = raw;
+    // Reflect in the active bar
+    document.getElementById('invoke-active-query').textContent = raw;
+    document.getElementById('invoke-active-bar').style.display = '';
+    // Clear the plain search box so they don't fight
+    const si = document.getElementById('search-input'); if (si) si.value = '';
+    errEl.textContent = '';
+    closeInvoke();
+    filterCards();
+  } catch (e) {
+    errEl.textContent = 'Could not parse that query. Check the syntax above.';
+  }
+}
+function clearInvoke() {
+  invokeQuery = null; invokeQueryRaw = '';
+  document.getElementById('invoke-active-bar').style.display = 'none';
+  document.getElementById('invoke-input').value = '';
+  filterCards();
+}
+
 function filterCards() {
   const q = document.getElementById('search-input').value.toLowerCase();
   const costMin = document.getElementById('cost-min')?.value !== '' ? parseInt(document.getElementById('cost-min').value) : null;
@@ -1292,6 +1580,8 @@ function filterCards() {
 
   const filtered = allCards.filter(c => {
     if (q && !c.name.toLowerCase().includes(q)) return false;
+    // Invoke advanced query (applied alongside the normal UI filters)
+    if (invokeQuery && !invokeMatch(c, invokeQuery)) return false;
     if (activeFilters.type.size && !activeFilters.type.has(c.type)) return false;
     if (activeFilters.set.size && !activeFilters.set.has(c.set)) return false;
     if (activeFilters.rarity.size && !activeFilters.rarity.has(c.rarity)) return false;
@@ -1670,7 +1960,7 @@ function toast(msg) {
   clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),2200);
 }
 
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeModal({});closeImport({});closeDeleteConfirm();} });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeModal({});closeImport({});closeDeleteConfirm();closeInvoke();} });
 // Wire the styled delete-confirm button + click-outside-to-close
 (function(){
   const yes = document.getElementById('delete-confirm-yes');
