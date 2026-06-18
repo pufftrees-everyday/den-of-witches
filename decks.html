@@ -449,7 +449,6 @@ function renderAuthBar() {
   if (currentUser) {
     bar.innerHTML = `<button class="profile-trigger header-link" onclick="toggleProfileMenu(event)" style="background:none;border:none;cursor:pointer;color:var(--gold);text-transform:none;letter-spacing:0.04em;font-family:inherit;font-size:inherit;display:inline-flex;align-items:center;gap:5px;">${currentUser.username} <span style="font-size:0.6rem;">▾</span></button>`;
     mob.innerHTML = `<a href="collection.html" class="header-link">My Vault</a>
-      <a href="collection.html" class="header-link">My Trades</a>
       <a href="decks.html" class="header-link">My Workshop</a>
       <a class="header-link" onclick="logout()" style="color:var(--ember)">Sign Out</a>`;
   } else {
@@ -474,7 +473,6 @@ function toggleProfileMenu(e) {
         <div class="cr-pm-email">${currentUser ? (currentUser.email || '') : ''}</div>
       </div>
       <a href="collection.html" class="cr-pm-item">My Vault</a>
-      <a href="collection.html" class="cr-pm-item">My Trades</a>
       <a href="decks.html" class="cr-pm-item">My Workshop</a>
       <div class="cr-pm-divider"></div>
       <button class="cr-pm-item cr-pm-signout" onclick="logout()">Sign Out</button>`;

@@ -179,7 +179,6 @@
           <div class="cr-pm-email">${CR.user ? (CR.user.email || '') : ''}</div>
         </div>
         <a href="collection.html" class="cr-pm-item">My Vault</a>
-        <a href="collection.html" class="cr-pm-item">My Trades</a>
         <a href="decks.html" class="cr-pm-item">My Workshop</a>
         <div class="cr-pm-divider"></div>
         <button class="cr-pm-item cr-pm-signout" onclick="CR.logout()">Sign Out</button>`;

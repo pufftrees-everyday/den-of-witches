@@ -788,6 +788,8 @@
 
   .add-to-deck-btn { padding: 8px 20px; font-family: 'Cinzel', serif; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; background: var(--rune); border: 1px solid var(--arcane); color: #fff; border-radius: 3px; cursor: pointer; transition: background 0.2s; }
   .add-to-deck-btn:hover { background: var(--arcane); }
+  .add-to-collection-btn { padding: 8px 16px; font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; background: transparent; border: 1px solid var(--gold); color: var(--gold); border-radius: 3px; cursor: pointer; transition: all 0.2s; }
+  .add-to-collection-btn:hover { background: var(--gold); color: #1a1410; }
 
   .add-feedback { font-size: 0.9rem; font-style: italic; }
   .add-feedback.ok { color: #7ab88a; }
@@ -1193,6 +1195,7 @@
             <button onclick="changeAddQty(1)">+</button>
           </div>
           <button class="add-to-deck-btn" onclick="addCurrentCard()">+ Add to Deck</button>
+          <button class="add-to-collection-btn" onclick="addCurrentCardToCollection()" title="Set aside as one of your 10 Collection (sideboard) cards">+ Deck Collection</button>
           <div class="add-feedback" id="add-feedback"></div>
         </div>
       </div>
@@ -1311,7 +1314,7 @@ let authMode = 'login';
 let lastSharedCode = null; // short code of the most recently shared deck (for publish)
 
 // deck: { atlas: {key: {card, qty}}, spellbook: {key: {card, qty}}, avatar: {key: {card, qty}} }
-let deck = { avatar: {}, atlas: {}, spellbook: {} };
+let deck = { avatar: {}, atlas: {}, spellbook: {}, collection: {} };
 let currentModalCard = null;
 let addQty = 1;
 let activeDeckId = null;
@@ -1409,8 +1412,9 @@ function cardElements(card) {
 const advFilters = { minionSubtype: new Set(), artifactSubtype: new Set(), siteSubtype: new Set(), keyword: new Set() };
 
 // Track collapsed state for deck sections
-const sectionCollapsed = { avatar: false, atlas: false, spellbook: false };
-const sectionUserToggled = { avatar: false, atlas: false, spellbook: false };
+const sectionCollapsed = { avatar: false, atlas: false, spellbook: false, collection: false };
+const sectionUserToggled = { avatar: false, atlas: false, spellbook: false, collection: false };
+const DECK_COLLECTION_LIMIT = 10;
 const subCollapsed = {};
 
 function toggleFilterPanel() {
@@ -1655,7 +1659,7 @@ function setViewMode(mode) {
 
 function getDeckCountForCard(id) {
   const key = String(id);
-  return (deck.avatar[key]?.qty || 0) + (deck.atlas[key]?.qty || 0) + (deck.spellbook[key]?.qty || 0);
+  return (deck.avatar[key]?.qty || 0) + (deck.atlas[key]?.qty || 0) + (deck.spellbook[key]?.qty || 0) + (deck.collection[key]?.qty || 0);
 }
 
 // ── MODAL ──
@@ -1715,6 +1719,18 @@ function addCurrentCard() {
   if (result.ok) {
     renderDeck();
     renderCardGrid(); // refresh badges
+  }
+}
+
+function addCurrentCardToCollection() {
+  if (!currentModalCard) return;
+  const result = addCardToDeckCollection(currentModalCard, addQty);
+  const fb = document.getElementById('add-feedback');
+  fb.textContent = result.message;
+  fb.className = 'add-feedback ' + (result.ok ? 'ok' : 'warn');
+  if (result.ok) {
+    renderDeck();
+    renderCardGrid();
   }
 }
 
@@ -1878,6 +1894,39 @@ function addCardToDeck(card, qty = 1) {
   return { ok: true, message: msg };
 }
 
+// Add a card to the 10-card Deck Collection (Sorcery's sideboard/toolbox)
+function addCardToDeckCollection(card, qty = 1) {
+  const key = String(card.id);
+  const rarity = card.rarity || 'Ordinary';
+  const limit = RARITY_LIMITS[rarity] || 4;
+
+  // Avatars cannot go in the Collection
+  if (getDeckSection(card) === 'avatar') {
+    return { ok: false, message: `Avatars can't be placed in the Deck Collection.` };
+  }
+
+  // Hard cap: total cards in collection may not exceed 10
+  const collectionTotal = Object.values(deck.collection).reduce((s, v) => s + v.qty, 0);
+  if (collectionTotal >= DECK_COLLECTION_LIMIT) {
+    return { ok: false, message: `Deck Collection is full — max ${DECK_COLLECTION_LIMIT} cards.` };
+  }
+
+  // Rarity limit across all sections
+  const currentTotal = getDeckCountForCard(card.id);
+  const roomForRarity = limit - currentTotal;
+  const roomForCap = DECK_COLLECTION_LIMIT - collectionTotal;
+  const allowed = Math.min(qty, roomForRarity, roomForCap);
+  if (allowed <= 0) {
+    if (roomForRarity <= 0) return { ok: false, message: `${card.name} is ${rarity} — max ${limit} cop${limit===1?'y':'ies'} across your deck. You have ${currentTotal}.` };
+    return { ok: false, message: `Deck Collection is full — max ${DECK_COLLECTION_LIMIT} cards.` };
+  }
+
+  if (deck.collection[key]) deck.collection[key].qty += allowed;
+  else deck.collection[key] = { card, qty: allowed };
+
+  return { ok: true, message: `${allowed}× ${card.name} added to Deck Collection.` };
+}
+
 function changeQty(section, key, delta) {
   if (!deck[section][key]) return;
   const card = deck[section][key].card;
@@ -1887,6 +1936,14 @@ function changeQty(section, key, delta) {
   if (delta > 0 && getDeckCountForCard(card.id) >= limit) {
     toast(`Max ${limit} cop${limit===1?'y':'ies'} of ${card.name} (${rarity})`);
     return;
+  }
+  // Hard cap the Deck Collection at 10 cards
+  if (delta > 0 && section === 'collection') {
+    const collectionTotal = Object.values(deck.collection).reduce((s, v) => s + v.qty, 0);
+    if (collectionTotal >= DECK_COLLECTION_LIMIT) {
+      toast(`Deck Collection is full — max ${DECK_COLLECTION_LIMIT} cards.`);
+      return;
+    }
   }
   if (newQty <= 0) { delete deck[section][key]; }
   else { deck[section][key].qty = newQty; }
@@ -1905,7 +1962,8 @@ function getDeckCounts() {
   const avatarCount = Object.values(deck.avatar).reduce((s,v)=>s+v.qty,0);
   const atlasCount = Object.values(deck.atlas).reduce((s,v)=>s+v.qty,0);
   const spellbookCount = Object.values(deck.spellbook).reduce((s,v)=>s+v.qty,0);
-  return { avatarCount, atlasCount, spellbookCount, total: avatarCount + atlasCount + spellbookCount };
+  const collectionCount = Object.values(deck.collection).reduce((s,v)=>s+v.qty,0);
+  return { avatarCount, atlasCount, spellbookCount, collectionCount, total: avatarCount + atlasCount + spellbookCount + collectionCount };
 }
 
 // ── RENDER DECK ──
@@ -1916,10 +1974,13 @@ function renderDeck() {
   const atlasOk = atlasCount >= 30;
   const spellbookOk = spellbookCount >= 60;
   const avatarOk = avatarCount === 1;
+  const collectionCount = Object.values(deck.collection).reduce((s,v)=>s+v.qty,0);
+  const collectionOk = collectionCount <= DECK_COLLECTION_LIMIT; // 0–10 all legal
   document.getElementById('deck-stats').innerHTML = `
     <div class="stat-pill ${avatarOk?'ok':'warn'}"><b>${avatarCount}</b> Avatar ${avatarOk?'✓':'(need 1)'}</div>
     <div class="stat-pill ${atlasOk?'ok':'warn'}"><b>${atlasCount}</b>/30 Atlas ${atlasOk?'✓':''}</div>
     <div class="stat-pill ${spellbookOk?'ok':'warn'}"><b>${spellbookCount}</b>/60 Spellbook ${spellbookOk?'✓':''}</div>
+    ${collectionCount > 0 ? `<div class="stat-pill ${collectionOk?'ok':'warn'}"><b>${collectionCount}</b>/10 Collection ${collectionOk?'✓':''}</div>` : ''}
     <div class="stat-pill"><b>${total}</b> total</div>
   `;
 
@@ -1929,6 +1990,7 @@ function renderDeck() {
   const avatarEntries = Object.entries(deck.avatar);
   const atlasEntries = Object.entries(deck.atlas);
   const spellbookEntries = Object.entries(deck.spellbook);
+  const collectionEntries = Object.entries(deck.collection);
 
   body.innerHTML = '';
 
@@ -1941,6 +2003,10 @@ function renderDeck() {
   // Spellbook section
   const spellbookByType = groupByType(spellbookEntries);
   body.innerHTML += renderSection('Spellbook', 'spellbook', spellbookEntries, spellbookOk ? '' : `${spellbookCount}/60 Spells (need ${Math.max(0,60-spellbookCount)} more)`, spellbookOk, '60+', spellbookByType);
+
+  // Deck Collection section (Sorcery's 10-card toolbox/sideboard) — always shown so it's discoverable
+  const collectionByType = groupByType(collectionEntries);
+  body.innerHTML += renderSection('Deck Collection', 'collection', collectionEntries, `${collectionCount}/10 cards`, collectionOk, '0–10', collectionByType);
 }
 
 function groupByType(entries) {
@@ -2450,7 +2516,7 @@ function loadDeck(id) {
   const saved = getSavedDecks();
   if (!saved[id]) return;
   const { name, deck: d } = saved[id];
-  deck = { avatar: {}, atlas: {}, spellbook: {} };
+  deck = { avatar: {}, atlas: {}, spellbook: {}, collection: {} };
   // Support old flat format and new sectioned format
   if (d.avatar !== undefined) {
     Object.entries(d.avatar||{}).forEach(([k,v]) => deck.avatar[k] = v);
@@ -2519,6 +2585,12 @@ function downloadDeckText() {
       lines.push('');
     });
   }
+  const collectionEntries = Object.values(deck.collection);
+  if (collectionEntries.length) {
+    lines.push('// Deck Collection (Sideboard)');
+    collectionEntries.forEach(({card,qty}) => lines.push(`${qty}x ${card.name}`));
+    lines.push('');
+  }
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([lines.join('\n')], {type:'text/plain'}));
   a.download = name.replace(/\s+/g,'_') + '.txt';
@@ -2531,7 +2603,7 @@ function downloadDeckText() {
 function buildDeckPayload() {
   const name = document.getElementById('deck-name-input').value.trim() || 'Shared Deck';
   const pack = section => Object.values(deck[section]).map(({card, qty}) => [card.name, qty]);
-  return { n: name, a: pack('avatar'), t: pack('atlas'), s: pack('spellbook') };
+  return { n: name, a: pack('avatar'), t: pack('atlas'), s: pack('spellbook'), c: pack('collection') };
 }
 
 function encodeDeck() {
@@ -2856,7 +2928,7 @@ async function maybeMigrateDecks() {
 // Convert a stored deck object {avatar,atlas,spellbook} into share payload form
 function deckToPayload(d, name) {
   const pack = sec => Object.values(d[sec] || {}).map(({card, qty}) => [card.name, qty]);
-  return { n: name || 'Unnamed Deck', a: pack('avatar'), t: pack('atlas'), s: pack('spellbook') };
+  return { n: name || 'Unnamed Deck', a: pack('avatar'), t: pack('atlas'), s: pack('spellbook'), c: pack('collection') };
 }
 
 function renderAuthBar() {
@@ -2883,7 +2955,6 @@ function toggleProfileMenu(e) {
         <div class="cr-pm-email">${currentUser ? (currentUser.email || '') : ''}</div>
       </div>
       <a href="collection.html" class="cr-pm-item">My Vault</a>
-      <a href="collection.html" class="cr-pm-item">My Trades</a>
       <a href="decks.html" class="cr-pm-item">My Workshop</a>
       <div class="cr-pm-divider"></div>
       <button class="cr-pm-item cr-pm-signout" onclick="logout()">Sign Out</button>`;
@@ -2911,7 +2982,7 @@ function profileMenuOutside(e) {
 
 // Apply a deck payload object {n,a,t,s} to the builder
 function applyDeckPayload(payload) {
-  const newDeck = { avatar:{}, atlas:{}, spellbook:{} };
+  const newDeck = { avatar:{}, atlas:{}, spellbook:{}, collection:{} };
   let matched = 0, missing = 0;
   const place = (arr, section) => {
     (arr || []).forEach(([cardName, qty]) => {
@@ -2923,6 +2994,7 @@ function applyDeckPayload(payload) {
   place(payload.a, 'avatar');
   place(payload.t, 'atlas');
   place(payload.s, 'spellbook');
+  place(payload.c, 'collection');
   if (matched === 0) { toast('Shared deck had no matching cards'); return false; }
   deck = newDeck;
   // A loaded shared deck is someone else's (or a fresh copy) — saving should
@@ -3096,7 +3168,7 @@ function syncDeckViewToggle() {
 
 // ── CLEAR ──
 function clearDeck() {
-  deck = { avatar: {}, atlas: {}, spellbook: {} };
+  deck = { avatar: {}, atlas: {}, spellbook: {}, collection: {} };
   activeDeckCode = null;
   activeDeckId = null;
   activeDeckPublic = false;
@@ -3114,7 +3186,7 @@ function runImport() {
   const text = document.getElementById('import-text').value.trim();
   if (!text) return;
   const lines = text.split('\n').map(l=>l.trim()).filter(Boolean);
-  const newDeck = { avatar:{}, atlas:{}, spellbook:{} };
+  const newDeck = { avatar:{}, atlas:{}, spellbook:{}, collection:{} };
   let matched=0, skipped=0;
   const sectionRe = /^(Avatar|Artifact|Minion|Magic|Aura|Site|Spell|Atlas|Spellbook)\s*(\(\d+\))?/i;
   for (const line of lines) {
