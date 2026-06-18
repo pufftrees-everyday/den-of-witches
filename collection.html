@@ -505,11 +505,9 @@
   <div class="collection-bar">
     <div class="collection-title"><img src="icon-192.png" alt="">My Vault</div>
     <div class="collection-stats">
-      <div class="cstat"><b id="stat-total">0</b> cards</div>
-      <div class="cstat have-stat">Have: <b id="stat-have">0</b><span id="stat-have-value" style="color:var(--sage);font-size:0.78rem;"></span></div>
+      <div class="cstat have-stat">Collection: <b id="stat-have">0</b><span id="stat-have-value" style="color:var(--sage);font-size:0.78rem;"></span></div>
       <div class="cstat want-stat">Want: <b id="stat-want">0</b><span id="stat-want-value" style="color:var(--ember);font-size:0.78rem;"></span></div>
       <div class="cstat trade-stat">Trade: <b id="stat-trade">0</b></div>
-      <div class="cstat" id="price-date" style="color:var(--mist);font-style:italic;font-size:0.78rem;"></div>
     </div>
     <div class="view-toggle section-switcher">
       <button class="view-btn active" id="sec-collection" onclick="setView('all')">Collection</button>
@@ -865,8 +863,6 @@ function updateStats() {
     foilWantVal += fp * (v.wantFoil || 0);
   }
 
-  document.getElementById('stat-total').textContent = allCards.length;
-
   // Show the current finish's have/want/trade in the main pills
   const isFoil = finishMode === 'foil';
   document.getElementById('stat-have').textContent = isFoil ? foilHaveQty : stdHaveQty;
@@ -892,9 +888,13 @@ function updateStats() {
   }
   const totalHaveVal = stdHaveVal + foilHaveVal;
   if (totalEl) {
+    const priceNote = priceDate
+      ? ` <span style="color:var(--mist);font-size:0.72rem;font-style:italic;">· TCG market, ${priceDate}</span>`
+      : ` <span style="color:var(--mist);font-size:0.72rem;font-style:italic;">· TCG market price</span>`;
     totalEl.innerHTML = totalHaveVal > 0
       ? `Collection value: <b style="color:var(--gold)">$${totalHaveVal.toFixed(2)}</b>` +
-        (foilHaveVal > 0 ? ` <span style="color:var(--mist);font-size:0.74rem;">(std $${stdHaveVal.toFixed(2)} · foil $${foilHaveVal.toFixed(2)})</span>` : '')
+        (foilHaveVal > 0 ? ` <span style="color:var(--mist);font-size:0.74rem;">(std $${stdHaveVal.toFixed(2)} · foil $${foilHaveVal.toFixed(2)})</span>` : '') +
+        priceNote
       : '';
     totalEl.style.display = totalHaveVal > 0 ? '' : 'none';
   }
@@ -941,9 +941,6 @@ async function loadCards() {
         foilPrices = pdata.foils || {};
         priceSource = pdata.source || 'JustTCG';
         priceDate = pdata.generated ? new Date(pdata.generated).toLocaleDateString() : null;
-        if (priceDate) {
-          document.getElementById('price-date').textContent = `Prices as of ${priceDate}`;
-        }
       }
     } catch(e) { /* prices.json not found, that's fine */ }
 
