@@ -161,6 +161,9 @@
   #my-decks-section { margin-bottom: 32px; display: none; }
 
   .decks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+  .my-decks-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .my-decks-collapse { background: none; border: 1px solid var(--border-strong); border-radius: 5px; color: var(--rune); font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 12px; cursor: pointer; transition: all 0.15s; flex-shrink: 0; }
+  .my-decks-collapse:hover { border-color: var(--arcane); color: var(--shimmer); background: rgba(155,135,212,0.08); }
   /* Archive-style My Decks cards */
   .decks-grid:has(.md-deck-card) { grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 16px; }
   .md-deck-card { position: relative; background: var(--dusk); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; transition: border-color 0.15s, transform 0.15s; }
@@ -644,6 +647,19 @@
   .toast { position: fixed; bottom: 24px; right: 24px; background: var(--dusk); border: 1px solid var(--border-strong); color: var(--shimmer); font-size: 0.9rem; padding: 10px 18px; border-radius: 6px; box-shadow: var(--glow); z-index: 999; opacity: 0; transform: translateY(8px); transition: opacity 0.2s, transform 0.2s; pointer-events: none; font-style: italic; }
   .toast.show { opacity: 1; transform: translateY(0); }
 
+  /* Delete confirmation modal */
+  .confirm-overlay { display: none; position: fixed; inset: 0; background: rgba(11,10,15,0.82); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+  .confirm-overlay.open { display: flex; }
+  .confirm-box { background: var(--dusk); border: 1px solid var(--border-strong); border-radius: 10px; max-width: 400px; width: 100%; padding: 28px 26px 22px; text-align: center; box-shadow: 0 12px 40px rgba(0,0,0,0.6); }
+  .confirm-icon { font-size: 2.4rem; color: var(--ember); margin-bottom: 10px; }
+  .confirm-title { font-family: 'Cinzel', serif; font-size: 1.3rem; font-weight: 700; color: var(--parchment); margin-bottom: 10px; }
+  .confirm-msg { font-family: 'Crimson Pro', serif; font-size: 0.98rem; color: var(--rune); line-height: 1.55; margin-bottom: 22px; }
+  .confirm-msg b { color: var(--shimmer); }
+  .confirm-actions { display: flex; gap: 12px; justify-content: center; }
+  .confirm-actions .btn { min-width: 120px; }
+  .confirm-delete-btn { background: var(--ember); border: 1px solid var(--ember); color: #fff; }
+  .confirm-delete-btn:hover { background: #d8745c; border-color: #d8745c; }
+
   @media (max-width: 700px) {
     .modal { grid-template-columns: 1fr; }
     .modal-img img { width: 100%; height: 180px; }
@@ -714,7 +730,10 @@
 
   <!-- MY DECKS -->
   <div id="my-decks-section" style="display:none;margin-bottom:32px;">
-    <div class="section-title">My Decks</div>
+    <div class="section-title my-decks-header">
+      <span>My Decks</span>
+      <button class="my-decks-collapse" onclick="hideMyDecks()" title="Hide My Decks">Hide ▲</button>
+    </div>
     <div class="decks-grid" id="decks-grid"></div>
     <div id="my-decks-more" style="text-align:center;margin-top:18px;display:none;"></div>
   </div>
@@ -951,6 +970,19 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- DELETE CONFIRMATION MODAL -->
+<div class="confirm-overlay" id="delete-confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-icon">⚠</div>
+    <div class="confirm-title">Delete this deck?</div>
+    <div class="confirm-msg" id="delete-confirm-msg">This will permanently remove the deck from your account. This cannot be undone.</div>
+    <div class="confirm-actions">
+      <button class="btn btn-ghost" onclick="closeDeleteConfirm()">Cancel</button>
+      <button class="btn confirm-delete-btn" id="delete-confirm-yes">Delete deck</button>
+    </div>
+  </div>
+</div>
 
 <script>
 let allCards = [];
@@ -1348,6 +1380,13 @@ async function toggleMyDecks() {
   }
 }
 
+function hideMyDecks() {
+  const s = document.getElementById('my-decks-section');
+  s.style.display = 'none';
+  // Scroll back to the top of the page so the user isn't left in dead space
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 function toggleMobileNav() {
   document.getElementById('mobile-nav').classList.toggle('open');
 }
@@ -1474,14 +1513,47 @@ function toggleMyDecksExpand() {
 
 function escHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
-async function deleteCloudDeck(shortCode) {
-  if (!window.CR || !CR.user) return;
-  if (!confirm('Delete this deck from your account?')) return;
-  try {
-    await CR.supa.from('decks').delete().eq('short_code', shortCode).eq('owner_id', CR.user.id);
+// Styled delete confirmation modal
+let pendingDelete = null; // { type:'cloud'|'local', id, name }
+function openDeleteConfirm(type, id, name) {
+  pendingDelete = { type, id, name };
+  const msg = document.getElementById('delete-confirm-msg');
+  if (msg) {
+    msg.innerHTML = name
+      ? `You're about to permanently delete <b>${escHtml(name)}</b> from your account. This cannot be undone.`
+      : `This will permanently remove the deck. This cannot be undone.`;
+  }
+  document.getElementById('delete-confirm-overlay').classList.add('open');
+}
+function closeDeleteConfirm() {
+  pendingDelete = null;
+  document.getElementById('delete-confirm-overlay').classList.remove('open');
+}
+async function confirmDeleteNow() {
+  if (!pendingDelete) return;
+  const { type, id } = pendingDelete;
+  if (type === 'cloud') {
+    if (!window.CR || !CR.user) { closeDeleteConfirm(); return; }
+    try {
+      await CR.supa.from('decks').delete().eq('short_code', id).eq('owner_id', CR.user.id);
+      toast('Deck deleted');
+      closeDeleteConfirm();
+      renderMyDecks();
+    } catch(e) { toast('Could not delete'); closeDeleteConfirm(); }
+  } else {
+    const saved = getSavedDecks();
+    delete saved[id];
+    localStorage.setItem('grimoire_decks', JSON.stringify(saved));
     toast('Deck deleted');
+    closeDeleteConfirm();
     renderMyDecks();
-  } catch(e) { toast('Could not delete'); }
+  }
+}
+
+function deleteCloudDeck(shortCode) {
+  if (!window.CR || !CR.user) return;
+  const d = (cloudDecks || []).find(x => x.short_code === shortCode);
+  openDeleteConfirm('cloud', shortCode, d ? d.name : '');
 }
 
 function copyDeckLink(shortCode) {
@@ -1509,11 +1581,8 @@ function loadDeck(id) {
 
 function deleteDeck(id) {
   const saved = getSavedDecks();
-  const name = saved[id]?.name||'Deck';
-  delete saved[id];
-  localStorage.setItem('grimoire_decks', JSON.stringify(saved));
-  renderMyDecks();
-  toast(`"${name}" deleted`);
+  const name = saved[id]?.name || 'Deck';
+  openDeleteConfirm('local', id, name);
 }
 
 // MODAL
@@ -1614,7 +1683,14 @@ function toast(msg) {
   clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),2200);
 }
 
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeModal({});closeImport({});} });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeModal({});closeImport({});closeDeleteConfirm();} });
+// Wire the styled delete-confirm button + click-outside-to-close
+(function(){
+  const yes = document.getElementById('delete-confirm-yes');
+  if (yes) yes.addEventListener('click', confirmDeleteNow);
+  const ov = document.getElementById('delete-confirm-overlay');
+  if (ov) ov.addEventListener('click', e => { if (e.target === ov) closeDeleteConfirm(); });
+})();
 
 // INIT
 document.getElementById('vm-grid').classList.toggle('active', viewMode === 'grid');
