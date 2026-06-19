@@ -621,7 +621,7 @@
     background: var(--dusk);
     overflow: visible;
   }
-  .dvg-card.is-site img {
+  .dvg-card.is-site > img {
     position: absolute;
     width: 75%;
     aspect-ratio: 3/4;
@@ -629,6 +629,21 @@
     object-fit: contain;
     transform-origin: center center;
   }
+
+  /* Big threshold overlay — hidden by default, shown when body.show-thresholds is on.
+     Same look as the deck viewer: repeated element symbols, always upright. */
+  .th-overlay-big { position: absolute; left: 6px; bottom: 6px; display: none; align-items: center; gap: 6px; z-index: 3; flex-wrap: wrap; max-width: calc(100% - 12px); background: rgba(11,10,15,0.78); border: 1px solid var(--border-strong); border-radius: 9px; padding: 5px 9px; backdrop-filter: blur(2px); }
+  body.show-thresholds .th-overlay-big { display: inline-flex; }
+  .th-group-big { display: inline-flex; gap: 2px; align-items: center; }
+  .th-icon-big { width: 34px; height: 34px; object-fit: contain; display: inline-block; transform: none !important; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.8)); }
+  .deck-card-grid-large .th-icon-big { width: 46px; height: 46px; }
+  /* Threshold toggle switch (matches the deck viewer) */
+  .threshold-toggle { background: none; border: none; cursor: pointer; padding: 0; display: inline-flex; align-items: center; gap: 7px; color: var(--rune); font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase; }
+  .th-toggle-track { width: 40px; height: 21px; border-radius: 11px; background: var(--twilight); border: 1px solid var(--border-strong); position: relative; transition: background 0.2s, border-color 0.2s; display: inline-block; flex-shrink: 0; }
+  .th-toggle-knob { position: absolute; top: 2px; left: 2px; width: 15px; height: 15px; border-radius: 50%; background: var(--rune); transition: transform 0.2s, background 0.2s; }
+  body.show-thresholds .th-toggle-track { background: rgba(200,169,110,0.25); border-color: var(--gold); }
+  body.show-thresholds .th-toggle-knob { transform: translateX(19px); background: var(--gold); }
+  body.show-thresholds .threshold-toggle { color: var(--gold); }
 
   .dvg-qty {
     position: absolute; bottom: 5px; right: 5px;
@@ -1157,6 +1172,10 @@
           <button class="dvm-btn" id="dvm-grid" onclick="setDeckViewMode('grid')" title="Card view" aria-label="Card view">⊞</button>
           <button class="dvm-btn" id="dvm-large" onclick="setDeckViewMode('large')" title="Large card view" aria-label="Large card view">⊡</button>
         </div>
+        <button class="threshold-toggle" onclick="toggleThresholds()" title="Show threshold requirements on cards">
+          <span class="th-toggle-track"><span class="th-toggle-knob"></span></span>
+          Threshold
+        </button>
       </div>
     </div>
 
@@ -1182,6 +1201,10 @@
           <button class="dvm-btn" id="dvm-grid-edit" onclick="setDeckViewMode('grid')" title="Card view" aria-label="Card view">⊞</button>
           <button class="dvm-btn" id="dvm-large-edit" onclick="setDeckViewMode('large')" title="Large card view" aria-label="Large card view">⊡</button>
         </div>
+        <button class="threshold-toggle" onclick="toggleThresholds()" title="Show threshold requirements on cards">
+          <span class="th-toggle-track"><span class="th-toggle-knob"></span></span>
+          Threshold
+        </button>
       </div>
     </div>
 
@@ -2443,8 +2466,26 @@ function renderDeckCard(section, key, card, qty) {
   return `<div class="dvg-card${isSite ? ' is-site' : ''}" data-card-id="${escId(card.id)}" onclick="openModal('${escId(card.id)}')">
     <img src="${getImageUrl(card)}" alt="${card.name}" loading="lazy" onerror="this.style.opacity='0.2'">
     ${qty > 1 ? `<div class="dvg-qty">×${qty}</div>` : ''}
+    ${thresholdOverlay(card)}
     ${controls}
   </div>`;
+}
+
+// Big threshold overlay shown over a grid/large card when the Threshold toggle is on
+// (same idea & symbols as the deck viewer — repeated element images, always upright).
+function thresholdOverlay(card) {
+  if (!card.thresholds) return '';
+  const imgMap = { air: 'wind.png', earth: 'earth.png', fire: 'fire.png', water: 'water.png' };
+  const groups = Object.entries(card.thresholds)
+    .filter(([, v]) => v > 0)
+    .map(([k, v]) => {
+      const file = imgMap[k.toLowerCase()];
+      if (!file) return '';
+      const icons = Array.from({ length: v }, () => `<img src="${file}" alt="${k}" class="th-icon-big">`).join('');
+      return `<span class="th-group-big">${icons}</span>`;
+    })
+    .filter(Boolean);
+  return groups.length ? `<div class="th-overlay-big">${groups.join('')}</div>` : '';
 }
 
 // Build threshold display using repeated element symbols (e.g. 🔥🔥 for 2 fire)
@@ -3241,6 +3282,14 @@ function setDeckViewMode(mode) {
   renderDeck();
 }
 
+// Threshold overlay toggle — mirrors the deck viewer. Persisted across sessions.
+let showThresholds = localStorage.getItem('grimoire_deckbuilder_thresholds') === '1';
+function toggleThresholds() {
+  showThresholds = !showThresholds;
+  localStorage.setItem('grimoire_deckbuilder_thresholds', showThresholds ? '1' : '0');
+  document.body.classList.toggle('show-thresholds', showThresholds);
+}
+
 function syncDeckViewToggle() {
   [['dvm-grid','dvm-list','dvm-large'],['dvm-grid-edit','dvm-list-edit','dvm-large-edit']].forEach(([g,l,lg]) => {
     const gb = document.getElementById(g), lb = document.getElementById(l), lgb = document.getElementById(lg);
@@ -3444,6 +3493,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.addEventListener('keydown', e => { if (e.key==='Escape') { closeModal({}); closeImport({}); closeAvatarPicker(); closeDeckStats(); closeExport({}); } });
   setupDivider();
   syncDeckViewToggle();
+  if (showThresholds) document.body.classList.add('show-thresholds');
   document.querySelector('.card-list').addEventListener('scroll', function() {
     if (visibleCount >= currentCards.length) return;
     if (this.scrollTop + this.clientHeight >= this.scrollHeight - 200) {
