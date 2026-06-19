@@ -96,6 +96,13 @@
   .viewmode-btn:last-child { border-right: none; }
   .viewmode-btn:hover { color: var(--arcane); }
   .viewmode-btn.active { background: var(--rune); color: #fff; }
+  .toolbar-left { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+  /* Threshold toggle switch */
+  .threshold-toggle { background: none; border: none; cursor: pointer; padding: 0; display: inline-flex; align-items: center; }
+  .th-toggle-track { width: 42px; height: 22px; border-radius: 11px; background: var(--twilight); border: 1px solid var(--border-strong); position: relative; transition: background 0.2s, border-color 0.2s; display: inline-block; }
+  .th-toggle-knob { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--rune); transition: transform 0.2s, background 0.2s; }
+  body.show-thresholds .th-toggle-track { background: rgba(200,169,110,0.25); border-color: var(--gold); }
+  body.show-thresholds .th-toggle-knob { transform: translateX(20px); background: var(--gold); }
 
   /* ── DECK SECTIONS ── */
   .deck-section { margin-bottom: 26px; }
@@ -105,22 +112,63 @@
   .deck-subgroup-title { font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--arcane); margin: 14px 0 8px; }
 
   /* TEXT view */
-  .deck-list { display: flex; flex-direction: column; gap: 2px; }
-  .deck-list-row { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border-radius: 4px; transition: background 0.12s; cursor: pointer; }
+  .deck-list { columns: 2; column-gap: 28px; }
+  @media (max-width: 680px) { .deck-list { columns: 1; } }
+  .deck-list-row { display: flex; align-items: center; gap: 8px; padding: 2px 8px; border-radius: 3px; transition: background 0.12s; cursor: pointer; line-height: 1.3; break-inside: avoid; }
   .deck-list-row:hover { background: rgba(155,135,212,0.08); }
-  .deck-list-qty { font-family: 'Cinzel', serif; font-weight: 700; color: var(--gold); min-width: 28px; }
-  .deck-list-name { flex: 1; color: var(--shimmer); }
-  .deck-list-cost { font-family: 'Cinzel', serif; font-size: 0.82rem; color: var(--rune); width: 28px; height: 28px; border:1px solid var(--border-strong); border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .deck-list-qty { font-family: 'Cinzel', serif; font-weight: 700; color: var(--gold); min-width: 24px; font-size: 0.9rem; }
+  .deck-list-name { flex: 1; color: var(--shimmer); font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .deck-list-cost { font-family: 'Cinzel', serif; font-size: 0.72rem; color: var(--rune); width: 21px; height: 21px; border:1px solid var(--border-strong); border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
   .deck-list-cost.empty { opacity: 0; }
+
+  /* DETAILS view — boxy rows like the explorer */
+  .deck-details { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 6px; }
+  .deck-detail-row { display: grid; grid-template-columns: auto auto 1fr auto auto auto auto; align-items: center; gap: 8px; background: #13111e; border: 1px solid var(--border); border-left: 3px solid var(--border-strong); padding: 6px 10px; border-radius: 3px; cursor: pointer; transition: background 0.12s; min-width: 0; }
+  .deck-detail-row:hover { background: #1a1728; border-left-color: var(--arcane); }
+  .cr-mana { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; font-family: 'Cinzel', serif; font-size: 0.7rem; font-weight: 700; color: var(--gold); background: radial-gradient(circle at 38% 32%, #2a2536, #15121d); border: 1px solid var(--gold); flex-shrink: 0; line-height: 1; }
+  .cr-mana.empty { visibility: hidden; }
+  .dd-qty { font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.9rem; color: var(--gold); min-width: 22px; }
+  .dd-name { font-family: 'Crimson Pro', serif; font-size: 0.95rem; color: var(--parchment); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .dd-th { display: inline-flex; gap: 3px; }
+  .set-badge { display: inline-flex; align-items: center; justify-content: center; font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.58rem; min-width: 20px; height: 18px; padding: 0 5px; border-radius: 9px; border: 1px solid; white-space: nowrap; line-height: 1; }
+  .set-alpha  { color: #d8b878; background: rgba(200,169,110,0.15); border-color: rgba(200,169,110,0.55); }
+  .set-beta   { color: #c2c2cc; background: rgba(180,180,195,0.13); border-color: rgba(180,180,195,0.5); }
+  .set-arth   { color: #7fb88a; background: rgba(90,160,110,0.15); border-color: rgba(90,160,110,0.55); }
+  .set-gothic { color: #b49ce0; background: rgba(155,135,212,0.16); border-color: rgba(155,135,212,0.55); }
+  .set-dragon { color: #e0907c; background: rgba(196,97,74,0.16); border-color: rgba(196,97,74,0.55); }
+  .set-promo  { color: #88b4d8; background: rgba(120,160,200,0.15); border-color: rgba(120,160,200,0.55); }
+  .set-other  { color: var(--rune); background: rgba(120,110,150,0.12); border-color: rgba(120,110,150,0.4); }
+  .dd-rarity { font-family: 'Cinzel', serif; font-size: 0.52rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 6px; border-radius: 8px; white-space: nowrap; }
+  .dd-rarity.ordinary { background: rgba(140,140,150,0.12); color: #9a9aa5; }
+  .dd-rarity.exceptional { background: rgba(90,138,176,0.14); color: #5a96b0; }
+  .dd-rarity.elite { background: rgba(155,135,212,0.14); color: var(--arcane); }
+  .dd-rarity.unique { background: rgba(200,169,110,0.14); color: var(--gold); }
+  .dd-type { font-size: 0.68rem; color: var(--rune); white-space: nowrap; }
+  @media (max-width: 560px) { .deck-details { grid-template-columns: 1fr; } .dd-type { display: none; } }
 
   /* CARD / LARGE grid view */
   .deck-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
   .deck-grid.large { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
   .deck-card-cell { position: relative; border-radius: 9px; overflow: hidden; border: 1px solid var(--border); background: var(--dusk); cursor: pointer; transition: transform 0.15s, border-color 0.15s; }
   .deck-card-cell:hover { transform: translateY(-3px); border-color: var(--arcane); z-index: 2; }
-  .deck-card-cell img { width: 100%; display: block; aspect-ratio: 5/7; object-fit: cover; background: #0b0a0f; }
-  .deck-card-cell .qty-chip { position: absolute; top: 6px; right: 6px; background: rgba(11,10,15,0.85); border: 1px solid var(--gold); color: var(--gold); font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.8rem; padding: 2px 8px; border-radius: 12px; }
+  .cell-img-wrap { position: relative; width: 100%; aspect-ratio: 5/7; overflow: hidden; }
+  .deck-card-cell img { width: 100%; height: 100%; display: block; object-fit: cover; background: #0b0a0f; }
+  /* Site cards rendered landscape with the image rotated 90° (full card visible) */
+  .deck-card-cell.is-site .cell-img-wrap { aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; background: #0b0a0f; overflow: hidden; }
+  .deck-card-cell.is-site img { position: absolute; width: 75%; height: auto; aspect-ratio: 5/7; transform: rotate(90deg); object-fit: contain; }
+  .deck-card-cell .qty-chip { position: absolute; top: 7px; right: 7px; background: rgba(11,10,15,0.9); border: 1.5px solid var(--gold); color: var(--gold); font-family: 'Cinzel', serif; font-weight: 700; font-size: 1.4rem; line-height: 1; padding: 5px 11px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.5); z-index: 3; }
+  .deck-card-cell .qty-chip .qty-x { font-size: 0.85rem; opacity: 0.8; margin-left: 1px; }
+  .deck-grid.large .deck-card-cell .qty-chip { font-size: 1.7rem; padding: 6px 13px; }
   .deck-card-cell .cell-name { padding: 6px 8px; font-size: 0.78rem; color: var(--shimmer); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* Threshold overlay — hidden by default, shown when body.show-thresholds */
+  .th-overlay { position: absolute; left: 6px; bottom: 6px; display: none; align-items: center; gap: 4px; z-index: 3; flex-wrap: wrap; max-width: calc(100% - 12px); }
+  body.show-thresholds .th-overlay { display: inline-flex; }
+  .th-badge { min-width: 24px; height: 24px; padding: 0 5px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; font-family: 'Cinzel', serif; font-size: 0.95rem; font-weight: 700; color: #0b0a0f; border: 1.5px solid rgba(11,10,15,0.55); box-shadow: 0 2px 6px rgba(0,0,0,0.6); }
+  .deck-grid.large .th-badge { min-width: 30px; height: 30px; font-size: 1.15rem; }
+  /* threshold pips in the text list */
+  .deck-list-th { display: inline-flex; gap: 4px; align-items: center; }
+  .th-row-pip { min-width: 18px; height: 18px; padding: 0 4px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 700; color: #0b0a0f; border: 1px solid rgba(0,0,0,0.3); }
 
   .status { text-align: center; padding: 60px 20px; color: var(--rune); font-style: italic; }
 
@@ -194,12 +242,21 @@
 
     <!-- TOOLBAR -->
     <div class="deck-toolbar">
-      <div class="viewmode-wrap">
-        <span class="viewmode-label">Change View</span>
-        <div class="viewmode-toggle">
-          <button class="viewmode-btn" id="vm-list" onclick="setDeckView('list')" title="Text view">☰</button>
-          <button class="viewmode-btn active" id="vm-grid" onclick="setDeckView('grid')" title="Card view">⊞</button>
-          <button class="viewmode-btn" id="vm-large" onclick="setDeckView('large')" title="Large view">⊡</button>
+      <div class="toolbar-left">
+        <div class="viewmode-wrap">
+          <span class="viewmode-label">Change View</span>
+          <div class="viewmode-toggle">
+            <button class="viewmode-btn" id="vm-list" onclick="setDeckView('list')" title="Text view">☰</button>
+            <button class="viewmode-btn" id="vm-details" onclick="setDeckView('details')" title="Details view">▤</button>
+            <button class="viewmode-btn active" id="vm-grid" onclick="setDeckView('grid')" title="Card view">⊞</button>
+            <button class="viewmode-btn" id="vm-large" onclick="setDeckView('large')" title="Large view">⊡</button>
+          </div>
+        </div>
+        <div class="viewmode-wrap">
+          <span class="viewmode-label">Threshold</span>
+          <button class="threshold-toggle" id="threshold-toggle" onclick="toggleThresholds()" title="Show threshold requirements on cards">
+            <span class="th-toggle-track"><span class="th-toggle-knob"></span></span>
+          </button>
         </div>
       </div>
       <button class="btn btn-ghost" onclick="downloadDeckText()">⬇ Download .txt</button>
@@ -264,7 +321,9 @@
         cardSlugMap[key] = slug;
         cardMap[key] = {
           name: c.name, type: g.type || '', rarity: g.rarity || '', cost: g.cost,
-          element: els.join(', '), slug
+          element: els.join(', '), slug, thresholds: g.thresholds || {},
+          set: (c.sets && c.sets[0]) ? (c.sets[0].name || '') : '',
+          subTypes: c.subTypes || ''
         };
       });
     } catch (e) { console.warn('cards.json failed', e); }
@@ -296,10 +355,18 @@
   function setDeckView(mode) {
     deckView = mode;
     localStorage.setItem('grimoire_deckview_mode', mode);
-    document.getElementById('vm-list').classList.toggle('active', mode==='list');
-    document.getElementById('vm-grid').classList.toggle('active', mode==='grid');
-    document.getElementById('vm-large').classList.toggle('active', mode==='large');
+    ['list','details','grid','large'].forEach(m => {
+      const btn = document.getElementById('vm-' + m);
+      if (btn) btn.classList.toggle('active', mode === m);
+    });
     renderSections();
+  }
+
+  let showThresholds = localStorage.getItem('grimoire_deckview_thresholds') === '1';
+  function toggleThresholds() {
+    showThresholds = !showThresholds;
+    localStorage.setItem('grimoire_deckview_thresholds', showThresholds ? '1' : '0');
+    document.body.classList.toggle('show-thresholds', showThresholds);
   }
 
   function cardCost(name) { const c = cardMap[(name||'').toLowerCase()]; return c && c.cost != null ? c.cost : ''; }
@@ -315,19 +382,84 @@
     });
   }
 
+  function cardThresholds(name) {
+    const c = cardMap[(name||'').toLowerCase()];
+    return c && c.thresholds ? c.thresholds : {};
+  }
+  function isSite(name) {
+    return (cardType(name) || '').toLowerCase() === 'site';
+  }
+  function cardSet(name) { const c = cardMap[(name||'').toLowerCase()]; return c ? c.set : ''; }
+  function cardRarity(name) { const c = cardMap[(name||'').toLowerCase()]; return c ? c.rarity : ''; }
+  function rarityAbbr(r) { return { 'Unique':'Uni', 'Elite':'Eli', 'Exceptional':'Exc', 'Ordinary':'Ord' }[r] || r; }
+  function setBadge(set) {
+    const s = (set || '').toLowerCase();
+    let cls = 'set-other', label = (set || '?').slice(0,3).toUpperCase();
+    if (s.includes('alpha')) { cls='set-alpha'; label='ALP'; }
+    else if (s.includes('beta')) { cls='set-beta'; label='BET'; }
+    else if (s.includes('arthur')) { cls='set-arth'; label='ART'; }
+    else if (s.includes('goth')) { cls='set-gothic'; label='GOT'; }
+    else if (s.includes('dragon')) { cls='set-dragon'; label='DRG'; }
+    else if (s.includes('promo')) { cls='set-promo'; label='PRO'; }
+    if (!set) return '';
+    return `<span class="set-badge ${cls}">${label}</span>`;
+  }
+
+  // Build the threshold overlay badges (e.g. 2 water + 1 fire) shown over a card
+  const THRESHOLD_ELS = ['air','earth','fire','water'];
+  function thresholdOverlayHtml(name) {
+    const th = cardThresholds(name);
+    const badges = [];
+    THRESHOLD_ELS.forEach(el => {
+      const n = th[el] || 0;
+      if (n > 0) {
+        badges.push(`<span class="th-badge" style="background:${ELEMENT_COLORS[el]};" title="${n} ${el} threshold">${n}</span>`);
+      }
+    });
+    if (!badges.length) return '';
+    return `<div class="th-overlay">${badges.join('')}</div>`;
+  }
+
   function renderEntryRow([name, qty]) {
     const cost = cardCost(name);
+    const th = cardThresholds(name);
+    const thStr = THRESHOLD_ELS.filter(el => th[el] > 0)
+      .map(el => `<span class="th-row-pip" style="background:${ELEMENT_COLORS[el]};" title="${el} ${th[el]}">${th[el]}</span>`).join('');
     return `<div class="deck-list-row" onclick="zoom('${escAttr(name)}')">
       <span class="deck-list-cost${cost===''?' empty':''}">${cost}</span>
       <span class="deck-list-qty">${qty}×</span>
       <span class="deck-list-name">${escHtml(name)}</span>
+      <span class="deck-list-th">${thStr}</span>
+    </div>`;
+  }
+
+  // Boxy "Details" row — like the explorer's detail list
+  function renderEntryDetail([name, qty]) {
+    const cost = cardCost(name);
+    const rarity = cardRarity(name);
+    const type = cardType(name);
+    const th = cardThresholds(name);
+    const thStr = THRESHOLD_ELS.filter(el => th[el] > 0)
+      .map(el => `<span class="th-row-pip" style="background:${ELEMENT_COLORS[el]};" title="${el} ${th[el]}">${th[el]}</span>`).join('');
+    return `<div class="deck-detail-row" onclick="zoom('${escAttr(name)}')">
+      <span class="cr-mana${cost===''?' empty':''}">${cost}</span>
+      <span class="dd-qty">${qty}×</span>
+      <span class="dd-name">${escHtml(name)}</span>
+      <span class="dd-th">${thStr}</span>
+      <span class="dd-set">${setBadge(cardSet(name))}</span>
+      <span class="dd-rarity ${(rarity||'').toLowerCase()}">${rarityAbbr(rarity)}</span>
+      <span class="dd-type">${escHtml(type)}</span>
     </div>`;
   }
 
   function renderEntryCell([name, qty]) {
-    return `<div class="deck-card-cell" onclick="zoom('${escAttr(name)}')">
-      <img src="${imgUrl(name)}" alt="${escHtml(name)}" loading="lazy" onerror="this.style.opacity='0.2'">
-      <div class="qty-chip">${qty}×</div>
+    const siteClass = isSite(name) ? ' is-site' : '';
+    return `<div class="deck-card-cell${siteClass}" onclick="zoom('${escAttr(name)}')">
+      <div class="cell-img-wrap">
+        <img src="${imgUrl(name)}" alt="${escHtml(name)}" loading="lazy" onerror="this.style.opacity='0.2'">
+        ${thresholdOverlayHtml(name)}
+      </div>
+      <div class="qty-chip">${qty}<span class="qty-x">×</span></div>
       <div class="cell-name">${escHtml(name)}</div>
     </div>`;
   }
@@ -340,6 +472,8 @@
     let inner = '';
     if (deckView === 'list') {
       inner = `<div class="deck-list">${sortEntries(entries).map(renderEntryRow).join('')}</div>`;
+    } else if (deckView === 'details') {
+      inner = `<div class="deck-details">${sortEntries(entries).map(renderEntryDetail).join('')}</div>`;
     } else {
       const gridClass = deckView === 'large' ? 'deck-grid large' : 'deck-grid';
       inner = `<div class="${gridClass}">${sortEntries(entries).map(renderEntryCell).join('')}</div>`;
@@ -416,9 +550,10 @@
     document.getElementById('hero-actions').innerHTML = acts.join('');
 
     // view toggle initial state
-    document.getElementById('vm-list').classList.toggle('active', deckView==='list');
-    document.getElementById('vm-grid').classList.toggle('active', deckView==='grid');
-    document.getElementById('vm-large').classList.toggle('active', deckView==='large');
+    ['list','details','grid','large'].forEach(m => {
+      const btn = document.getElementById('vm-' + m);
+      if (btn) btn.classList.toggle('active', deckView === m);
+    });
   }
 
   // ── Lightbox ──
@@ -551,6 +686,7 @@
   // ── INIT ──
   (async function init() {
     renderAuthBar();
+    if (showThresholds) document.body.classList.add('show-thresholds');
     await Promise.all([loadCards(), refreshUser()]);
     renderAuthBar();
     await loadDeck();
