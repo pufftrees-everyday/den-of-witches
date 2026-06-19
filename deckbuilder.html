@@ -2121,7 +2121,25 @@ function groupByType(entries) {
     const t = card.type || 'Other';
     (groups[t] = groups[t] || []).push({key, card, qty});
   });
+  // Order each group low→high mana cost (then by name) instead of add-order.
+  Object.keys(groups).forEach(t => groups[t].sort(deckCardCostSort));
   return groups;
+}
+
+// Sort deck cards by mana cost ascending, then alphabetically. Cards with no
+// cost (e.g. Sites) sort to the end of their group.
+function deckCardCostSort(a, b) {
+  const ca = (a.card.cost == null || a.card.cost === '') ? Infinity : Number(a.card.cost);
+  const cb = (b.card.cost == null || b.card.cost === '') ? Infinity : Number(b.card.cost);
+  if (ca !== cb) return ca - cb;
+  return (a.card.name || '').localeCompare(b.card.name || '');
+}
+
+// Sort raw [key,{card,qty}] entries the same way (used for flat sections like Atlas).
+function sortDeckEntries(entries) {
+  return [...entries].sort((A, B) => deckCardCostSort(
+    { card: A[1].card }, { card: B[1].card }
+  ));
 }
 
 // ── DECK STATS ──
@@ -2445,7 +2463,7 @@ function renderSection(title, section, entries, reqMsg, isOk, req, groups) {
         </div>`;
     }).join('');
   } else {
-    cardsHtml = entries.map(([key,{card,qty}]) => renderDeckCard(section, key, card, qty)).join('');
+    cardsHtml = sortDeckEntries(entries).map(([key,{card,qty}]) => renderDeckCard(section, key, card, qty)).join('');
   }
 
   return `
