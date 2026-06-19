@@ -385,8 +385,11 @@
 
   /* Site-only rotation mode */
   .card-list-grid.sites-only { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
-  .card-list-grid.sites-only .card-item { aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; overflow: visible; }
-  .card-list-grid.sites-only .card-item img { position: absolute; width: 75%; aspect-ratio: 3/4; transform: rotate(90deg); object-fit: contain; }
+  .card-list-grid.sites-only-large { grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)); }
+  .card-list-grid.sites-only .card-item,
+  .card-list-grid.sites-only-large .card-item { aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; overflow: visible; }
+  .card-list-grid.sites-only .card-item img,
+  .card-list-grid.sites-only-large .card-item img { position: absolute; width: 75%; aspect-ratio: 3/4; transform: rotate(90deg); object-fit: contain; }
 
   .card-item {
     cursor: pointer;
@@ -1691,8 +1694,11 @@ function sortExplorerCards(cards) {
 // ── RENDER CARD GRID ──
 function renderCardGrid(append = false) {
   const grid = document.getElementById('card-grid');
-  const sitesOnly = activeFilters.type.size === 1 && activeFilters.type.has('Site');
+  // Rotate site cards whenever every card currently shown is a Site — regardless of
+  // which filter combination produced that (e.g. Site + Fire selected together).
+  const sitesOnly = currentCards.length > 0 && currentCards.every(c => c.type === 'Site');
   grid.classList.toggle('sites-only', sitesOnly && viewMode === 'grid');
+  grid.classList.toggle('sites-only-large', sitesOnly && viewMode === 'large');
   grid.classList.toggle('list-view', viewMode === 'list');
   grid.classList.toggle('large-view', viewMode === 'large');
   const shown = currentCards.slice(append ? visibleCount - PAGE_SIZE : 0, visibleCount);

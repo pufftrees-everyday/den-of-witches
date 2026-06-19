@@ -1210,8 +1210,8 @@ function escId(id) { return String(id).replace(/\\/g,'\\\\').replace(/'/g,"\\'")
 // RENDER CARDS
 function renderCards(cards, append = false) {
   const grid = document.getElementById('card-grid');
-  // Apply site-only rotation mode when Site is the only active type filter
-  const sitesOnly = activeFilters.type.size === 1 && activeFilters.type.has('Site');
+  // Rotate site cards whenever every card shown is a Site (any filter combo, e.g. Site + Fire)
+  const sitesOnly = cards.length > 0 && cards.every(c => c.type === 'Site');
   grid.classList.toggle('list-view', viewMode === 'list');
   if (!append) {
     currentCards = cards;
