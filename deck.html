@@ -152,21 +152,22 @@
   .deck-card-cell { position: relative; border-radius: 9px; overflow: hidden; border: 1px solid var(--border); background: var(--dusk); cursor: pointer; transition: transform 0.15s, border-color 0.15s; }
   .deck-card-cell:hover { transform: translateY(-3px); border-color: var(--arcane); z-index: 2; }
   .cell-img-wrap { position: relative; width: 100%; aspect-ratio: 5/7; overflow: hidden; }
-  .deck-card-cell img { width: 100%; height: 100%; display: block; object-fit: cover; background: #0b0a0f; }
+  .deck-card-cell > .cell-img-wrap > img.card-art { width: 100%; height: 100%; display: block; object-fit: cover; background: #0b0a0f; }
   /* Site cards rendered landscape with the image rotated 90° (full card visible) */
   .deck-card-cell.is-site .cell-img-wrap { aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; background: #0b0a0f; overflow: hidden; }
-  .deck-card-cell.is-site img { position: absolute; width: 75%; height: auto; aspect-ratio: 5/7; transform: rotate(90deg); object-fit: contain; }
+  .deck-card-cell.is-site > .cell-img-wrap > img.card-art { position: absolute; width: 75%; height: auto; aspect-ratio: 5/7; transform: rotate(90deg); object-fit: contain; }
   .deck-card-cell .qty-chip { position: absolute; top: 7px; right: 7px; background: rgba(11,10,15,0.9); border: 1.5px solid var(--gold); color: var(--gold); font-family: 'Cinzel', serif; font-weight: 700; font-size: 1.4rem; line-height: 1; padding: 5px 11px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.5); z-index: 3; }
   .deck-card-cell .qty-chip .qty-x { font-size: 0.85rem; opacity: 0.8; margin-left: 1px; }
   .deck-grid.large .deck-card-cell .qty-chip { font-size: 1.7rem; padding: 6px 13px; }
   .deck-card-cell .cell-name { padding: 6px 8px; font-size: 0.78rem; color: var(--shimmer); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
   /* Threshold overlay — hidden by default, shown when body.show-thresholds */
-  .th-overlay { position: absolute; left: 6px; bottom: 6px; display: none; align-items: center; gap: 5px; z-index: 3; flex-wrap: wrap; max-width: calc(100% - 12px); background: rgba(11,10,15,0.78); border: 1px solid var(--border-strong); border-radius: 8px; padding: 4px 7px; backdrop-filter: blur(2px); }
+  .th-overlay { position: absolute; left: 6px; bottom: 6px; display: none; align-items: center; gap: 6px; z-index: 3; flex-wrap: wrap; max-width: calc(100% - 12px); background: rgba(11,10,15,0.78); border: 1px solid var(--border-strong); border-radius: 9px; padding: 5px 9px; backdrop-filter: blur(2px); }
   body.show-thresholds .th-overlay { display: inline-flex; }
-  .th-group { display: inline-flex; gap: 1px; align-items: center; }
-  .th-icon { width: 19px; height: 19px; object-fit: contain; display: inline-block; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.7)); }
-  .deck-grid.large .th-icon { width: 24px; height: 24px; }
+  .th-group { display: inline-flex; gap: 2px; align-items: center; }
+  /* Overlay icons are large & always upright (never inherit card rotation) */
+  .th-icon { width: 40px; height: 40px; object-fit: contain; display: inline-block; transform: none !important; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.8)); }
+  .deck-grid.large .th-icon { width: 52px; height: 52px; }
   /* threshold symbols in the text/details rows */
   .deck-list-th, .dd-th { display: inline-flex; gap: 4px; align-items: center; }
   .th-row-icon { width: 15px; height: 15px; object-fit: contain; display: inline-block; vertical-align: middle; }
@@ -177,6 +178,12 @@
   .lightbox { display: none; position: fixed; inset: 0; background: rgba(11,10,15,0.9); z-index: 1000; align-items: center; justify-content: center; padding: 30px; cursor: zoom-out; }
   .lightbox.open { display: flex; }
   .lightbox img { max-width: 90%; max-height: 90vh; border-radius: 12px; box-shadow: 0 12px 50px rgba(0,0,0,0.7); }
+
+  /* hover preview (desktop only) */
+  .hover-preview { position: fixed; z-index: 1500; pointer-events: none; opacity: 0; transition: opacity 0.12s; display: none; }
+  .hover-preview.show { opacity: 1; }
+  .hover-preview img { width: 280px; max-width: 42vw; border-radius: 12px; border: 1px solid var(--border-strong); box-shadow: 0 12px 40px rgba(0,0,0,0.75); display: block; background: #0b0a0f; }
+  @media (hover: hover) and (pointer: fine) { .hover-preview { display: block; } }
 
   /* confirm modal */
   .confirm-overlay { display: none; position: fixed; inset: 0; background: rgba(11,10,15,0.84); backdrop-filter: blur(4px); z-index: 1100; align-items: center; justify-content: center; padding: 20px; }
@@ -270,6 +277,9 @@
 
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox" onclick="this.classList.remove('open')"><img id="lightbox-img" src="" alt=""></div>
+
+<!-- HOVER PREVIEW -->
+<div class="hover-preview" id="hover-preview"><img id="hover-preview-img" src="" alt=""></div>
 
 <!-- BRING TO WORKSHOP CONFIRM -->
 <div class="confirm-overlay" id="copy-overlay" onclick="if(event.target===this)closeCopyConfirm()">
@@ -432,7 +442,7 @@
   function renderEntryRow([name, qty]) {
     const cost = cardCost(name);
     const thStr = thresholdSymbols(name, 'th-row-icon').join('');
-    return `<div class="deck-list-row" onclick="zoom('${escAttr(name)}')">
+    return `<div class="deck-list-row" data-card="${escAttr(name)}" onclick="zoom('${escAttr(name)}')">
       <span class="deck-list-cost${cost===''?' empty':''}">${cost}</span>
       <span class="deck-list-qty">${qty}×</span>
       <span class="deck-list-name">${escHtml(name)}</span>
@@ -446,7 +456,7 @@
     const rarity = cardRarity(name);
     const type = cardType(name);
     const thStr = thresholdSymbols(name, 'th-row-icon').join('');
-    return `<div class="deck-detail-row" onclick="zoom('${escAttr(name)}')">
+    return `<div class="deck-detail-row" data-card="${escAttr(name)}" onclick="zoom('${escAttr(name)}')">
       <span class="cr-mana${cost===''?' empty':''}">${cost}</span>
       <span class="dd-qty">${qty}×</span>
       <span class="dd-name">${escHtml(name)}</span>
@@ -459,9 +469,9 @@
 
   function renderEntryCell([name, qty]) {
     const siteClass = isSite(name) ? ' is-site' : '';
-    return `<div class="deck-card-cell${siteClass}" onclick="zoom('${escAttr(name)}')">
+    return `<div class="deck-card-cell${siteClass}" data-card="${escAttr(name)}" onclick="zoom('${escAttr(name)}')">
       <div class="cell-img-wrap">
-        <img src="${imgUrl(name)}" alt="${escHtml(name)}" loading="lazy" onerror="this.style.opacity='0.2'">
+        <img class="card-art" src="${imgUrl(name)}" alt="${escHtml(name)}" loading="lazy" onerror="this.style.opacity='0.2'">
         ${thresholdOverlayHtml(name)}
       </div>
       <div class="qty-chip">${qty}<span class="qty-x">×</span></div>
@@ -564,6 +574,52 @@
   function zoom(name) {
     document.getElementById('lightbox-img').src = imgUrl(name);
     document.getElementById('lightbox').classList.add('open');
+    hidePreview();
+  }
+
+  // ── Hover preview (desktop) ──
+  let previewEl, previewImg, previewVisible = false;
+  function showPreview(name, x, y) {
+    if (!previewEl) { previewEl = document.getElementById('hover-preview'); previewImg = document.getElementById('hover-preview-img'); }
+    if (previewImg.dataset.for !== name) { previewImg.src = imgUrl(name); previewImg.dataset.for = name; }
+    positionPreview(x, y);
+    previewEl.classList.add('show');
+    previewVisible = true;
+  }
+  function positionPreview(x, y) {
+    if (!previewEl) return;
+    const pad = 18;
+    const pw = previewEl.offsetWidth || 290, ph = previewEl.offsetHeight || 400;
+    let left = x + pad, top = y + pad;
+    if (left + pw > window.innerWidth - 8) left = x - pw - pad;   // flip to left of cursor
+    if (top + ph > window.innerHeight - 8) top = window.innerHeight - ph - 8;
+    if (top < 8) top = 8;
+    previewEl.style.left = left + 'px';
+    previewEl.style.top = top + 'px';
+  }
+  function hidePreview() {
+    if (previewEl) previewEl.classList.remove('show');
+    previewVisible = false;
+  }
+  // Delegated hover on the deck sections
+  function wireHover() {
+    const root = document.getElementById('deck-sections');
+    if (!root) return;
+    root.addEventListener('mouseover', e => {
+      const cell = e.target.closest('[data-card]');
+      if (!cell) return;
+      showPreview(cell.getAttribute('data-card'), e.clientX, e.clientY);
+    });
+    root.addEventListener('mousemove', e => {
+      if (!previewVisible) return;
+      const cell = e.target.closest('[data-card]');
+      if (!cell) { hidePreview(); return; }
+      positionPreview(e.clientX, e.clientY);
+    });
+    root.addEventListener('mouseout', e => {
+      const to = e.relatedTarget;
+      if (!to || !to.closest || !to.closest('[data-card]')) hidePreview();
+    });
   }
 
   // ── Download .txt ──
@@ -674,6 +730,7 @@
       renderSections();
       statusEl.style.display = 'none';
       document.getElementById('deck-content').style.display = '';
+      wireHover();
     } catch (e) {
       console.warn(e);
       statusEl.innerHTML = 'Could not load the deck.';
