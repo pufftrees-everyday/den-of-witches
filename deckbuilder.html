@@ -806,6 +806,15 @@
 
   /* TOAST */
   .toast { position: fixed; bottom: 20px; right: 20px; background: var(--dusk); border: 1px solid var(--border-strong); color: var(--shimmer); font-size: 0.9rem; padding: 9px 16px; border-radius: 4px; box-shadow: var(--glow); z-index: 999; opacity: 0; transform: translateY(6px); transition: opacity 0.2s, transform 0.2s; pointer-events: none; font-style: italic; }
+  .confirm-overlay { display: none; position: fixed; inset: 0; background: rgba(11,10,15,0.84); backdrop-filter: blur(4px); z-index: 1100; align-items: center; justify-content: center; padding: 20px; }
+  .confirm-overlay.open { display: flex; }
+  .confirm-box { background: var(--dusk); border: 1px solid var(--border-strong); border-radius: 10px; max-width: 440px; width: 100%; padding: 26px; text-align: center; box-shadow: 0 16px 50px rgba(0,0,0,0.6); }
+  .confirm-icon { font-size: 2.2rem; color: var(--gold); margin-bottom: 8px; }
+  .confirm-title { font-family: 'Cinzel', serif; font-size: 1.25rem; font-weight: 700; color: var(--parchment); margin-bottom: 10px; }
+  .confirm-msg { color: var(--rune); line-height: 1.55; margin-bottom: 20px; }
+  .confirm-msg b { color: var(--shimmer); }
+  .confirm-actions { display: flex; gap: 12px; justify-content: center; }
+  .confirm-actions .btn { min-width: 120px; }
   .toast.show { opacity: 1; transform: translateY(0); }
   /* HEADER NAV (added for consistency) */
   .header-nav { display: flex; gap: 12px; align-items: center; }
@@ -1287,6 +1296,19 @@
       New here? <a onclick="setAuthMode('signup')" style="color:var(--arcane);cursor:pointer;text-decoration:underline;">Create an account</a>
     </div>
     <button class="modal-close" onclick="closeAuth()">✕</button>
+  </div>
+</div>
+
+<!-- INSCRIBE IN ARCHIVE CONFIRM -->
+<div class="confirm-overlay" id="inscribe-overlay" onclick="if(event.target===this)closeInscribe()">
+  <div class="confirm-box">
+    <div class="confirm-icon">✦</div>
+    <div class="confirm-title">Inscribe in the Archive?</div>
+    <div class="confirm-msg">Your deck will be made <b>public</b> and added to The Archive, where every Sorcerer can view it, study it, and bring a copy to their own Workshop.<br><br>You can withdraw it from the Archive at any time to make it private again.</div>
+    <div class="confirm-actions">
+      <button class="btn btn-ghost" onclick="closeInscribe()">Not yet</button>
+      <button class="btn btn-primary" onclick="doInscribe()">✦ Inscribe it</button>
+    </div>
   </div>
 </div>
 
@@ -2431,18 +2453,28 @@ function renderVisibilityBar() {
 
   if (activeDeckPublic) {
     bar.innerHTML = `<div class="vis-bar">
-      <div class="vis-status public"><span class="vis-dot"></span>Public</div>
-      <button class="vis-toggle-btn" onclick="setDeckVisibility(false)">Make Private</button>
-      <span class="vis-hint">This deck is live in the <a href="archive.html" style="color:var(--arcane);">The Archive</a> for everyone to find.</span>
+      <div class="vis-status public"><span class="vis-dot"></span>In the Archive</div>
+      <button class="vis-toggle-btn" onclick="setDeckVisibility(false)">Withdraw from the Archive</button>
+      <span class="vis-hint">This deck is inscribed in <a href="archive.html" style="color:var(--arcane);">The Archive</a> for all Sorcerers to find.</span>
     </div>`;
   } else {
     bar.innerHTML = `<div class="vis-bar">
       <div class="vis-status private"><span class="vis-dot"></span>Private</div>
-      <button class="vis-toggle-btn make-public" onclick="setDeckVisibility(true)">Make Public</button>
-      <span class="vis-hint">Only you can see this deck. Make it public to share it in the Archive.</span>
+      <button class="vis-toggle-btn make-public" onclick="confirmInscribe()">✦ Inscribe in the Archive</button>
+      <span class="vis-hint">Only you can see this deck. Inscribe it to share it with the realm.</span>
     </div>`;
   }
 }
+
+// Themed confirmation before publishing to the public Archive
+function confirmInscribe() {
+  const ov = document.getElementById('inscribe-overlay');
+  if (ov) { ov.classList.add('open'); return; }
+  // Fallback if modal markup is missing
+  if (confirm('Inscribe this deck in the Archive? It will become PUBLIC and visible to everyone.')) setDeckVisibility(true);
+}
+function closeInscribe() { const ov = document.getElementById('inscribe-overlay'); if (ov) ov.classList.remove('open'); }
+function doInscribe() { closeInscribe(); setDeckVisibility(true); }
 
 async function setDeckVisibility(makePublic) {
   if (!supa || !currentUser || !activeDeckCode) return;

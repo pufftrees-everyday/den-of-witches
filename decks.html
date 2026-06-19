@@ -796,7 +796,7 @@ function renderDeckCard(d, authors) {
       ${av ? `<div class="deck-card-avatar-name">${escapeHtml(av)}</div>` : ''}
       <div class="deck-card-actions">
         <button class="btn btn-primary" onclick="window.location.href='deckbuilder.html?d=${d.short_code}'">Edit</button>
-        <button class="btn btn-ghost" onclick="window.location.href='deckbuilder.html?d=${d.short_code}&view=1'">View</button>
+        <button class="btn btn-ghost" onclick="window.location.href='deck.html?d=${d.short_code}'">View</button>
         <button class="deck-card-link" onclick="event.stopPropagation();copyDeckLink('${d.short_code}')" title="Copy share link">🔗</button>
       </div>
       ${barHtml}

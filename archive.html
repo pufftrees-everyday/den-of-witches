@@ -175,6 +175,15 @@
   .modal-close:hover { color: var(--ember); }
 
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--dusk); border: 1px solid var(--border-strong); color: var(--parchment); padding: 12px 22px; border-radius: 6px; font-size: 0.95rem; opacity: 0; transition: all 0.3s; z-index: 400; }
+  .confirm-overlay { display: none; position: fixed; inset: 0; background: rgba(11,10,15,0.84); backdrop-filter: blur(4px); z-index: 1100; align-items: center; justify-content: center; padding: 20px; }
+  .confirm-overlay.open { display: flex; }
+  .confirm-box { background: var(--dusk); border: 1px solid var(--border-strong); border-radius: 10px; max-width: 420px; width: 100%; padding: 26px; text-align: center; box-shadow: 0 16px 50px rgba(0,0,0,0.6); }
+  .confirm-icon { font-size: 2.2rem; color: var(--gold); margin-bottom: 8px; }
+  .confirm-title { font-family: 'Cinzel', serif; font-size: 1.25rem; font-weight: 700; color: var(--parchment); margin-bottom: 10px; }
+  .confirm-msg { color: var(--rune); line-height: 1.55; margin-bottom: 20px; }
+  .confirm-msg b { color: var(--shimmer); }
+  .confirm-actions { display: flex; gap: 12px; justify-content: center; }
+  .confirm-actions .btn { min-width: 130px; }
   .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
   /* More dropdown menu */
@@ -306,6 +315,19 @@
     <button class="btn btn-primary" id="auth-submit" onclick="submitAuth()">Sign In</button>
     <div class="auth-toggle" id="auth-toggle-text">
       New here? <a onclick="setAuthMode('signup')">Create an account</a>
+    </div>
+  </div>
+</div>
+
+<!-- BRING TO WORKSHOP CONFIRM -->
+<div class="confirm-overlay" id="bring-overlay" onclick="if(event.target===this)closeBring()">
+  <div class="confirm-box">
+    <div class="confirm-icon">✦</div>
+    <div class="confirm-title">Bring to My Workshop?</div>
+    <div class="confirm-msg" id="bring-msg">This will save a personal copy to your Workshop.</div>
+    <div class="confirm-actions">
+      <button class="btn btn-ghost" onclick="closeBring()">Cancel</button>
+      <button class="btn btn-primary" id="bring-confirm-btn" onclick="confirmBring()">Bring it over</button>
     </div>
   </div>
 </div>
@@ -757,8 +779,10 @@ function renderDeckCard(d, authors) {
       <div class="deck-card-author">by <b>${escapeHtml(author)}</b></div>
       ${av ? `<div class="deck-card-avatar-name">${escapeHtml(av)}</div>` : ''}
       <div class="deck-card-actions">
-        <button class="btn btn-primary" onclick="openDeck('${d.short_code}')">Open</button>
-        ${isOwner ? `<button class="btn btn-ghost" onclick="unpublishDeck('${d.id}')">Unpublish</button>` : ''}
+        <button class="btn btn-primary" onclick="openDeck('${d.short_code}')">View Deck</button>
+        ${isOwner
+          ? `<button class="btn btn-ghost" onclick="unpublishDeck('${d.id}')">Unpublish</button>`
+          : `<button class="btn btn-ghost" onclick="bringToWorkshop('${d.short_code}', ${JSON.stringify(d.name||'').replace(/"/g,'&quot;')})">Bring to My Workshop</button>`}
       </div>
       ${barHtml}
     </div>
@@ -766,7 +790,47 @@ function renderDeckCard(d, authors) {
 }
 
 function openDeck(shortCode) {
-  window.location.href = `deckbuilder.html?d=${shortCode}`;
+  window.location.href = `deck.html?d=${shortCode}`;
+}
+
+// Bring a public deck into the viewer's own Workshop (a personal copy)
+let pendingCopyCode = null;
+function bringToWorkshop(shortCode, name) {
+  if (!currentUser) { toast('Sign in to bring decks to your Workshop'); setTimeout(()=>window.location.href='decks.html', 1200); return; }
+  pendingCopyCode = shortCode;
+  const msg = document.getElementById('bring-msg');
+  if (msg) msg.innerHTML = `This will save a personal copy of <b>${escapeHtml(name||'this deck')}</b> to your Workshop, where you can edit it freely. The original stays in the Archive untouched.`;
+  document.getElementById('bring-overlay').classList.add('open');
+}
+function closeBring() { pendingCopyCode = null; document.getElementById('bring-overlay').classList.remove('open'); }
+function genShortCode() {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let s = ''; for (let i=0;i<7;i++) s += chars[Math.floor(Math.random()*chars.length)];
+  return s;
+}
+async function confirmBring() {
+  if (!pendingCopyCode || !currentUser || !supa) { closeBring(); return; }
+  const btn = document.getElementById('bring-confirm-btn');
+  btn.disabled = true; btn.style.opacity = '0.6';
+  try {
+    const { data: src, error: e1 } = await supa.from('decks').select('name, deck_data').eq('short_code', pendingCopyCode).single();
+    if (e1 || !src) throw (e1 || new Error('not found'));
+    const newData = JSON.parse(JSON.stringify(src.deck_data || {}));
+    const newName = (src.name || 'Deck') + ' (copy)';
+    newData.n = newName;
+    const { error: e2 } = await supa.from('decks').insert({
+      short_code: genShortCode(), name: newName, deck_data: newData,
+      owner_id: currentUser.id, is_public: false, is_saved: true
+    });
+    if (e2) throw e2;
+    closeBring();
+    toast('Brought to your Workshop!');
+    setTimeout(() => { window.location.href = 'decks.html'; }, 1000);
+  } catch (err) {
+    console.warn(err);
+    toast('Could not copy the deck');
+    btn.disabled = false; btn.style.opacity = '1';
+  }
 }
 
 async function unpublishDeck(deckId) {

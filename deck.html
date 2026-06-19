@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cursed Realm — Deck</title>
+<meta name="description" content="View a Sorcery: Contested Realm deck on Cursed Realm.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Deck — Cursed Realm">
+<meta property="og:description" content="View a Sorcery: Contested Realm deck on Cursed Realm.">
+<meta property="og:image" content="https://cursedrealm.org/social-banner.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0b0a0f">
+<link rel="icon" type="image/png" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #0b0a0f; --abyss: #111018; --dusk: #1a1826; --twilight: #252338;
+    --mist: #3a3658; --rune: #6b5fa0; --arcane: #9b87d4; --shimmer: #c9bfee;
+    --parchment: #e8e0cc; --gold: #c8a96e; --ember: #c4614a; --sage: #5a8a6a;
+    --border: rgba(155, 135, 212, 0.18); --border-strong: rgba(155, 135, 212, 0.35);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--void); color: var(--parchment); font-family: 'Crimson Pro', serif; min-height: 100vh; }
+  a { color: inherit; }
+
+  header {
+    background: linear-gradient(180deg, #0d0b14 0%, var(--void) 100%);
+    border-bottom: 1px solid var(--border); padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    height: 60px; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(8px);
+  }
+  .header-main { display: flex; align-items: center; gap: 16px; min-width: 0; flex-wrap: wrap; }
+  #auth-bar { flex-shrink: 0; }
+  .header-nav { display: flex; gap: 12px; align-items: center; }
+  .header-link { font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rune); text-decoration: none; transition: color 0.2s; white-space: nowrap; }
+  .header-link:hover { color: var(--arcane); }
+  .logo-link { display: flex; align-items: center; gap: 9px; text-decoration: none; }
+  .logo-link img { width: 30px; height: 30px; border-radius: 6px; }
+  .logo-text { font-family: 'Cinzel Decorative', serif; font-size: 1.1rem; font-weight: 700; color: var(--gold); white-space: nowrap; }
+
+  .hamburger { display: none; background: none; border: 1px solid var(--border-strong); color: var(--gold); font-size: 1.3rem; line-height: 1; padding: 4px 12px; border-radius: 4px; cursor: pointer; }
+  .mobile-nav { display: none; position: sticky; top: 60px; z-index: 99; background: #0d0b14; border-bottom: 1px solid var(--border); flex-direction: column; padding: 8px 0; }
+  .mobile-nav.open { display: flex; }
+  .mobile-nav .header-link { padding: 13px 24px; font-size: 0.85rem; border-bottom: 1px solid rgba(155,135,212,0.06); }
+  @media (max-width: 980px) {
+    .nav-collapsible { display: none !important; }
+    .hamburger { display: block; }
+    header { padding: 0 16px; }
+  }
+
+  .btn { padding: 8px 18px; font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; border-radius: 4px; cursor: pointer; border: 1px solid transparent; transition: all 0.2s; }
+  .btn-primary { background: var(--rune); border-color: var(--arcane); color: #fff; }
+  .btn-primary:hover { background: var(--arcane); }
+  .btn-ghost { background: transparent; border-color: var(--border-strong); color: var(--shimmer); }
+  .btn-ghost:hover { border-color: var(--arcane); color: #fff; }
+
+  .page { max-width: 1100px; margin: 0 auto; padding: 28px 24px 80px; }
+
+  /* ── DECK HERO ── */
+  .deck-hero { display: grid; grid-template-columns: 220px 1fr; gap: 26px; margin-bottom: 30px; align-items: start; }
+  .deck-hero-avatar { width: 100%; border-radius: 12px; overflow: hidden; border: 1px solid var(--border-strong); background: #0b0a0f; aspect-ratio: 5/7; box-shadow: 0 8px 30px rgba(0,0,0,0.5); }
+  .deck-hero-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .deck-hero-avatar.placeholder { display: flex; align-items: center; justify-content: center; color: var(--mist); font-family: 'Cinzel', serif; font-size: 0.8rem; letter-spacing: 0.1em; }
+  .deck-hero-info { min-width: 0; }
+  .deck-hero-name { font-family: 'Cinzel Decorative', serif; font-size: 2.1rem; font-weight: 700; color: var(--parchment); line-height: 1.15; margin-bottom: 8px; }
+  .deck-hero-meta { font-family: 'Crimson Pro', serif; font-size: 1rem; color: var(--rune); margin-bottom: 4px; }
+  .deck-hero-meta b { color: var(--gold); }
+  .deck-hero-avatar-name { font-family: 'Crimson Pro', serif; font-size: 1.05rem; color: var(--gold); margin-bottom: 16px; }
+
+  /* counts strip */
+  .deck-counts { display: flex; gap: 10px; flex-wrap: wrap; margin: 14px 0 18px; }
+  .deck-count-pill { background: var(--dusk); border: 1px solid var(--border); border-radius: 6px; padding: 8px 14px; font-family: 'Cinzel', serif; font-size: 0.78rem; color: var(--shimmer); }
+  .deck-count-pill b { color: var(--gold); font-size: 1rem; }
+  .deck-count-pill.ok { border-color: var(--sage); }
+  .deck-count-pill.warn { border-color: var(--ember); }
+
+  .deck-hero-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+
+  /* element balance bar */
+  .el-section { margin-top: 18px; max-width: 520px; }
+  .el-section-title { font-family: 'Cinzel', serif; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rune); margin-bottom: 7px; }
+  .el-bar { display: flex; width: 100%; height: 12px; border-radius: 6px; overflow: hidden; border: 1px solid rgba(0,0,0,0.35); }
+  .el-seg { height: 100%; }
+  .el-labels { display: flex; flex-wrap: wrap; gap: 10px 16px; margin-top: 9px; }
+  .el-label { display: inline-flex; align-items: center; gap: 6px; font-family: 'Crimson Pro', serif; font-size: 0.9rem; color: var(--shimmer); }
+  .el-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+
+  /* ── VIEW TOGGLE ── */
+  .deck-toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+  .viewmode-wrap { display: flex; align-items: center; gap: 8px; }
+  .viewmode-label { font-family: 'Cinzel', serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rune); }
+  .viewmode-toggle { display: flex; border: 1px solid var(--border-strong); border-radius: 4px; overflow: hidden; }
+  .viewmode-btn { padding: 6px 12px; background: transparent; border: none; border-right: 1px solid var(--border); color: var(--rune); cursor: pointer; font-size: 1rem; transition: all 0.15s; }
+  .viewmode-btn:last-child { border-right: none; }
+  .viewmode-btn:hover { color: var(--arcane); }
+  .viewmode-btn.active { background: var(--rune); color: #fff; }
+
+  /* ── DECK SECTIONS ── */
+  .deck-section { margin-bottom: 26px; }
+  .deck-section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; padding-bottom: 7px; border-bottom: 1px solid var(--border); }
+  .deck-section-title { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); }
+  .deck-section-count { font-family: 'Crimson Pro', serif; font-size: 0.9rem; color: var(--rune); }
+  .deck-subgroup-title { font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--arcane); margin: 14px 0 8px; }
+
+  /* TEXT view */
+  .deck-list { display: flex; flex-direction: column; gap: 2px; }
+  .deck-list-row { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border-radius: 4px; transition: background 0.12s; cursor: pointer; }
+  .deck-list-row:hover { background: rgba(155,135,212,0.08); }
+  .deck-list-qty { font-family: 'Cinzel', serif; font-weight: 700; color: var(--gold); min-width: 28px; }
+  .deck-list-name { flex: 1; color: var(--shimmer); }
+  .deck-list-cost { font-family: 'Cinzel', serif; font-size: 0.82rem; color: var(--rune); width: 28px; height: 28px; border:1px solid var(--border-strong); border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .deck-list-cost.empty { opacity: 0; }
+
+  /* CARD / LARGE grid view */
+  .deck-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .deck-grid.large { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
+  .deck-card-cell { position: relative; border-radius: 9px; overflow: hidden; border: 1px solid var(--border); background: var(--dusk); cursor: pointer; transition: transform 0.15s, border-color 0.15s; }
+  .deck-card-cell:hover { transform: translateY(-3px); border-color: var(--arcane); z-index: 2; }
+  .deck-card-cell img { width: 100%; display: block; aspect-ratio: 5/7; object-fit: cover; background: #0b0a0f; }
+  .deck-card-cell .qty-chip { position: absolute; top: 6px; right: 6px; background: rgba(11,10,15,0.85); border: 1px solid var(--gold); color: var(--gold); font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.8rem; padding: 2px 8px; border-radius: 12px; }
+  .deck-card-cell .cell-name { padding: 6px 8px; font-size: 0.78rem; color: var(--shimmer); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .status { text-align: center; padding: 60px 20px; color: var(--rune); font-style: italic; }
+
+  /* lightbox for card zoom */
+  .lightbox { display: none; position: fixed; inset: 0; background: rgba(11,10,15,0.9); z-index: 1000; align-items: center; justify-content: center; padding: 30px; cursor: zoom-out; }
+  .lightbox.open { display: flex; }
+  .lightbox img { max-width: 90%; max-height: 90vh; border-radius: 12px; box-shadow: 0 12px 50px rgba(0,0,0,0.7); }
+
+  /* confirm modal */
+  .confirm-overlay { display: none; position: fixed; inset: 0; background: rgba(11,10,15,0.84); backdrop-filter: blur(4px); z-index: 1100; align-items: center; justify-content: center; padding: 20px; }
+  .confirm-overlay.open { display: flex; }
+  .confirm-box { background: var(--dusk); border: 1px solid var(--border-strong); border-radius: 10px; max-width: 420px; width: 100%; padding: 26px; text-align: center; box-shadow: 0 16px 50px rgba(0,0,0,0.6); }
+  .confirm-icon { font-size: 2.2rem; color: var(--gold); margin-bottom: 8px; }
+  .confirm-title { font-family: 'Cinzel', serif; font-size: 1.25rem; font-weight: 700; color: var(--parchment); margin-bottom: 10px; }
+  .confirm-msg { color: var(--rune); line-height: 1.55; margin-bottom: 20px; }
+  .confirm-msg b { color: var(--shimmer); }
+  .confirm-actions { display: flex; gap: 12px; justify-content: center; }
+  .confirm-actions .btn { min-width: 130px; }
+
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(8px); background: var(--dusk); border: 1px solid var(--border-strong); color: var(--shimmer); font-size: 0.9rem; padding: 11px 20px; border-radius: 6px; z-index: 1200; opacity: 0; transition: opacity 0.2s, transform 0.2s; pointer-events: none; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 720px) {
+    .deck-hero { grid-template-columns: 130px 1fr; gap: 16px; }
+    .deck-hero-name { font-size: 1.5rem; }
+    .deck-grid { grid-template-columns: repeat(auto-fill, minmax(110px,1fr)); gap: 9px; }
+    .deck-grid.large { grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-main">
+    <a href="index.html" class="logo-link"><img src="icon-192.png" alt=""><span class="logo-text">Cursed Realm</span></a>
+    <a href="collection.html" class="header-link nav-collapsible">My Vault</a>
+    <a href="decks.html" class="header-link nav-collapsible">My Workshop</a>
+    <a href="archive.html" class="header-link nav-collapsible">The Archive</a>
+    <button class="btn btn-primary nav-collapsible" onclick="window.location.href='deckbuilder.html'">New Deck</button>
+  </div>
+  <div class="header-nav nav-collapsible" id="auth-bar"></div>
+  <button class="hamburger" onclick="document.getElementById('mobile-nav').classList.toggle('open')" aria-label="Menu">☰</button>
+</header>
+
+<div class="mobile-nav" id="mobile-nav">
+  <a href="collection.html" class="header-link">My Vault</a>
+  <a href="decks.html" class="header-link">My Workshop</a>
+  <a href="archive.html" class="header-link">The Archive</a>
+  <a href="deckbuilder.html" class="header-link">New Deck</a>
+</div>
+
+<div class="page" id="deck-page">
+  <div class="status" id="deck-status">Summoning the deck…</div>
+  <div id="deck-content" style="display:none;">
+    <!-- HERO -->
+    <div class="deck-hero">
+      <div class="deck-hero-avatar placeholder" id="hero-avatar">No Avatar</div>
+      <div class="deck-hero-info">
+        <div class="deck-hero-name" id="hero-name">—</div>
+        <div class="deck-hero-meta" id="hero-author"></div>
+        <div class="deck-hero-avatar-name" id="hero-avatar-name"></div>
+        <div class="deck-counts" id="hero-counts"></div>
+        <div class="deck-hero-actions" id="hero-actions"></div>
+        <div class="el-section" id="hero-elements" style="display:none;">
+          <div class="el-section-title">Element Balance</div>
+          <div class="el-bar" id="hero-el-bar"></div>
+          <div class="el-labels" id="hero-el-labels"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOOLBAR -->
+    <div class="deck-toolbar">
+      <div class="viewmode-wrap">
+        <span class="viewmode-label">Change View</span>
+        <div class="viewmode-toggle">
+          <button class="viewmode-btn" id="vm-list" onclick="setDeckView('list')" title="Text view">☰</button>
+          <button class="viewmode-btn active" id="vm-grid" onclick="setDeckView('grid')" title="Card view">⊞</button>
+          <button class="viewmode-btn" id="vm-large" onclick="setDeckView('large')" title="Large view">⊡</button>
+        </div>
+      </div>
+      <button class="btn btn-ghost" onclick="downloadDeckText()">⬇ Download .txt</button>
+    </div>
+
+    <!-- SECTIONS -->
+    <div id="deck-sections"></div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="this.classList.remove('open')"><img id="lightbox-img" src="" alt=""></div>
+
+<!-- BRING TO WORKSHOP CONFIRM -->
+<div class="confirm-overlay" id="copy-overlay" onclick="if(event.target===this)closeCopyConfirm()">
+  <div class="confirm-box">
+    <div class="confirm-icon">✦</div>
+    <div class="confirm-title">Bring to My Workshop?</div>
+    <div class="confirm-msg" id="copy-msg">This will save a personal copy of this deck to your Workshop, where you can edit it freely. The original stays untouched.</div>
+    <div class="confirm-actions">
+      <button class="btn btn-ghost" onclick="closeCopyConfirm()">Cancel</button>
+      <button class="btn btn-primary" id="copy-confirm-btn" onclick="confirmBringToWorkshop()">Bring it over</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://nuizkjkcephopnbcmtlz.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_9er9B3YGFuvNO8Y8W6yr2g_sR5tXvKH';
+  let supa = null;
+  try { if (window.supabase) supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e) {}
+
+  const IMAGE_BASE = 'https://pub-5999238092ad418ca60e7a9ad641cf57.r2.dev/';
+  const ELEMENT_COLORS = { air: '#8cb4d2', earth: '#a08246', fire: '#c4614a', water: '#5a96b0' };
+  const RARITY_ORDER = { 'Unique':0, 'Elite':1, 'Exceptional':2, 'Ordinary':3 };
+
+  let cardMap = {};        // lowercased name → full card object
+  let cardSlugMap = {};    // lowercased name → slug
+  let cardElementMap = {}; // lowercased name → [elements]
+  let currentDeck = null;  // the loaded deck row
+  let currentUser = null;
+  let deckView = localStorage.getItem('grimoire_deckview_mode') || 'grid';
+
+  // ── Load card data ──
+  async function loadCards() {
+    try {
+      const res = await fetch('cards.json');
+      const cards = await res.json();
+      cards.forEach(c => {
+        const key = (c.name || '').toLowerCase();
+        const g = c.guardian || {};
+        let slug = c.slug || null;
+        if (!slug && c.sets && c.sets[0] && c.sets[0].variants && c.sets[0].variants.length) {
+          const v = c.sets[0].variants.find(v => v.finish === 'Standard' && v.product === 'Booster') || c.sets[0].variants[0];
+          slug = v ? v.slug : null;
+        }
+        const els = Array.isArray(c.elements) ? c.elements : (c.elements ? String(c.elements).split(',') : []);
+        cardElementMap[key] = els.map(e => String(e).trim().toLowerCase()).filter(Boolean);
+        cardSlugMap[key] = slug;
+        cardMap[key] = {
+          name: c.name, type: g.type || '', rarity: g.rarity || '', cost: g.cost,
+          element: els.join(', '), slug
+        };
+      });
+    } catch (e) { console.warn('cards.json failed', e); }
+  }
+
+  function imgUrl(name) {
+    const slug = cardSlugMap[(name||'').toLowerCase()];
+    if (slug) return `${IMAGE_BASE}${slug}.png`;
+    return `${IMAGE_BASE}${(name||'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'')}.png`;
+  }
+
+  // ── Deck data helpers ──
+  function avatarName(dd) { return (dd.a && dd.a.length) ? dd.a[0][0] : null; }
+
+  function deckElementBreakdown(dd) {
+    const counts = { air:0, earth:0, fire:0, water:0 }; let total = 0;
+    ['a','t','s'].forEach(sec => (dd[sec]||[]).forEach(([name, qty]) => {
+      const q = qty || 1; const ce = cardElementMap[(name||'').toLowerCase()];
+      if (ce && ce.length) ce.forEach(e => { if (counts[e] != null) { counts[e] += q; total += q; } });
+    }));
+    if (!total) return [];
+    return Object.entries(counts).filter(([,v]) => v>0)
+      .map(([el,v]) => ({ el, pct: v/total*100 })).sort((a,b)=>b.pct-a.pct);
+  }
+
+  function sectionCount(dd, sec) { return (dd[sec]||[]).reduce((s,[,q])=>s+(q||0),0); }
+
+  // ── Render ──
+  function setDeckView(mode) {
+    deckView = mode;
+    localStorage.setItem('grimoire_deckview_mode', mode);
+    document.getElementById('vm-list').classList.toggle('active', mode==='list');
+    document.getElementById('vm-grid').classList.toggle('active', mode==='grid');
+    document.getElementById('vm-large').classList.toggle('active', mode==='large');
+    renderSections();
+  }
+
+  function cardCost(name) { const c = cardMap[(name||'').toLowerCase()]; return c && c.cost != null ? c.cost : ''; }
+  function cardRarityRank(name) { const c = cardMap[(name||'').toLowerCase()]; return c ? (RARITY_ORDER[c.rarity] ?? 9) : 9; }
+  function cardType(name) { const c = cardMap[(name||'').toLowerCase()]; return c ? c.type : ''; }
+
+  function sortEntries(entries) {
+    // sort by cost then name
+    return [...entries].sort((a,b) => {
+      const ca = cardCost(a[0]), cb = cardCost(b[0]);
+      const na = ca===''?99:ca, nb = cb===''?99:cb;
+      return na - nb || a[0].localeCompare(b[0]);
+    });
+  }
+
+  function renderEntryRow([name, qty]) {
+    const cost = cardCost(name);
+    return `<div class="deck-list-row" onclick="zoom('${escAttr(name)}')">
+      <span class="deck-list-cost${cost===''?' empty':''}">${cost}</span>
+      <span class="deck-list-qty">${qty}×</span>
+      <span class="deck-list-name">${escHtml(name)}</span>
+    </div>`;
+  }
+
+  function renderEntryCell([name, qty]) {
+    return `<div class="deck-card-cell" onclick="zoom('${escAttr(name)}')">
+      <img src="${imgUrl(name)}" alt="${escHtml(name)}" loading="lazy" onerror="this.style.opacity='0.2'">
+      <div class="qty-chip">${qty}×</div>
+      <div class="cell-name">${escHtml(name)}</div>
+    </div>`;
+  }
+
+  function renderSectionBlock(title, entries, opts = {}) {
+    if (!entries || !entries.length) {
+      if (!opts.showEmpty) return '';
+    }
+    const count = entries.reduce((s,[,q])=>s+(q||0),0);
+    let inner = '';
+    if (deckView === 'list') {
+      inner = `<div class="deck-list">${sortEntries(entries).map(renderEntryRow).join('')}</div>`;
+    } else {
+      const gridClass = deckView === 'large' ? 'deck-grid large' : 'deck-grid';
+      inner = `<div class="${gridClass}">${sortEntries(entries).map(renderEntryCell).join('')}</div>`;
+    }
+    return `<div class="deck-section">
+      <div class="deck-section-head">
+        <span class="deck-section-title">${title}</span>
+        <span class="deck-section-count">${count} card${count===1?'':'s'}${opts.limit?` · ${opts.limit}`:''}</span>
+      </div>
+      ${entries.length ? inner : '<div style="color:var(--rune);font-style:italic;padding:8px 0;">None</div>'}
+    </div>`;
+  }
+
+  function renderSections() {
+    const dd = currentDeck.deck_data || {};
+    let html = '';
+    // Avatar
+    html += renderSectionBlock('Avatar', dd.a || []);
+    // Atlas
+    html += renderSectionBlock('Atlas', dd.t || [], { limit: '30+ sites' });
+    // Spellbook
+    html += renderSectionBlock('Spellbook', dd.s || [], { limit: '60+ spells' });
+    // Deck Collection (only if present)
+    if ((dd.c || []).length) {
+      html += renderSectionBlock('Deck Collection', dd.c || [], { limit: 'sideboard, up to 10' });
+    }
+    document.getElementById('deck-sections').innerHTML = html;
+  }
+
+  function renderHero() {
+    const dd = currentDeck.deck_data || {};
+    const av = avatarName(dd);
+    const avImg = av ? imgUrl(av) : null;
+    const heroAv = document.getElementById('hero-avatar');
+    if (avImg) {
+      heroAv.classList.remove('placeholder');
+      heroAv.innerHTML = `<img src="${avImg}" alt="${escHtml(av)}" onerror="this.parentElement.classList.add('placeholder');this.parentElement.innerHTML='No Avatar'">`;
+    }
+    document.getElementById('hero-name').textContent = currentDeck.name || 'Untitled Deck';
+    const author = currentDeck._author || '';
+    document.getElementById('hero-author').innerHTML = author ? `by <b>${escHtml(author)}</b>` : '';
+    document.getElementById('hero-avatar-name').textContent = av || '';
+
+    // counts
+    const aC = sectionCount(dd,'a'), tC = sectionCount(dd,'t'), sC = sectionCount(dd,'s'), cC = sectionCount(dd,'c');
+    const pills = [];
+    pills.push(`<div class="deck-count-pill ${aC===1?'ok':'warn'}"><b>${aC}</b> Avatar</div>`);
+    pills.push(`<div class="deck-count-pill ${tC>=30?'ok':'warn'}"><b>${tC}</b>/30 Atlas</div>`);
+    pills.push(`<div class="deck-count-pill ${sC>=60?'ok':'warn'}"><b>${sC}</b>/60 Spellbook</div>`);
+    if (cC > 0) pills.push(`<div class="deck-count-pill ${cC<=10?'ok':'warn'}"><b>${cC}</b>/10 Collection</div>`);
+    pills.push(`<div class="deck-count-pill"><b>${aC+tC+sC+cC}</b> total</div>`);
+    document.getElementById('hero-counts').innerHTML = pills.join('');
+
+    // element bar
+    const breakdown = deckElementBreakdown(dd);
+    if (breakdown.length) {
+      document.getElementById('hero-elements').style.display = '';
+      document.getElementById('hero-el-bar').innerHTML = breakdown.map(b =>
+        `<div class="el-seg" style="width:${b.pct.toFixed(1)}%;background:${ELEMENT_COLORS[b.el]};"></div>`).join('');
+      document.getElementById('hero-el-labels').innerHTML = breakdown.map(b =>
+        `<span class="el-label"><span class="el-dot" style="background:${ELEMENT_COLORS[b.el]};"></span>${b.el.charAt(0).toUpperCase()+b.el.slice(1)} ${Math.round(b.pct)}%</span>`).join('');
+    }
+
+    // actions
+    const isOwner = currentUser && currentDeck.owner_id === currentUser.id;
+    const acts = [];
+    if (isOwner) {
+      acts.push(`<button class="btn btn-primary" onclick="window.location.href='deckbuilder.html?d=${currentDeck.short_code}'">✎ Edit in Workshop</button>`);
+    } else {
+      acts.push(`<button class="btn btn-primary" onclick="openCopyConfirm()">✦ Bring to My Workshop</button>`);
+    }
+    acts.push(`<button class="btn btn-ghost" onclick="copyDeckLink()">🔗 Copy Link</button>`);
+    acts.push(`<button class="btn btn-ghost" onclick="history.length>1?history.back():window.location.href='archive.html'">← Back</button>`);
+    document.getElementById('hero-actions').innerHTML = acts.join('');
+
+    // view toggle initial state
+    document.getElementById('vm-list').classList.toggle('active', deckView==='list');
+    document.getElementById('vm-grid').classList.toggle('active', deckView==='grid');
+    document.getElementById('vm-large').classList.toggle('active', deckView==='large');
+  }
+
+  // ── Lightbox ──
+  function zoom(name) {
+    document.getElementById('lightbox-img').src = imgUrl(name);
+    document.getElementById('lightbox').classList.add('open');
+  }
+
+  // ── Download .txt ──
+  function downloadDeckText() {
+    const dd = currentDeck.deck_data || {};
+    const lines = [`// ${currentDeck.name || 'Deck'}`, ''];
+    const sec = (label, arr) => { if ((arr||[]).length) { lines.push(`// ${label}`); arr.forEach(([n,q]) => lines.push(`${q}x ${n}`)); lines.push(''); } };
+    sec('Avatar', dd.a); sec('Atlas (Sites)', dd.t); sec('Spellbook', dd.s); sec('Deck Collection (Sideboard)', dd.c);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([lines.join('\n')], {type:'text/plain'}));
+    a.download = (currentDeck.name||'deck').replace(/\s+/g,'_') + '.txt';
+    a.click();
+    toast('Deck downloaded');
+  }
+
+  function copyDeckLink() {
+    const url = `${window.location.origin}/deck.html?d=${currentDeck.short_code}`;
+    navigator.clipboard.writeText(url).then(() => toast('Link copied!'), () => window.prompt('Copy link:', url));
+  }
+
+  // ── Bring to My Workshop ──
+  function openCopyConfirm() {
+    if (!currentUser) {
+      toast('Sign in to bring decks to your Workshop');
+      setTimeout(() => { window.location.href = 'decks.html'; }, 1200);
+      return;
+    }
+    document.getElementById('copy-msg').innerHTML = `This will save a personal copy of <b>${escHtml(currentDeck.name||'this deck')}</b> to your Workshop, where you can edit it freely. The original stays untouched.`;
+    document.getElementById('copy-overlay').classList.add('open');
+  }
+  function closeCopyConfirm() { document.getElementById('copy-overlay').classList.remove('open'); }
+
+  function genShortCode() {
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    let s = ''; for (let i=0;i<7;i++) s += chars[Math.floor(Math.random()*chars.length)];
+    return s;
+  }
+
+  async function confirmBringToWorkshop() {
+    if (!currentUser || !supa) return;
+    const btn = document.getElementById('copy-confirm-btn');
+    btn.disabled = true; btn.style.opacity = '0.6';
+    try {
+      const newData = JSON.parse(JSON.stringify(currentDeck.deck_data || {}));
+      const newName = (currentDeck.name || 'Deck') + ' (copy)';
+      newData.n = newName;
+      const row = {
+        short_code: genShortCode(),
+        name: newName,
+        deck_data: newData,
+        owner_id: currentUser.id,
+        is_public: false,
+        is_saved: true
+      };
+      const { error } = await supa.from('decks').insert(row);
+      if (error) throw error;
+      closeCopyConfirm();
+      toast('Brought to your Workshop!');
+      setTimeout(() => { window.location.href = 'decks.html'; }, 1000);
+    } catch (e) {
+      console.warn(e);
+      toast('Could not copy the deck');
+      btn.disabled = false; btn.style.opacity = '1';
+    }
+  }
+
+  // ── Auth bar (minimal) ──
+  async function refreshUser() {
+    if (!supa) return;
+    try {
+      const { data } = await supa.auth.getUser();
+      if (data && data.user) {
+        let username = data.user.email;
+        try { const { data: prof } = await supa.from('profiles').select('username').eq('id', data.user.id).single(); if (prof && prof.username) username = prof.username; } catch(e){}
+        currentUser = { id: data.user.id, email: data.user.email, username };
+      } else currentUser = null;
+    } catch (e) { currentUser = null; }
+  }
+  function renderAuthBar() {
+    const bar = document.getElementById('auth-bar');
+    if (!bar) return;
+    if (currentUser) {
+      bar.innerHTML = `<a href="decks.html" class="header-link" style="color:var(--gold)">${escHtml(currentUser.username)}</a>`;
+    } else {
+      bar.innerHTML = `<a href="decks.html" class="header-link">Sign In</a>`;
+    }
+  }
+
+  // ── Load the deck ──
+  async function loadDeck() {
+    const code = new URLSearchParams(window.location.search).get('d');
+    const statusEl = document.getElementById('deck-status');
+    if (!code) { statusEl.innerHTML = 'No deck specified.'; return; }
+    if (!supa) { statusEl.innerHTML = 'Could not connect.'; return; }
+    try {
+      const { data: deckRow, error } = await supa.from('decks').select('*').eq('short_code', code).single();
+      if (error || !deckRow) { statusEl.innerHTML = 'Deck not found.'; return; }
+      currentDeck = deckRow;
+      // resolve author
+      if (deckRow.owner_id) {
+        try {
+          const { data: prof } = await supa.from('profiles').select('username').eq('id', deckRow.owner_id).single();
+          currentDeck._author = prof && prof.username ? prof.username : null;
+        } catch(e) { currentDeck._author = null; }
+      }
+      document.title = `${currentDeck.name || 'Deck'} — Cursed Realm`;
+      renderHero();
+      renderSections();
+      statusEl.style.display = 'none';
+      document.getElementById('deck-content').style.display = '';
+    } catch (e) {
+      console.warn(e);
+      statusEl.innerHTML = 'Could not load the deck.';
+    }
+  }
+
+  // ── utils ──
+  function escHtml(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function escAttr(s){ return String(s==null?'':s).replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
+  function toast(msg){ const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),2400); }
+
+  document.addEventListener('keydown', e => { if (e.key==='Escape'){ document.getElementById('lightbox').classList.remove('open'); closeCopyConfirm(); } });
+
+  // ── INIT ──
+  (async function init() {
+    renderAuthBar();
+    await Promise.all([loadCards(), refreshUser()]);
+    renderAuthBar();
+    await loadDeck();
+    if (supa) supa.auth.onAuthStateChange((ev) => { if (ev==='SIGNED_IN'||ev==='SIGNED_OUT') refreshUser().then(()=>{renderAuthBar(); if(currentDeck) renderHero();}); });
+  })();
+</script>
+</body>
+</html>
