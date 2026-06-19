@@ -108,6 +108,33 @@
   .deck-section { margin-bottom: 26px; }
   .deck-section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; padding-bottom: 7px; border-bottom: 1px solid var(--border); }
   .deck-section-title { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); }
+
+  /* DECK STATS PANEL */
+  .deck-stats-panel { background: var(--abyss); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; margin-bottom: 20px; display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px 28px; }
+  .stat-block-title { font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rune); margin-bottom: 10px; }
+  .stat-quick { display: flex; gap: 18px; flex-wrap: wrap; grid-column: 1 / -1; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+  .stat-quick-item { display: flex; flex-direction: column; }
+  .stat-quick-item b { font-family: 'Cinzel', serif; font-size: 1.4rem; color: var(--gold); line-height: 1; }
+  .stat-quick-item span { font-size: 0.7rem; color: var(--rune); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 3px; }
+  /* mana curve */
+  .curve-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .curve-label { width: 42px; font-family: 'Cinzel', serif; font-size: 0.72rem; color: var(--rune); flex-shrink: 0; }
+  .curve-track { flex: 1; height: 14px; background: var(--dusk); border-radius: 3px; overflow: hidden; }
+  .curve-fill { height: 100%; background: linear-gradient(90deg, var(--rune), var(--arcane)); border-radius: 3px; min-width: 2px; transition: width 0.3s; }
+  .curve-val { width: 22px; text-align: right; font-size: 0.78rem; color: var(--shimmer); flex-shrink: 0; }
+  /* threshold summary */
+  .thr-summary { display: flex; flex-direction: column; gap: 7px; }
+  .thr-summary-item { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--shimmer); }
+  .thr-summary-item img { width: 22px; height: 22px; object-fit: contain; }
+  .thr-summary-item b { color: var(--gold); font-family: 'Cinzel', serif; }
+  @media (max-width: 640px) { .deck-stats-panel { grid-template-columns: 1fr; } }
+
+  /* collapsible section heads */
+  .deck-section-head { cursor: pointer; user-select: none; }
+  .deck-section-head:hover .deck-section-title { color: var(--shimmer); }
+  .deck-section-caret { display: inline-block; color: var(--rune); font-size: 0.8rem; margin-right: 8px; transition: transform 0.18s; }
+  .deck-section.collapsed .deck-section-caret { transform: rotate(-90deg); }
+  .deck-section.collapsed .deck-section-body { display: none; }
   .deck-section-count { font-family: 'Crimson Pro', serif; font-size: 0.9rem; color: var(--rune); }
   .deck-subgroup-title { font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--arcane); margin: 14px 0 8px; }
 
@@ -297,6 +324,9 @@
       </div>
       <button class="btn btn-ghost" onclick="downloadDeckText()">⬇ Download .txt</button>
     </div>
+
+    <!-- DECK STATS -->
+    <div id="deck-stats-panel"></div>
 
     <!-- SECTIONS -->
     <div id="deck-sections"></div>
@@ -528,6 +558,13 @@
     </div>`;
   }
 
+  const collapsedSections = {};  // title → true when collapsed
+  function toggleSection(title) {
+    collapsedSections[title] = !collapsedSections[title];
+    const el = document.getElementById('section-' + title.replace(/\s+/g,'-'));
+    if (el) el.classList.toggle('collapsed', collapsedSections[title]);
+  }
+
   function renderSectionBlock(title, entries, opts = {}) {
     if (!entries || !entries.length) {
       if (!opts.showEmpty) return '';
@@ -542,17 +579,93 @@
       const gridClass = deckView === 'large' ? 'deck-grid large' : 'deck-grid';
       inner = `<div class="${gridClass}">${sortEntries(entries).map(renderEntryCell).join('')}</div>`;
     }
-    return `<div class="deck-section">
-      <div class="deck-section-head">
-        <span class="deck-section-title">${title}</span>
+    const sid = 'section-' + title.replace(/\s+/g,'-');
+    const collapsed = collapsedSections[title] ? ' collapsed' : '';
+    return `<div class="deck-section${collapsed}" id="${sid}">
+      <div class="deck-section-head" onclick="toggleSection('${title}')">
+        <span class="deck-section-title"><span class="deck-section-caret">▾</span>${title}</span>
         <span class="deck-section-count">${count} card${count===1?'':'s'}${opts.limit?` · ${opts.limit}`:''}</span>
       </div>
-      ${entries.length ? inner : '<div style="color:var(--rune);font-style:italic;padding:8px 0;">None</div>'}
+      <div class="deck-section-body">
+        ${entries.length ? inner : '<div style="color:var(--rune);font-style:italic;padding:8px 0;">None</div>'}
+      </div>
+    </div>`;
+  }
+
+  function renderDeckStats(dd) {
+    const panel = document.getElementById('deck-stats-panel');
+    if (!panel) return;
+    const spells = dd.s || [];
+    const atlas = dd.t || [];
+    const coll = dd.c || [];
+    const all = [...spells, ...atlas]; // main deck (avatar shown above; collection is sideboard)
+    const totalMain = all.reduce((s,[,q]) => s + (q||0), 0);
+    if (!totalMain) { panel.innerHTML = ''; return; }
+
+    // Mana curve from spellbook (cards with a cost), bucket 7+
+    const curve = {}; let costSum = 0, costCards = 0;
+    spells.forEach(([name, qty]) => {
+      const c = cardMap[(name||'').toLowerCase()];
+      if (!c || c.cost == null || c.cost === '') return;
+      const cost = Number(c.cost);
+      const key = cost >= 7 ? '7+' : String(cost);
+      curve[key] = (curve[key] || 0) + qty;
+      costSum += cost * qty; costCards += qty;
+    });
+    const avgCost = costCards ? (costSum / costCards).toFixed(1) : '—';
+
+    // Threshold totals (distinct pips across the deck's unique cards)
+    const thr = { air:0, earth:0, fire:0, water:0 };
+    [...spells, ...atlas, ...coll].forEach(([name]) => {
+      const c = cardMap[(name||'').toLowerCase()];
+      if (!c || !c.thresholds) return;
+      for (const [k,v] of Object.entries(c.thresholds)) {
+        const kk = k.toLowerCase();
+        if (thr[kk] != null) thr[kk] = Math.max(thr[kk], v||0); // deck identity = highest single requirement
+      }
+    });
+
+    const curveKeys = ['0','1','2','3','4','5','6','7+'];
+    const curveMax = Math.max(1, ...curveKeys.map(k => curve[k]||0));
+    const curveBars = curveKeys.map(k => {
+      const v = curve[k] || 0;
+      return `<div class="curve-row">
+        <span class="curve-label">${k}${k==='7+'?'':' cost'}</span>
+        <div class="curve-track"><div class="curve-fill" style="width:${(v/curveMax*100)}%"></div></div>
+        <span class="curve-val">${v}</span>
+      </div>`;
+    }).join('');
+
+    const imgMap = { air:'wind.png', earth:'earth.png', fire:'fire.png', water:'water.png' };
+    const thrHtml = Object.entries(thr).filter(([,v])=>v>0).map(([k,v]) =>
+      `<div class="thr-summary-item"><img src="${imgMap[k]}" alt="${k}"> <b>${v}</b> ${k.charAt(0).toUpperCase()+k.slice(1)}</div>`
+    ).join('') || '<div style="color:var(--rune);font-style:italic;font-size:0.85rem;">No threshold requirements</div>';
+
+    const spellCount = spells.reduce((s,[,q])=>s+(q||0),0);
+    const atlasCount = atlas.reduce((s,[,q])=>s+(q||0),0);
+
+    panel.innerHTML = `<div class="deck-stats-panel">
+      <div class="stat-quick">
+        <div class="stat-quick-item"><b>${totalMain}</b><span>Main Deck</span></div>
+        <div class="stat-quick-item"><b>${spellCount}</b><span>Spells</span></div>
+        <div class="stat-quick-item"><b>${atlasCount}</b><span>Sites</span></div>
+        <div class="stat-quick-item"><b>${avgCost}</b><span>Avg Cost</span></div>
+        ${coll.length ? `<div class="stat-quick-item"><b>${coll.reduce((s,[,q])=>s+(q||0),0)}</b><span>Collection</span></div>` : ''}
+      </div>
+      <div class="stat-block">
+        <div class="stat-block-title">Mana Curve (Spellbook)</div>
+        ${curveBars}
+      </div>
+      <div class="stat-block">
+        <div class="stat-block-title">Threshold Requirements</div>
+        <div class="thr-summary">${thrHtml}</div>
+      </div>
     </div>`;
   }
 
   function renderSections() {
     const dd = currentDeck.deck_data || {};
+    renderDeckStats(dd);
     let html = '';
     // Avatar is already shown as the hero image + name at the top, so we don't
     // repeat it as a section here. (The .txt export builds it separately from dd.a.)
