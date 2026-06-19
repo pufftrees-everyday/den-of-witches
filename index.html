@@ -803,12 +803,12 @@
           <svg viewBox="0 0 20 20"><path d="M12.9 14.32a8 8 0 111.41-1.41l4.42 4.41-1.41 1.42-4.42-4.42zM8 14A6 6 0 108 2a6 6 0 000 12z"/></svg>
           <input type="text" id="search-input" placeholder="Search cards…" autocomplete="off">
         </div>
-        <button class="invoke-btn" onclick="openInvoke()" title="Advanced search syntax">✦ Invoke</button>
+        <button class="invoke-btn" onclick="openInvoke()" title="Advanced search syntax">Invoke</button>
         <button class="clear-all-btn" onclick="clearAllFilters()">✕ Clear all</button>
       </div>
 
       <div id="invoke-active-bar" class="invoke-active-bar" style="display:none;">
-        <span class="invoke-active-label">✦ Invoke:</span>
+        <span class="invoke-active-label">Invoke:</span>
         <code id="invoke-active-query"></code>
         <button class="invoke-edit" onclick="openInvoke()">Edit</button>
         <button class="invoke-clear" onclick="clearInvoke()">✕</button>
@@ -1046,7 +1046,7 @@
 <div class="invoke-overlay" id="invoke-overlay" onclick="if(event.target===this)closeInvoke()">
   <div class="invoke-box">
     <div class="invoke-head">
-      <div class="invoke-title">✦ Invoke — Advanced Search</div>
+      <div class="invoke-title">Invoke — Advanced Search</div>
       <button class="invoke-x" onclick="closeInvoke()">✕</button>
     </div>
     <p class="invoke-intro">Conjure precise queries with a powerful search syntax. Combine terms freely — they all must match unless you use <b>OR</b>.</p>

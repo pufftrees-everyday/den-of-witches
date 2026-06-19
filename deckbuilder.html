@@ -1312,12 +1312,11 @@
 <!-- INSCRIBE IN ARCHIVE CONFIRM -->
 <div class="confirm-overlay" id="inscribe-overlay" onclick="if(event.target===this)closeInscribe()">
   <div class="confirm-box">
-    <div class="confirm-icon">✦</div>
     <div class="confirm-title">Inscribe in the Archive?</div>
     <div class="confirm-msg">Your deck will be made <b>public</b> and added to The Archive, where every Sorcerer can view it, study it, and bring a copy to their own Workshop.<br><br>You can withdraw it from the Archive at any time to make it private again.</div>
     <div class="confirm-actions">
       <button class="btn btn-ghost" onclick="closeInscribe()">Not yet</button>
-      <button class="btn btn-primary" onclick="doInscribe()">✦ Inscribe it</button>
+      <button class="btn btn-primary" onclick="doInscribe()">Inscribe it</button>
     </div>
   </div>
 </div>
@@ -1424,7 +1423,6 @@ function getImageUrl(card) {
 // ── HOVER PREVIEW (desktop, list view only) ──
 let _hpEl, _hpImg, _hpVisible = false;
 function hpShow(id, x, y) {
-  if (viewMode !== 'list') return;
   const card = allCards.find(c => c.id === id || c.name === id);
   if (!card) return;
   if (!_hpEl) { _hpEl = document.getElementById('hover-preview'); _hpImg = document.getElementById('hover-preview-img'); }
@@ -1445,13 +1443,17 @@ function hpMove(x, y) {
   _hpEl.style.top = top + 'px';
 }
 function hpHide() { if (_hpEl) _hpEl.classList.remove('show'); _hpVisible = false; }
-(function wireHover() {
-  const root = document.getElementById('card-grid');
+// Wire hover preview on a container. `gate` returns true when previews are allowed
+// (we only want them in the list/text views, where the card image isn't already shown).
+function wireHoverOn(rootId, gate) {
+  const root = document.getElementById(rootId);
   if (!root) return;
-  root.addEventListener('mouseover', e => { const r = e.target.closest('[data-card-id]'); if (r) hpShow(r.getAttribute('data-card-id'), e.clientX, e.clientY); });
+  root.addEventListener('mouseover', e => { if (!gate()) return; const r = e.target.closest('[data-card-id]'); if (r) hpShow(r.getAttribute('data-card-id'), e.clientX, e.clientY); });
   root.addEventListener('mousemove', e => { if (!_hpVisible) return; const r = e.target.closest('[data-card-id]'); if (!r) { hpHide(); return; } hpMove(e.clientX, e.clientY); });
   root.addEventListener('mouseout', e => { const to = e.relatedTarget; if (!to || !to.closest || !to.closest('[data-card-id]')) hpHide(); });
-})();
+}
+wireHoverOn('card-grid', () => viewMode === 'list');        // left explorer
+wireHoverOn('deck-body', () => deckViewMode === 'list');    // right deck panel
 
 function escId(id) { return String(id).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
 
@@ -2438,7 +2440,7 @@ function renderDeckCard(section, key, card, qty) {
       <button class="qty-btn" onclick="event.stopPropagation();changeQty('${section}','${key}',1)">+</button>` : ''}
       <button class="del-btn" onclick="event.stopPropagation();removeCard('${section}','${key}')">✕</button>
     </div>`;
-  return `<div class="dvg-card${isSite ? ' is-site' : ''}" onclick="openModal('${escId(card.id)}')">
+  return `<div class="dvg-card${isSite ? ' is-site' : ''}" data-card-id="${escId(card.id)}" onclick="openModal('${escId(card.id)}')">
     <img src="${getImageUrl(card)}" alt="${card.name}" loading="lazy" onerror="this.style.opacity='0.2'">
     ${qty > 1 ? `<div class="dvg-qty">×${qty}</div>` : ''}
     ${controls}
@@ -2473,7 +2475,7 @@ function renderDeckCardRow(section, key, card, qty) {
       <button class="dr-qty-btn" onclick="event.stopPropagation();changeQty('${section}','${key}',1)">+</button>` : ''}
       <button class="dr-del-btn" onclick="event.stopPropagation();removeCard('${section}','${key}')">✕</button>
     </div>`;
-  return `<div class="deck-card-row" onclick="openModal('${escId(card.id)}')">
+  return `<div class="deck-card-row" data-card-id="${escId(card.id)}" onclick="openModal('${escId(card.id)}')">
     <span class="dr-qty">${qty}×</span>
     <span class="dr-name">${card.name}</span>
     ${thr}
@@ -2510,7 +2512,7 @@ function renderVisibilityBar() {
   } else {
     bar.innerHTML = `<div class="vis-bar">
       <div class="vis-status private"><span class="vis-dot"></span>Private</div>
-      <button class="vis-toggle-btn make-public" onclick="confirmInscribe()">✦ Inscribe in the Archive</button>
+      <button class="vis-toggle-btn make-public" onclick="confirmInscribe()">Inscribe in the Archive</button>
       <span class="vis-hint">Only you can see this deck. Inscribe it to share it with the realm.</span>
     </div>`;
   }
