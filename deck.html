@@ -110,7 +110,7 @@
   .deck-section-title { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); }
 
   /* DECK STATS PANEL */
-  .deck-stats-panel { background: var(--abyss); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; margin-bottom: 20px; display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px 28px; }
+  .deck-stats-panel { background: var(--abyss); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px 28px; }
   .stat-block-title { font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rune); margin-bottom: 10px; }
   .stat-quick { display: flex; gap: 18px; flex-wrap: wrap; grid-column: 1 / -1; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
   .stat-quick-item { display: flex; flex-direction: column; }
@@ -122,6 +122,16 @@
   .curve-track { flex: 1; height: 14px; background: var(--dusk); border-radius: 3px; overflow: hidden; }
   .curve-fill { height: 100%; background: linear-gradient(90deg, var(--rune), var(--arcane)); border-radius: 3px; min-width: 2px; transition: width 0.3s; }
   .curve-val { width: 22px; text-align: right; font-size: 0.78rem; color: var(--shimmer); flex-shrink: 0; }
+  .curve-thr { display: inline-flex; align-items: center; gap: 1px; flex-shrink: 0; min-width: 0; }
+  .tstat-icon { width: 15px; height: 15px; object-fit: contain; }
+  /* peak threshold — big repeated symbols */
+  .thr-symbols-big { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+  .tstat-icon-big { width: 32px; height: 32px; object-fit: contain; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.7)); }
+  .peak-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .peak-syms { display: inline-flex; gap: 2px; align-items: center; }
+  .peak-cost { font-family: 'Crimson Pro', serif; font-size: 0.9rem; color: var(--rune); }
+  .peak-cost b { color: var(--gold); font-family: 'Cinzel', serif; font-size: 1rem; }
+  .peak-cost-site { font-style: italic; }
   /* threshold summary */
   .thr-summary { display: flex; flex-direction: column; gap: 7px; }
   .thr-summary-item { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--shimmer); }
@@ -614,51 +624,101 @@
     });
     const avgCost = costCards ? (costSum / costCards).toFixed(1) : '—';
 
-    // Threshold totals (distinct pips across the deck's unique cards)
-    const thr = { air:0, earth:0, fire:0, water:0 };
-    [...spells, ...atlas, ...coll].forEach(([name]) => {
-      const c = cardMap[(name||'').toLowerCase()];
-      if (!c || !c.thresholds) return;
-      for (const [k,v] of Object.entries(c.thresholds)) {
-        const kk = k.toLowerCase();
-        if (thr[kk] != null) thr[kk] = Math.max(thr[kk], v||0); // deck identity = highest single requirement
+    // Threshold requirements, tracked PER mana-cost bucket (the most demanding single
+    // card at each cost). We also record, for each element, the HIGHEST threshold the
+    // deck demands and the mana cost where that peak first occurs.
+    const THRESH_ELS = ['air','earth','fire','water'];
+    const imgMap = { air:'wind.png', earth:'earth.png', fire:'fire.png', water:'water.png' };
+    const curveThr = {};   // bucket key → { air, earth, fire, water } max
+    const thr = { air:0, earth:0, fire:0, water:0 };       // overall max per element
+    const thrPeakCost = { air:null, earth:null, fire:null, water:null }; // cost at which the peak occurs
+    // record a card's thresholds, attributing the cost where a new peak is set
+    const recordThresholds = (cardThresholds, cost, bucketKey) => {
+      if (!cardThresholds) return;
+      if (bucketKey != null) {
+        const bt = curveThr[bucketKey] || (curveThr[bucketKey] = { air:0, earth:0, fire:0, water:0 });
+        for (const [k,v] of Object.entries(cardThresholds)) { const kk=k.toLowerCase(); if (bt[kk]!=null) bt[kk]=Math.max(bt[kk], v||0); }
       }
+      for (const [k,v] of Object.entries(cardThresholds)) {
+        const kk = k.toLowerCase();
+        if (thr[kk] == null) continue;
+        if ((v||0) > thr[kk]) { thr[kk] = v||0; thrPeakCost[kk] = cost; }   // new higher peak → remember its cost
+      }
+    };
+    spells.forEach(([name]) => {
+      const c = cardMap[(name||'').toLowerCase()];
+      if (!c) return;
+      const cost = (c.cost == null || c.cost === '') ? null : Number(c.cost);
+      const bucketKey = cost == null ? null : (cost >= 7 ? '7+' : String(cost));
+      recordThresholds(c.thresholds, cost, bucketKey);
     });
+    // Sites & collection feed the overall peak too (sites have no cost → peak cost stays null)
+    [...atlas, ...coll].forEach(([name]) => {
+      const c = cardMap[(name||'').toLowerCase()];
+      if (!c) return;
+      const cost = (c.cost == null || c.cost === '') ? null : Number(c.cost);
+      recordThresholds(c.thresholds, cost, null);
+    });
+
+    // Repeated-symbol renderer — ALWAYS shows N symbols, never "N Water" text.
+    const symbols = (obj, size) => {
+      const cls = size === 'big' ? 'tstat-icon-big' : 'tstat-icon';
+      let out = '';
+      THRESH_ELS.forEach(el => { for (let i=0;i<(obj[el]||0);i++) out += `<img src="${imgMap[el]}" alt="${el}" class="${cls}">`; });
+      return out;
+    };
 
     const curveKeys = ['0','1','2','3','4','5','6','7+'];
     const curveMax = Math.max(1, ...curveKeys.map(k => curve[k]||0));
     const curveBars = curveKeys.map(k => {
       const v = curve[k] || 0;
+      const bt = curveThr[k];
+      const syms = bt ? symbols(bt, 'small') : '';
       return `<div class="curve-row">
         <span class="curve-label">${k}${k==='7+'?'':' cost'}</span>
         <div class="curve-track"><div class="curve-fill" style="width:${(v/curveMax*100)}%"></div></div>
         <span class="curve-val">${v}</span>
+        <span class="curve-thr">${syms}</span>
       </div>`;
     }).join('');
 
-    const imgMap = { air:'wind.png', earth:'earth.png', fire:'fire.png', water:'water.png' };
-    const thrHtml = Object.entries(thr).filter(([,v])=>v>0).map(([k,v]) =>
-      `<div class="thr-summary-item"><img src="${imgMap[k]}" alt="${k}"> <b>${v}</b> ${k.charAt(0).toUpperCase()+k.slice(1)}</div>`
-    ).join('') || '<div style="color:var(--rune);font-style:italic;font-size:0.85rem;">No threshold requirements</div>';
+    // Per-element peak: repeated symbols + the mana cost where that peak occurs.
+    const peakRows = THRESH_ELS.filter(el => thr[el] > 0).map(el => {
+      const syms = Array.from({length: thr[el]}, () => `<img src="${imgMap[el]}" alt="${el}" class="tstat-icon-big">`).join('');
+      const cost = thrPeakCost[el];
+      const costLabel = (cost == null)
+        ? `<span class="peak-cost peak-cost-site">from a site</span>`
+        : `<span class="peak-cost">at <b>${cost}</b> cost</span>`;
+      return `<div class="peak-row"><span class="peak-syms">${syms}</span>${costLabel}</div>`;
+    }).join('');
+    const thrHtml = peakRows || '<div style="color:var(--rune);font-style:italic;font-size:0.85rem;">No threshold requirements</div>';
 
     const spellCount = spells.reduce((s,[,q])=>s+(q||0),0);
     const atlasCount = atlas.reduce((s,[,q])=>s+(q||0),0);
 
-    panel.innerHTML = `<div class="deck-stats-panel">
-      <div class="stat-quick">
-        <div class="stat-quick-item"><b>${totalMain}</b><span>Main Deck</span></div>
-        <div class="stat-quick-item"><b>${spellCount}</b><span>Spells</span></div>
-        <div class="stat-quick-item"><b>${atlasCount}</b><span>Sites</span></div>
-        <div class="stat-quick-item"><b>${avgCost}</b><span>Avg Cost</span></div>
-        ${coll.length ? `<div class="stat-quick-item"><b>${coll.reduce((s,[,q])=>s+(q||0),0)}</b><span>Collection</span></div>` : ''}
+    const collapsed = collapsedSections['Deck Stats'] ? ' collapsed' : '';
+    panel.innerHTML = `<div class="deck-section deck-stats-section${collapsed}" id="section-Deck-Stats">
+      <div class="deck-section-head" onclick="toggleSection('Deck Stats')">
+        <span class="deck-section-title"><span class="deck-section-caret">▾</span>Deck Stats</span>
       </div>
-      <div class="stat-block">
-        <div class="stat-block-title">Mana Curve (Spellbook)</div>
-        ${curveBars}
-      </div>
-      <div class="stat-block">
-        <div class="stat-block-title">Threshold Requirements</div>
-        <div class="thr-summary">${thrHtml}</div>
+      <div class="deck-section-body">
+        <div class="deck-stats-panel">
+          <div class="stat-quick">
+            <div class="stat-quick-item"><b>${totalMain}</b><span>Main Deck</span></div>
+            <div class="stat-quick-item"><b>${spellCount}</b><span>Spells</span></div>
+            <div class="stat-quick-item"><b>${atlasCount}</b><span>Sites</span></div>
+            <div class="stat-quick-item"><b>${avgCost}</b><span>Avg Cost</span></div>
+            ${coll.length ? `<div class="stat-quick-item"><b>${coll.reduce((s,[,q])=>s+(q||0),0)}</b><span>Collection</span></div>` : ''}
+          </div>
+          <div class="stat-block">
+            <div class="stat-block-title">Mana Curve &amp; Thresholds</div>
+            ${curveBars}
+          </div>
+          <div class="stat-block">
+            <div class="stat-block-title">Peak Threshold by Element</div>
+            <div class="thr-summary">${thrHtml}</div>
+          </div>
+        </div>
       </div>
     </div>`;
   }
