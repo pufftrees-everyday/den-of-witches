@@ -123,10 +123,15 @@
   /* DECK STATS PANEL */
   .deck-stats-panel { background: var(--abyss); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; display: grid; grid-template-columns: 1.3fr 1fr 0.9fr; gap: 20px 28px; }
   .stat-block-title { font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rune); margin-bottom: 10px; }
-  .stat-quick { display: flex; gap: 18px; flex-wrap: wrap; grid-column: 1 / -1; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+  .stat-quick { display: flex; gap: 18px; flex-wrap: wrap; grid-column: 1 / -1; padding-bottom: 14px; border-bottom: 1px solid var(--border); align-items: flex-start; }
   .stat-quick-item { display: flex; flex-direction: column; }
   .stat-quick-item b { font-family: 'Cinzel', serif; font-size: 1.4rem; color: var(--gold); line-height: 1; }
   .stat-quick-item span { font-size: 0.7rem; color: var(--rune); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 3px; }
+  .stat-quick-divider { width: 1px; align-self: stretch; background: var(--border); margin: 0 2px; }
+  /* spell-type sub-stats read a touch quieter than the headline numbers */
+  .stat-quick-type b { font-size: 1.15rem; color: var(--shimmer); }
+  .stat-quick-type span { color: var(--rune); }
+  @media (max-width: 560px) { .stat-quick-divider { display: none; } }
   /* mana curve */
   .curve-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
   .curve-label { width: 42px; font-family: 'Cinzel', serif; font-size: 0.72rem; color: var(--rune); flex-shrink: 0; }
@@ -736,6 +741,20 @@
 
     const spellCount = spells.reduce((s,[,q])=>s+(q||0),0);
     const atlasCount = atlas.reduce((s,[,q])=>s+(q||0),0);
+    const collCount = coll.reduce((s,[,q])=>s+(q||0),0);
+
+    // Spell type breakdown (spellbook only, not sites) → quick-stat items
+    const spellTypeCount = {};
+    spells.forEach(([name, q]) => {
+      const c = cardMap[(name||'').toLowerCase()];
+      const t = (c && c.type) ? c.type : 'Other';
+      spellTypeCount[t] = (spellTypeCount[t] || 0) + (q || 0);
+    });
+    const typeOrder = ['Minion','Magic','Artifact','Aura','Other'];
+    const typeItems = Object.entries(spellTypeCount)
+      .sort((a,b) => (typeOrder.indexOf(a[0])+1||99) - (typeOrder.indexOf(b[0])+1||99))
+      .map(([t,n]) => `<div class="stat-quick-item stat-quick-type"><b>${n}</b><span>${escHtml(t)}${n===1?'':'s'}</span></div>`)
+      .join('');
 
     // Element distribution pie (reuses the same breakdown as the hero element bar)
     const elBreakdown = deckElementBreakdown(dd);   // [{el, pct}], sorted desc
@@ -785,8 +804,10 @@
             <div class="stat-quick-item"><b>${totalMain}</b><span>Main Deck</span></div>
             <div class="stat-quick-item"><b>${spellCount}</b><span>Spells</span></div>
             <div class="stat-quick-item"><b>${atlasCount}</b><span>Sites</span></div>
+            <div class="stat-quick-item"><b>${collCount}</b><span>Collection</span></div>
             <div class="stat-quick-item"><b>${avgCost}</b><span>Avg Cost</span></div>
-            ${coll.length ? `<div class="stat-quick-item"><b>${coll.reduce((s,[,q])=>s+(q||0),0)}</b><span>Collection</span></div>` : ''}
+            <div class="stat-quick-divider"></div>
+            ${typeItems}
           </div>
           <div class="stat-block">
             <div class="stat-block-title">Mana Curve &amp; Thresholds</div>
