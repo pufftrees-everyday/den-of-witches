@@ -563,7 +563,7 @@
     html += renderSectionBlock('Spellbook', dd.s || [], { limit: '60+ spells' });
     // Deck Collection (only if present)
     if ((dd.c || []).length) {
-      html += renderSectionBlock('Deck Collection', dd.c || [], { limit: 'sideboard, up to 10' });
+      html += renderSectionBlock('Collection', dd.c || [], { limit: 'sideboard, up to 10' });
     }
     document.getElementById('deck-sections').innerHTML = html;
   }
@@ -717,7 +717,7 @@
     const dd = currentDeck.deck_data || {};
     const lines = [`// ${currentDeck.name || 'Deck'}`, ''];
     const sec = (label, arr) => { if ((arr||[]).length) { lines.push(`// ${label}`); arr.forEach(([n,q]) => lines.push(`${q}x ${n}`)); lines.push(''); } };
-    sec('Avatar', dd.a); sec('Atlas (Sites)', dd.t); sec('Spellbook', dd.s); sec('Deck Collection (Sideboard)', dd.c);
+    sec('Avatar', dd.a); sec('Atlas (Sites)', dd.t); sec('Spellbook', dd.s); sec('Collection (Sideboard)', dd.c);
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([lines.join('\n')], {type:'text/plain'}));
     a.download = (currentDeck.name||'deck').replace(/\s+/g,'_') + '.txt';

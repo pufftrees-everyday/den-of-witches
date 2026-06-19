@@ -1214,7 +1214,7 @@
             <button onclick="changeAddQty(1)">+</button>
           </div>
           <button class="add-to-deck-btn" onclick="addCurrentCard()">+ Add to Deck</button>
-          <button class="add-to-collection-btn" onclick="addCurrentCardToCollection()" title="Set aside as one of your 10 Collection (sideboard) cards">+ Deck Collection</button>
+          <button class="add-to-collection-btn" onclick="addCurrentCardToCollection()" title="Set aside as one of your 10 Collection (sideboard) cards">+ Collection</button>
           <div class="add-feedback" id="add-feedback"></div>
         </div>
       </div>
@@ -1974,13 +1974,13 @@ function addCardToDeckCollection(card, qty = 1) {
 
   // Avatars cannot go in the Collection
   if (getDeckSection(card) === 'avatar') {
-    return { ok: false, message: `Avatars can't be placed in the Deck Collection.` };
+    return { ok: false, message: `Avatars can't be placed in the Collection.` };
   }
 
   // Hard cap: total cards in collection may not exceed 10
   const collectionTotal = Object.values(deck.collection).reduce((s, v) => s + v.qty, 0);
   if (collectionTotal >= DECK_COLLECTION_LIMIT) {
-    return { ok: false, message: `Deck Collection is full — max ${DECK_COLLECTION_LIMIT} cards.` };
+    return { ok: false, message: `Collection is full — max ${DECK_COLLECTION_LIMIT} cards.` };
   }
 
   // Rarity limit across all sections
@@ -1990,13 +1990,13 @@ function addCardToDeckCollection(card, qty = 1) {
   const allowed = Math.min(qty, roomForRarity, roomForCap);
   if (allowed <= 0) {
     if (roomForRarity <= 0) return { ok: false, message: `${card.name} is ${rarity} — max ${limit} cop${limit===1?'y':'ies'} across your deck. You have ${currentTotal}.` };
-    return { ok: false, message: `Deck Collection is full — max ${DECK_COLLECTION_LIMIT} cards.` };
+    return { ok: false, message: `Collection is full — max ${DECK_COLLECTION_LIMIT} cards.` };
   }
 
   if (deck.collection[key]) deck.collection[key].qty += allowed;
   else deck.collection[key] = { card, qty: allowed };
 
-  return { ok: true, message: `${allowed}× ${card.name} added to Deck Collection.` };
+  return { ok: true, message: `${allowed}× ${card.name} added to Collection.` };
 }
 
 function changeQty(section, key, delta) {
@@ -2013,7 +2013,7 @@ function changeQty(section, key, delta) {
   if (delta > 0 && section === 'collection') {
     const collectionTotal = Object.values(deck.collection).reduce((s, v) => s + v.qty, 0);
     if (collectionTotal >= DECK_COLLECTION_LIMIT) {
-      toast(`Deck Collection is full — max ${DECK_COLLECTION_LIMIT} cards.`);
+      toast(`Collection is full — max ${DECK_COLLECTION_LIMIT} cards.`);
       return;
     }
   }
@@ -2078,7 +2078,7 @@ function renderDeck() {
 
   // Deck Collection section (Sorcery's 10-card toolbox/sideboard) — always shown so it's discoverable
   const collectionByType = groupByType(collectionEntries);
-  body.innerHTML += renderSection('Deck Collection', 'collection', collectionEntries, `${collectionCount}/10 cards`, collectionOk, '0–10', collectionByType);
+  body.innerHTML += renderSection('Collection', 'collection', collectionEntries, `${collectionCount}/10 cards`, collectionOk, '0–10', collectionByType);
 }
 
 function groupByType(entries) {
@@ -2669,7 +2669,7 @@ function downloadDeckText() {
   }
   const collectionEntries = Object.values(deck.collection);
   if (collectionEntries.length) {
-    lines.push('// Deck Collection (Sideboard)');
+    lines.push('// Collection (Sideboard)');
     collectionEntries.forEach(({card,qty}) => lines.push(`${qty}x ${card.name}`));
     lines.push('');
   }
