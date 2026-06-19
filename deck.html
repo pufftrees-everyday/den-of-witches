@@ -110,7 +110,7 @@
   .deck-section-title { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); }
 
   /* DECK STATS PANEL */
-  .deck-stats-panel { background: var(--abyss); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px 28px; }
+  .deck-stats-panel { background: var(--abyss); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; display: grid; grid-template-columns: 1.3fr 1fr 0.9fr; gap: 20px 28px; }
   .stat-block-title { font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rune); margin-bottom: 10px; }
   .stat-quick { display: flex; gap: 18px; flex-wrap: wrap; grid-column: 1 / -1; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
   .stat-quick-item { display: flex; flex-direction: column; }
@@ -137,7 +137,17 @@
   .thr-summary-item { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--shimmer); }
   .thr-summary-item img { width: 22px; height: 22px; object-fit: contain; }
   .thr-summary-item b { color: var(--gold); font-family: 'Cinzel', serif; }
+  @media (max-width: 900px) { .deck-stats-panel { grid-template-columns: 1fr 1fr; } }
   @media (max-width: 640px) { .deck-stats-panel { grid-template-columns: 1fr; } }
+  /* element pie */
+  .pie-wrap { display: flex; align-items: center; gap: 14px; }
+  .pie-svg { width: 110px; height: 110px; flex-shrink: 0; }
+  .pie-center-pct { fill: var(--gold); font-family: 'Cinzel', serif; font-size: 15px; font-weight: 700; }
+  .pie-center-el { fill: var(--rune); font-family: 'Cinzel', serif; font-size: 8px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .pie-legend { display: flex; flex-direction: column; gap: 6px; }
+  .pie-leg-item { display: flex; align-items: center; gap: 7px; font-size: 0.85rem; color: var(--shimmer); }
+  .pie-leg-dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+  .pie-leg-item b { color: var(--gold); font-family: 'Cinzel', serif; margin-left: auto; }
 
   /* collapsible section heads */
   .deck-section-head { cursor: pointer; user-select: none; }
@@ -696,6 +706,43 @@
     const spellCount = spells.reduce((s,[,q])=>s+(q||0),0);
     const atlasCount = atlas.reduce((s,[,q])=>s+(q||0),0);
 
+    // Element distribution pie (reuses the same breakdown as the hero element bar)
+    const elBreakdown = deckElementBreakdown(dd);   // [{el, pct}], sorted desc
+    let pieHtml;
+    if (elBreakdown.length) {
+      const R = 52, CX = 60, CY = 60, INNER = 30; // donut
+      let acc = 0;
+      const segs = elBreakdown.map(({el, pct}) => {
+        const frac = pct / 100;
+        const a0 = acc * 2 * Math.PI - Math.PI/2;
+        acc += frac;
+        const a1 = acc * 2 * Math.PI - Math.PI/2;
+        const large = frac > 0.5 ? 1 : 0;
+        const x0 = CX + R*Math.cos(a0), y0 = CY + R*Math.sin(a0);
+        const x1 = CX + R*Math.cos(a1), y1 = CY + R*Math.sin(a1);
+        // full-circle guard (single element = 100%)
+        if (frac >= 0.999) {
+          return `<circle cx="${CX}" cy="${CY}" r="${R}" fill="${ELEMENT_COLORS[el]}"></circle>`;
+        }
+        return `<path d="M ${CX} ${CY} L ${x0.toFixed(2)} ${y0.toFixed(2)} A ${R} ${R} 0 ${large} 1 ${x1.toFixed(2)} ${y1.toFixed(2)} Z" fill="${ELEMENT_COLORS[el]}"></path>`;
+      }).join('');
+      const top = elBreakdown[0];
+      const legend = elBreakdown.map(({el, pct}) =>
+        `<div class="pie-leg-item"><span class="pie-leg-dot" style="background:${ELEMENT_COLORS[el]}"></span>${el.charAt(0).toUpperCase()+el.slice(1)} <b>${Math.round(pct)}%</b></div>`
+      ).join('');
+      pieHtml = `<div class="pie-wrap">
+        <svg viewBox="0 0 120 120" class="pie-svg" role="img" aria-label="Element distribution">
+          ${segs}
+          <circle cx="${CX}" cy="${CY}" r="${INNER}" fill="var(--abyss)"></circle>
+          <text x="${CX}" y="${CY-3}" text-anchor="middle" class="pie-center-pct">${Math.round(top.pct)}%</text>
+          <text x="${CX}" y="${CY+11}" text-anchor="middle" class="pie-center-el">${top.el.charAt(0).toUpperCase()+top.el.slice(1)}</text>
+        </svg>
+        <div class="pie-legend">${legend}</div>
+      </div>`;
+    } else {
+      pieHtml = '<div style="color:var(--rune);font-style:italic;font-size:0.85rem;">No element data</div>';
+    }
+
     const collapsed = collapsedSections['Deck Stats'] ? ' collapsed' : '';
     panel.innerHTML = `<div class="deck-section deck-stats-section${collapsed}" id="section-Deck-Stats">
       <div class="deck-section-head" onclick="toggleSection('Deck Stats')">
@@ -717,6 +764,10 @@
           <div class="stat-block">
             <div class="stat-block-title">Peak Threshold by Element</div>
             <div class="thr-summary">${thrHtml}</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-block-title">Element Distribution</div>
+            ${pieHtml}
           </div>
         </div>
       </div>
