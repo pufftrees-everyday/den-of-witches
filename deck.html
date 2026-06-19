@@ -68,6 +68,17 @@
   .deck-hero-meta { font-family: 'Crimson Pro', serif; font-size: 1rem; color: var(--rune); margin-bottom: 4px; }
   .deck-hero-meta b { color: var(--gold); }
   .deck-hero-avatar-name { font-family: 'Crimson Pro', serif; font-size: 1.05rem; color: var(--gold); margin-bottom: 16px; }
+  .hero-avatar-link { color: var(--gold); text-decoration: none; border-bottom: 1px dotted rgba(200,169,110,0.5); transition: color 0.15s, border-color 0.15s; }
+  .hero-avatar-link:hover { color: var(--shimmer); border-bottom-color: var(--shimmer); }
+  .hero-author-link { text-decoration: none; color: var(--arcane); transition: color 0.15s; }
+  .hero-author-link:hover { color: var(--shimmer); text-decoration: underline; }
+  /* Like button */
+  .like-btn { display: inline-flex; align-items: center; gap: 7px; background: var(--dusk); border: 1px solid var(--border-strong); color: var(--shimmer); font-family: 'Cinzel', serif; font-size: 0.78rem; letter-spacing: 0.04em; padding: 9px 16px; border-radius: 8px; cursor: pointer; transition: all 0.15s; }
+  .like-btn:hover { border-color: var(--ember); color: var(--ember); }
+  .like-btn .heart { font-size: 1.05rem; line-height: 1; }
+  .like-btn.liked { background: rgba(196,97,74,0.16); border-color: var(--ember); color: var(--ember); }
+  .like-btn:disabled { opacity: 0.6; cursor: default; }
+  .like-count-badge { color: var(--gold); font-weight: 700; }
 
   /* counts strip */
   .deck-counts { display: flex; gap: 10px; flex-wrap: wrap; margin: 14px 0 18px; }
@@ -823,8 +834,12 @@
     }
     document.getElementById('hero-name').textContent = currentDeck.name || 'Untitled Deck';
     const author = currentDeck._author || '';
-    document.getElementById('hero-author').innerHTML = author ? `by <b>${escHtml(author)}</b>` : '';
-    document.getElementById('hero-avatar-name').textContent = av || '';
+    document.getElementById('hero-author').innerHTML = author
+      ? `by <a href="profile.html?u=${encodeURIComponent(author)}" class="hero-author-link"><b>${escHtml(author)}</b></a>`
+      : '';
+    document.getElementById('hero-avatar-name').innerHTML = av
+      ? `<a href="avatar.html?a=${encodeURIComponent(av)}" class="hero-avatar-link">${escHtml(av)}</a>`
+      : '';
 
     // counts
     const aC = sectionCount(dd,'a'), tC = sectionCount(dd,'t'), sC = sectionCount(dd,'s'), cC = sectionCount(dd,'c');
@@ -853,9 +868,12 @@
     } else {
       acts.push(`<button class="btn btn-primary" onclick="openCopyConfirm()">Bring to Workshop</button>`);
     }
+    // Like button — shows the count for everyone; togglable when logged in & not your own deck
+    acts.push(`<button class="like-btn" id="like-btn" onclick="toggleLike()"><span class="heart">♡</span> <span id="like-count" class="like-count-badge">0</span></button>`);
     acts.push(`<button class="btn btn-ghost" onclick="copyDeckLink()">🔗 Copy Link</button>`);
     acts.push(`<button class="btn btn-ghost" onclick="history.length>1?history.back():window.location.href='archive.html'">← Back</button>`);
     document.getElementById('hero-actions').innerHTML = acts.join('');
+    refreshLikes();
 
     // view toggle initial state
     ['list','details','grid','large'].forEach(m => {
@@ -1036,7 +1054,7 @@
     const bar = document.getElementById('auth-bar');
     if (!bar) return;
     if (currentUser) {
-      bar.innerHTML = `<a href="decks.html" class="header-link" style="color:var(--gold)">${escHtml(currentUser.username)}</a>`;
+      bar.innerHTML = `<a href="profile.html?u=${encodeURIComponent(currentUser.username)}" class="header-link" style="color:var(--gold)">${escHtml(currentUser.username)}</a>`;
     } else {
       bar.innerHTML = `<a href="decks.html" class="header-link">Sign In</a>`;
     }
@@ -1069,6 +1087,55 @@
       console.warn(e);
       statusEl.innerHTML = 'Could not load the deck.';
     }
+  }
+
+  // ── Likes ──
+  let likedByMe = false, likeBusy = false;
+  async function refreshLikes() {
+    const btn = document.getElementById('like-btn');
+    const countEl = document.getElementById('like-count');
+    if (!btn || !supa || !currentDeck) return;
+    try {
+      // total count for this deck
+      const { count } = await supa.from('deck_likes').select('*', { count: 'exact', head: true }).eq('deck_id', currentDeck.id);
+      if (countEl) countEl.textContent = count || 0;
+      // did the current user like it?
+      if (currentUser) {
+        const { data } = await supa.from('deck_likes').select('id').eq('deck_id', currentDeck.id).eq('user_id', currentUser.id).limit(1);
+        likedByMe = !!(data && data.length);
+      } else likedByMe = false;
+      applyLikeState();
+    } catch(e) { /* table may not exist yet */ }
+  }
+  function applyLikeState() {
+    const btn = document.getElementById('like-btn');
+    if (!btn) return;
+    const isOwner = currentUser && currentDeck.owner_id === currentUser.id;
+    btn.classList.toggle('liked', likedByMe);
+    btn.querySelector('.heart').textContent = likedByMe ? '♥' : '♡';
+    // owners can't like their own deck; logged-out users see count but can't toggle
+    btn.disabled = !currentUser || isOwner;
+    btn.title = !currentUser ? 'Sign in to like decks' : (isOwner ? "You can't like your own deck" : (likedByMe ? 'Unlike' : 'Like this deck'));
+  }
+  async function toggleLike() {
+    if (likeBusy || !currentUser || !currentDeck) return;
+    const isOwner = currentDeck.owner_id === currentUser.id;
+    if (isOwner) return;
+    likeBusy = true;
+    const countEl = document.getElementById('like-count');
+    try {
+      if (likedByMe) {
+        await supa.from('deck_likes').delete().eq('deck_id', currentDeck.id).eq('user_id', currentUser.id);
+        likedByMe = false;
+        if (countEl) countEl.textContent = Math.max(0, (parseInt(countEl.textContent)||0) - 1);
+      } else {
+        await supa.from('deck_likes').insert({ deck_id: currentDeck.id, user_id: currentUser.id });
+        likedByMe = true;
+        if (countEl) countEl.textContent = (parseInt(countEl.textContent)||0) + 1;
+      }
+      applyLikeState();
+    } catch(e) { /* ignore */ }
+    likeBusy = false;
   }
 
   // ── utils ──

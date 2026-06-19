@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cursed Realm — Avatar</title>
+<meta name="description" content="Avatar details for Sorcery: Contested Realm on Cursed Realm.">
+<meta name="theme-color" content="#0b0a0f">
+<link rel="icon" type="image/png" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #0b0a0f; --abyss: #111018; --dusk: #1a1826; --twilight: #252338;
+    --mist: #3a3658; --rune: #6b5fa0; --arcane: #9b87d4; --shimmer: #c9bfee;
+    --parchment: #e8e0cc; --gold: #c8a96e; --ember: #c4614a; --sage: #5a8a6a;
+    --border: rgba(155, 135, 212, 0.18); --border-strong: rgba(155, 135, 212, 0.35);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--void); color: var(--parchment); font-family: 'Crimson Pro', serif; min-height: 100vh; }
+  a { color: inherit; }
+  header {
+    background: linear-gradient(180deg, #0d0b14 0%, var(--void) 100%);
+    border-bottom: 1px solid var(--border); padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    height: 60px; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(8px);
+  }
+  .header-main { display: flex; align-items: center; gap: 16px; min-width: 0; }
+  .header-nav { display: flex; gap: 14px; align-items: center; }
+  .header-link { font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rune); text-decoration: none; transition: color 0.2s; white-space: nowrap; }
+  .header-link:hover { color: var(--arcane); }
+  .logo-link { display: flex; align-items: center; gap: 9px; text-decoration: none; }
+  .logo-link img { width: 30px; height: 30px; border-radius: 6px; }
+  .logo-text { font-family: 'Cinzel Decorative', serif; font-size: 1.1rem; font-weight: 700; color: var(--gold); white-space: nowrap; }
+  @media (max-width: 760px) { .header-nav .nav-extra { display: none; } }
+
+  .page { max-width: 980px; margin: 0 auto; padding: 32px 24px 64px; }
+  .status { text-align: center; color: var(--rune); padding: 60px 0; font-style: italic; }
+  .back-link { font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--rune); text-decoration: none; display: inline-block; margin-bottom: 20px; }
+  .back-link:hover { color: var(--arcane); }
+
+  .avatar-layout { display: grid; grid-template-columns: 360px 1fr; gap: 32px; align-items: start; }
+  @media (max-width: 720px) { .avatar-layout { grid-template-columns: 1fr; } }
+
+  .avatar-art { width: 100%; border-radius: 14px; overflow: hidden; border: 1px solid var(--border-strong); background: #0b0a0f; box-shadow: 0 12px 40px rgba(0,0,0,0.55); aspect-ratio: 5/7; }
+  .avatar-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .avatar-art.placeholder { display: flex; align-items: center; justify-content: center; color: var(--mist); font-family: 'Cinzel', serif; }
+
+  .avatar-name { font-family: 'Cinzel Decorative', serif; font-size: 2.4rem; font-weight: 700; color: var(--parchment); line-height: 1.1; margin-bottom: 6px; }
+  .avatar-sub { font-family: 'Cinzel', serif; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+
+  .stat-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px; }
+  .stat-box { background: var(--abyss); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; min-width: 78px; }
+  .stat-box .label { font-family: 'Cinzel', serif; font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--rune); margin-bottom: 4px; }
+  .stat-box .value { font-family: 'Cinzel', serif; font-size: 1.3rem; color: var(--gold); }
+
+  .block-title { font-family: 'Cinzel', serif; font-size: 0.74rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rune); margin: 0 0 10px; }
+  .ability-text { background: var(--abyss); border: 1px solid var(--border); border-left: 3px solid var(--arcane); border-radius: 8px; padding: 16px 18px; font-size: 1.08rem; line-height: 1.7; color: var(--parchment); white-space: pre-wrap; margin-bottom: 24px; }
+  .ability-text.empty { color: var(--rune); font-style: italic; }
+
+  .threshold-row { display: flex; align-items: center; gap: 6px; margin-bottom: 24px; flex-wrap: wrap; }
+  .threshold-row img { width: 28px; height: 28px; object-fit: contain; }
+
+  .meta-line { font-size: 0.95rem; color: var(--rune); margin-bottom: 6px; }
+  .meta-line b { color: var(--shimmer); font-weight: 600; }
+
+  .elements-line { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
+  .el-chip { display: inline-flex; align-items: center; gap: 5px; background: var(--abyss); border: 1px solid var(--border); border-radius: 14px; padding: 4px 11px; font-size: 0.85rem; color: var(--shimmer); }
+  .el-chip img { width: 16px; height: 16px; }
+
+  .printings { font-size: 0.9rem; color: var(--rune); margin-top: 6px; }
+  .printings b { color: var(--gold); }
+
+  .disclaimer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 0.78rem; color: var(--rune); line-height: 1.6; font-style: italic; }
+</style>
+</head>
+<body>
+<header>
+  <div class="header-main">
+    <a href="index.html" class="logo-link">
+      <img src="icon-192.png" alt="Cursed Realm" onerror="this.style.display='none'">
+      <span class="logo-text">Cursed Realm</span>
+    </a>
+  </div>
+  <nav class="header-nav">
+    <a href="index.html" class="header-link">Explore</a>
+    <a href="archive.html" class="header-link nav-extra">The Archive</a>
+    <a href="deckbuilder.html" class="header-link">New Deck</a>
+  </nav>
+</header>
+
+<div class="page">
+  <a href="index.html" class="back-link">← Back to Explore</a>
+  <div class="status" id="status">Summoning the avatar…</div>
+  <div id="content" style="display:none;"></div>
+</div>
+
+<script>
+  const IMAGE_BASE = 'https://pub-5999238092ad418ca60e7a9ad641cf57.r2.dev/';
+  const ELEMENT_COLORS = { air:'#8cb4d2', earth:'#a08246', fire:'#c4614a', water:'#5a96b0' };
+  const THRESHOLD_IMG = { air:'wind.png', earth:'earth.png', fire:'fire.png', water:'water.png' };
+
+  function escHtml(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function getParam(n){ return new URLSearchParams(location.search).get(n); }
+
+  function chooseSet(sets) {
+    return (sets||[]).find(s => /beta/i.test(s.name||''))
+      || (sets||[]).find(s => /alpha/i.test(s.name||''))
+      || (sets||[])[0];
+  }
+  function slugFor(card) {
+    if (card.slug) return card.slug;
+    const set = chooseSet(card.sets);
+    if (set && set.variants && set.variants.length) {
+      const v = set.variants.find(v => v.finish==='Standard' && v.product==='Booster') || set.variants[0];
+      if (v) return v.slug;
+    }
+    return (card.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
+  }
+
+  async function run() {
+    const name = getParam('a');
+    const statusEl = document.getElementById('status');
+    if (!name) { statusEl.textContent = 'No avatar specified.'; return; }
+
+    let cards;
+    try {
+      const res = await fetch('cards.json');
+      cards = await res.json();
+      if (!Array.isArray(cards)) cards = cards.data || cards.cards || [];
+    } catch(e) { statusEl.textContent = 'Could not load card data.'; return; }
+
+    const card = cards.find(c => (c.name||'').toLowerCase() === name.toLowerCase());
+    if (!card) { statusEl.textContent = `Avatar "${name}" not found.`; return; }
+
+    const g = card.guardian || {};
+    const set = chooseSet(card.sets);
+    const slug = slugFor(card);
+    const els = Array.isArray(card.elements) ? card.elements : (card.elements ? String(card.elements).split(',') : []);
+    const th = g.thresholds || {};
+
+    document.title = `${card.name} — Cursed Realm`;
+
+    // stat boxes
+    const stats = [];
+    if (g.cost != null) stats.push(['Cost', g.cost]);
+    if (g.attack != null) stats.push(['Power', g.attack]);
+    if (g.life != null) stats.push(['Life', g.life]);
+    if (g.defence != null) stats.push(['Defence', g.defence]);
+    if (g.rarity) stats.push(['Rarity', g.rarity]);
+    const statHtml = stats.map(([l,v]) => `<div class="stat-box"><div class="label">${l}</div><div class="value">${escHtml(String(v))}</div></div>`).join('');
+
+    // thresholds (repeated symbols)
+    let thHtml = '';
+    ['air','earth','fire','water'].forEach(el => {
+      const n = th[el] || 0;
+      for (let i=0;i<n;i++) thHtml += `<img src="${THRESHOLD_IMG[el]}" alt="${el}">`;
+    });
+
+    // elements chips
+    const elHtml = els.map(e => {
+      const k = String(e).trim().toLowerCase();
+      const img = THRESHOLD_IMG[k] ? `<img src="${THRESHOLD_IMG[k]}" alt="${k}">` : '';
+      return `<span class="el-chip">${img}${escHtml(String(e).trim())}</span>`;
+    }).join('');
+
+    // printings
+    const setNames = (card.sets||[]).map(s => s.name).filter(Boolean);
+
+    const ability = g.rulesText || '';
+
+    document.getElementById('content').innerHTML = `
+      <div class="avatar-layout">
+        <div class="avatar-art" id="art">
+          <img src="${IMAGE_BASE}${slug}.png" alt="${escHtml(card.name)}" onerror="this.parentElement.classList.add('placeholder');this.parentElement.textContent='No image'">
+        </div>
+        <div>
+          <div class="avatar-name">${escHtml(card.name)}</div>
+          <div class="avatar-sub">${escHtml(g.type || 'Avatar')}${set ? ' · ' + escHtml(set.name) : ''}</div>
+
+          ${stats.length ? `<div class="stat-grid">${statHtml}</div>` : ''}
+
+          ${els.length ? `<div class="block-title">Elements</div><div class="elements-line">${elHtml}</div>` : ''}
+
+          ${thHtml ? `<div class="block-title">Threshold</div><div class="threshold-row">${thHtml}</div>` : ''}
+
+          <div class="block-title">Ability</div>
+          <div class="ability-text${ability ? '' : ' empty'}">${ability ? escHtml(ability) : 'No ability text on record.'}</div>
+
+          ${setNames.length ? `<div class="printings">Printed in: <b>${setNames.map(escHtml).join('</b>, <b>')}</b></div>` : ''}
+        </div>
+      </div>
+      <div class="disclaimer">
+        Card details and ability text are the property of Erik's Curiosa Limited. Cursed Realm is an unofficial fan-made reference and is not affiliated with or endorsed by Erik's Curiosa.
+      </div>
+    `;
+    statusEl.style.display = 'none';
+    document.getElementById('content').style.display = '';
+  }
+  run();
+</script>
+</body>
+</html>

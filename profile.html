@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cursed Realm — Profile</title>
+<meta name="description" content="A Sorcerer's profile on Cursed Realm.">
+<meta name="theme-color" content="#0b0a0f">
+<link rel="icon" type="image/png" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #0b0a0f; --abyss: #111018; --dusk: #1a1826; --twilight: #252338;
+    --mist: #3a3658; --rune: #6b5fa0; --arcane: #9b87d4; --shimmer: #c9bfee;
+    --parchment: #e8e0cc; --gold: #c8a96e; --ember: #c4614a; --sage: #5a8a6a;
+    --border: rgba(155, 135, 212, 0.18); --border-strong: rgba(155, 135, 212, 0.35);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--void); color: var(--parchment); font-family: 'Crimson Pro', serif; min-height: 100vh; }
+  a { color: inherit; }
+  header {
+    background: linear-gradient(180deg, #0d0b14 0%, var(--void) 100%);
+    border-bottom: 1px solid var(--border); padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    height: 60px; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(8px);
+  }
+  .header-main { display: flex; align-items: center; gap: 16px; min-width: 0; }
+  .header-nav { display: flex; gap: 14px; align-items: center; }
+  .header-link { font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rune); text-decoration: none; transition: color 0.2s; white-space: nowrap; }
+  .header-link:hover { color: var(--arcane); }
+  .logo-link { display: flex; align-items: center; gap: 9px; text-decoration: none; }
+  .logo-link img { width: 30px; height: 30px; border-radius: 6px; }
+  .logo-text { font-family: 'Cinzel Decorative', serif; font-size: 1.1rem; font-weight: 700; color: var(--gold); white-space: nowrap; }
+  @media (max-width: 760px) { .header-nav .nav-extra { display: none; } }
+
+  .page { max-width: 960px; margin: 0 auto; padding: 32px 24px 64px; }
+  .status { text-align: center; color: var(--rune); padding: 60px 0; font-style: italic; }
+
+  .profile-head { display: flex; align-items: flex-start; gap: 22px; flex-wrap: wrap; padding-bottom: 22px; border-bottom: 1px solid var(--border); margin-bottom: 26px; }
+  .profile-sigil { width: 84px; height: 84px; border-radius: 50%; background: radial-gradient(circle at 38% 30%, var(--twilight), var(--dusk)); border: 2px solid var(--border-strong); display: flex; align-items: center; justify-content: center; font-family: 'Cinzel Decorative', serif; font-size: 2.2rem; color: var(--gold); flex-shrink: 0; }
+  .profile-info { flex: 1; min-width: 200px; }
+  .profile-name { font-family: 'Cinzel Decorative', serif; font-size: 2.1rem; font-weight: 700; color: var(--parchment); line-height: 1.1; }
+  .profile-joined { font-size: 0.9rem; color: var(--rune); margin-top: 4px; }
+  .profile-stats { display: flex; gap: 26px; margin-top: 14px; flex-wrap: wrap; }
+  .pstat b { font-family: 'Cinzel', serif; font-size: 1.5rem; color: var(--gold); display: block; line-height: 1; }
+  .pstat span { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--rune); }
+
+  .bio-section { margin-bottom: 30px; }
+  .bio-text { font-size: 1.05rem; line-height: 1.7; color: var(--parchment); white-space: pre-wrap; }
+  .bio-text.empty { color: var(--rune); font-style: italic; }
+  .bio-edit { width: 100%; background: var(--abyss); border: 1px solid var(--border-strong); border-radius: 8px; color: var(--parchment); font-family: 'Crimson Pro', serif; font-size: 1.02rem; line-height: 1.6; padding: 12px 14px; resize: vertical; min-height: 90px; }
+  .bio-actions { margin-top: 10px; display: flex; gap: 10px; align-items: center; }
+  .btn { font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 9px 16px; border-radius: 6px; cursor: pointer; border: 1px solid var(--border-strong); background: var(--dusk); color: var(--shimmer); transition: all 0.15s; }
+  .btn:hover { border-color: var(--arcane); }
+  .btn-primary { background: var(--rune); color: #fff; border-color: var(--rune); }
+  .btn-primary:hover { background: var(--arcane); }
+  .btn-link { background: none; border: none; color: var(--rune); cursor: pointer; font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; }
+  .btn-link:hover { color: var(--arcane); }
+
+  .section-title { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); margin: 0 0 16px; }
+
+  .deck-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+  .deck-card { background: var(--dusk); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; transition: transform 0.15s, border-color 0.15s; cursor: pointer; }
+  .deck-card:hover { transform: translateY(-3px); border-color: var(--arcane); }
+  .deck-card-art { aspect-ratio: 5/3; background: #0b0a0f; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; }
+  .deck-card-art img { width: 100%; height: 100%; object-fit: cover; }
+  .deck-card-body { padding: 12px 14px; }
+  .deck-card-name { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--parchment); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .deck-card-meta { font-size: 0.82rem; color: var(--rune); display: flex; gap: 12px; }
+  .deck-card-likes { color: var(--ember); }
+  .empty-note { color: var(--rune); font-style: italic; padding: 16px 0; }
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--dusk); border: 1px solid var(--border-strong); color: var(--shimmer); padding: 10px 18px; border-radius: 6px; z-index: 999; opacity: 0; transform: translateY(8px); transition: opacity 0.2s, transform 0.2s; pointer-events: none; font-style: italic; }
+  .toast.show { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+<header>
+  <div class="header-main">
+    <a href="index.html" class="logo-link">
+      <img src="icon-192.png" alt="Cursed Realm" onerror="this.style.display='none'">
+      <span class="logo-text">Cursed Realm</span>
+    </a>
+  </div>
+  <nav class="header-nav">
+    <a href="index.html" class="header-link">Explore</a>
+    <a href="archive.html" class="header-link nav-extra">The Archive</a>
+    <a href="deckbuilder.html" class="header-link">New Deck</a>
+  </nav>
+</header>
+
+<div class="page">
+  <div class="status" id="status">Consulting the records…</div>
+  <div id="content" style="display:none;"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://nuizkjkcephopnbcmtlz.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_9er9B3YGFuvNO8Y8W6yr2g_sR5tXvKH';
+  const IMAGE_BASE = 'https://pub-5999238092ad418ca60e7a9ad641cf57.r2.dev/';
+  let supa = null;
+  try { if (window.supabase) supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e) {}
+
+  let currentUser = null;     // logged-in viewer
+  let profile = null;         // the profile being viewed
+  let cardMap = {};           // name → slug (for avatar art)
+
+  function escHtml(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function getParam(n){ return new URLSearchParams(location.search).get(n); }
+  function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2200); }
+
+  function chooseSet(sets){ return (sets||[]).find(s=>/beta/i.test(s.name||'')) || (sets||[]).find(s=>/alpha/i.test(s.name||'')) || (sets||[])[0]; }
+  async function loadCards() {
+    try {
+      const res = await fetch('cards.json'); let cards = await res.json();
+      if (!Array.isArray(cards)) cards = cards.data || cards.cards || [];
+      cards.forEach(c => {
+        let slug = c.slug || null;
+        const set = chooseSet(c.sets);
+        if (!slug && set && set.variants && set.variants.length) {
+          const v = set.variants.find(v=>v.finish==='Standard'&&v.product==='Booster') || set.variants[0];
+          slug = v ? v.slug : null;
+        }
+        cardMap[(c.name||'').toLowerCase()] = slug || (c.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
+      });
+    } catch(e) { /* art will fall back */ }
+  }
+
+  async function refreshUser() {
+    if (!supa) return;
+    try {
+      const { data } = await supa.auth.getUser();
+      if (data && data.user) {
+        let username = data.user.email;
+        try { const { data: p } = await supa.from('profiles').select('username').eq('id', data.user.id).single(); if (p && p.username) username = p.username; } catch(e){}
+        currentUser = { id: data.user.id, email: data.user.email, username };
+      }
+    } catch(e){}
+  }
+
+  function avatarNameOf(dd){ return (dd && dd.a && dd.a.length) ? dd.a[0][0] : null; }
+  function deckCardCount(dd){
+    let n = 0; ['a','t','s'].forEach(k => (dd[k]||[]).forEach(([,q]) => n += (q||0))); return n;
+  }
+
+  async function run() {
+    const uname = getParam('u');
+    const statusEl = document.getElementById('status');
+    if (!uname) { statusEl.textContent = 'No user specified.'; return; }
+    if (!supa) { statusEl.textContent = 'Could not connect.'; return; }
+
+    await Promise.all([loadCards(), refreshUser()]);
+
+    // find profile by username (case-insensitive)
+    let prof;
+    try {
+      const { data } = await supa.from('profiles').select('id, username, bio, created_at').ilike('username', uname).limit(1);
+      prof = data && data[0];
+    } catch(e) {}
+    if (!prof) { statusEl.textContent = `No Sorcerer named "${escHtml(uname)}" found.`; return; }
+    profile = prof;
+    document.title = `${prof.username} — Cursed Realm`;
+
+    // their public decks (with like counts) via the view
+    let decks = [];
+    try {
+      const { data } = await supa.from('public_decks_with_likes').select('*').eq('owner_id', prof.id).order('created_at', { ascending: false });
+      decks = data || [];
+    } catch(e) {}
+
+    const totalLikes = decks.reduce((s,d) => s + (d.like_count||0), 0);
+    const isOwn = currentUser && currentUser.id === prof.id;
+
+    render(decks, totalLikes, isOwn);
+    statusEl.style.display = 'none';
+    document.getElementById('content').style.display = '';
+  }
+
+  function render(decks, totalLikes, isOwn) {
+    const joined = profile.created_at ? new Date(profile.created_at).toLocaleDateString(undefined, { year:'numeric', month:'long' }) : null;
+    const initial = (profile.username||'?').charAt(0).toUpperCase();
+
+    const bioBlock = isOwn ? `
+      <div class="bio-section">
+        <div class="section-title">Bio</div>
+        <div id="bio-view">
+          <div class="bio-text${profile.bio ? '' : ' empty'}">${profile.bio ? escHtml(profile.bio) : 'No bio yet.'}</div>
+          <div class="bio-actions"><button class="btn-link" onclick="startEditBio()">✎ Edit bio</button></div>
+        </div>
+        <div id="bio-edit-wrap" style="display:none;">
+          <textarea class="bio-edit" id="bio-input" maxlength="600" placeholder="Tell the realm about yourself…">${escHtml(profile.bio||'')}</textarea>
+          <div class="bio-actions">
+            <button class="btn btn-primary" onclick="saveBio()">Save</button>
+            <button class="btn" onclick="cancelEditBio()">Cancel</button>
+          </div>
+        </div>
+      </div>` : `
+      <div class="bio-section">
+        <div class="section-title">Bio</div>
+        <div class="bio-text${profile.bio ? '' : ' empty'}">${profile.bio ? escHtml(profile.bio) : 'This Sorcerer keeps their secrets.'}</div>
+      </div>`;
+
+    const deckCards = decks.length ? decks.map(d => {
+      const dd = d.deck_data || {};
+      const av = avatarNameOf(dd);
+      const slug = av ? cardMap[av.toLowerCase()] : null;
+      const art = slug ? `<img src="${IMAGE_BASE}${slug}.png" alt="${escHtml(av||'')}" onerror="this.style.display='none'">` : '';
+      return `<div class="deck-card" onclick="location.href='deck.html?d=${encodeURIComponent(d.short_code)}'">
+        <div class="deck-card-art">${art}</div>
+        <div class="deck-card-body">
+          <div class="deck-card-name">${escHtml(d.name||'Untitled Deck')}</div>
+          <div class="deck-card-meta">
+            <span>${deckCardCount(dd)} cards</span>
+            <span class="deck-card-likes">♥ ${d.like_count||0}</span>
+          </div>
+        </div>
+      </div>`;
+    }).join('') : `<div class="empty-note">${isOwn ? "You haven't published any decks yet." : 'No public decks yet.'}</div>`;
+
+    document.getElementById('content').innerHTML = `
+      <div class="profile-head">
+        <div class="profile-sigil">${escHtml(initial)}</div>
+        <div class="profile-info">
+          <div class="profile-name">${escHtml(profile.username)}</div>
+          ${joined ? `<div class="profile-joined">Joined ${escHtml(joined)}</div>` : ''}
+          <div class="profile-stats">
+            <div class="pstat"><b>${decks.length}</b><span>Public Decks</span></div>
+            <div class="pstat"><b>${totalLikes}</b><span>Total Likes</span></div>
+          </div>
+        </div>
+      </div>
+      ${bioBlock}
+      <div class="section-title">Public Decks</div>
+      <div class="deck-grid">${deckCards}</div>
+    `;
+  }
+
+  // ── Bio editing (own profile only) ──
+  function startEditBio(){ document.getElementById('bio-view').style.display='none'; document.getElementById('bio-edit-wrap').style.display=''; document.getElementById('bio-input').focus(); }
+  function cancelEditBio(){ document.getElementById('bio-edit-wrap').style.display='none'; document.getElementById('bio-view').style.display=''; }
+  async function saveBio(){
+    const val = document.getElementById('bio-input').value.trim();
+    try {
+      const { error } = await supa.from('profiles').update({ bio: val }).eq('id', profile.id);
+      if (error) { toast('Could not save bio'); return; }
+      profile.bio = val;
+      const view = document.getElementById('bio-view');
+      view.querySelector('.bio-text').className = 'bio-text' + (val ? '' : ' empty');
+      view.querySelector('.bio-text').textContent = val || 'No bio yet.';
+      cancelEditBio();
+      toast('Bio saved');
+    } catch(e) { toast('Could not save bio'); }
+  }
+
+  run();
+</script>
+</body>
+</html>
