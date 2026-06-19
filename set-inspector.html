@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Set Inspector — cards.json diagnostic</title>
+<style>
+  body { background:#0b0a0f; color:#e8e0cc; font-family:monospace; padding:24px; line-height:1.5; max-width:1000px; margin:0 auto; }
+  h1 { color:#c8a96e; font-size:1.3rem; }
+  h2 { color:#9b87d4; font-size:1rem; margin-top:24px; border-bottom:1px solid #3a3658; padding-bottom:4px; }
+  .stat { background:#1a1826; border:1px solid #3a3658; border-radius:6px; padding:10px 14px; margin:6px 0; }
+  .stat b { color:#c8a96e; font-size:1.2rem; }
+  .good { color:#5a8a6a; }
+  .bad { color:#c4614a; }
+  .warn { color:#c8a96e; }
+  pre { background:#111018; border:1px solid #3a3658; border-radius:6px; padding:12px; overflow-x:auto; font-size:0.82rem; white-space:pre-wrap; }
+  table { border-collapse:collapse; width:100%; font-size:0.85rem; }
+  td,th { border:1px solid #3a3658; padding:5px 8px; text-align:left; }
+  th { color:#9b87d4; }
+  .small { color:#6b5fa0; font-size:0.8rem; }
+</style>
+</head>
+<body>
+<h1>cards.json — Set Structure Inspector</h1>
+<p class="small">This is a read-only diagnostic. It loads your live cards.json and reports how sets/variants are structured, so we know exactly how to fix the Beta-vs-Alpha defaulting. Nothing is changed or saved.</p>
+<div id="out">Loading cards.json…</div>
+
+<script>
+const SET_PREF = ['Beta','Alpha']; // for the test
+async function run() {
+  const out = document.getElementById('out');
+  let cards;
+  try {
+    const res = await fetch('cards.json');
+    cards = await res.json();
+    if (!Array.isArray(cards)) cards = cards.data || cards.cards || [];
+  } catch (e) {
+    out.innerHTML = `<p class="bad">Could not load cards.json: ${e.message}</p>`;
+    return;
+  }
+
+  const total = cards.length;
+  // Tally how many sets each card lists, and which set names appear
+  const setNameCounts = {};       // set name → how many cards list it
+  const setSizeHistogram = {};    // number of sets a card has → count of such cards
+  let cardsWithBeta = 0, cardsWithAlpha = 0, cardsWithBoth = 0;
+  let betaOnly = 0, alphaOnly = 0, neither = 0;
+  const sampleMultiSet = [];      // sample of cards in multiple sets
+  const betaMissingExamples = []; // cards with Alpha but no Beta
+
+  cards.forEach(c => {
+    const sets = (c.sets || []);
+    const names = sets.map(s => (s.name || '').trim());
+    const n = sets.length;
+    setSizeHistogram[n] = (setSizeHistogram[n] || 0) + 1;
+    names.forEach(nm => { if (nm) setNameCounts[nm] = (setNameCounts[nm]||0) + 1; });
+
+    const hasBeta = names.some(nm => /beta/i.test(nm));
+    const hasAlpha = names.some(nm => /alpha/i.test(nm));
+    if (hasBeta) cardsWithBeta++;
+    if (hasAlpha) cardsWithAlpha++;
+    if (hasBeta && hasAlpha) { cardsWithBoth++; if (sampleMultiSet.length<8) sampleMultiSet.push(c); }
+    if (hasBeta && !hasAlpha) betaOnly++;
+    if (hasAlpha && !hasBeta) { alphaOnly++; if (betaMissingExamples.length<15) betaMissingExamples.push(c.name); }
+    if (!hasBeta && !hasAlpha) neither++;
+  });
+
+  // Inspect the variant shape of one multi-set card
+  let variantSample = '(none found)';
+  if (sampleMultiSet.length) {
+    const c = sampleMultiSet[0];
+    variantSample = JSON.stringify({ name: c.name, sets: (c.sets||[]).map(s => ({ name:s.name, variants:(s.variants||[]).map(v=>({finish:v.finish,product:v.product,slug:v.slug})) })) }, null, 2);
+  }
+
+  let html = '';
+  html += `<div class="stat">Total cards: <b>${total}</b></div>`;
+
+  html += `<h2>Set membership</h2>`;
+  html += `<div class="stat">Cards listing <b>Alpha</b>: <b>${cardsWithAlpha}</b></div>`;
+  html += `<div class="stat">Cards listing <b>Beta</b>: <b class="${cardsWithBeta>300?'good':'bad'}">${cardsWithBeta}</b></div>`;
+  html += `<div class="stat">Cards listing <b>BOTH</b> Alpha & Beta: <b>${cardsWithBoth}</b></div>`;
+  html += `<div class="stat">Alpha but <b>NO</b> Beta: <b class="${alphaOnly>50?'bad':'warn'}">${alphaOnly}</b> ${alphaOnly>50?'← these would stay Alpha':''}</div>`;
+  html += `<div class="stat">Beta but no Alpha (the 4 new avatars etc): <b>${betaOnly}</b></div>`;
+  html += `<div class="stat">Neither Alpha nor Beta (later sets): <b>${neither}</b></div>`;
+
+  html += `<h2>Diagnosis</h2>`;
+  if (cardsWithBeta >= 300) {
+    html += `<div class="stat good">✓ GOOD NEWS: The data already contains Beta printings for ${cardsWithBeta} cards. This means we can fix everything in CODE — just prefer the Beta entry when a card has one. No data rebuild needed.</div>`;
+  } else if (cardsWithBeta > 0 && cardsWithBeta < 100) {
+    html += `<div class="stat bad">✗ PROBLEM CONFIRMED: Only ${cardsWithBeta} cards list Beta in the data, even though ~400 should. The source cards.json does NOT contain Beta printings for the reprints — so code alone can't fix it. We'd need to rebuild cards.json with proper Beta data (e.g. by mapping Alpha cards to their Beta equivalents/slugs).</div>`;
+  } else {
+    html += `<div class="stat warn">Mixed/unclear result — see the numbers above. ${cardsWithBeta} cards have Beta.</div>`;
+  }
+
+  html += `<h2>How many sets does each card list?</h2>`;
+  html += `<table><tr><th># of sets</th><th># of cards</th></tr>`;
+  Object.keys(setSizeHistogram).sort((a,b)=>a-b).forEach(k => {
+    html += `<tr><td>${k}</td><td>${setSizeHistogram[k]}</td></tr>`;
+  });
+  html += `</table>`;
+
+  html += `<h2>All set names found (and how many cards list each)</h2>`;
+  html += `<table><tr><th>Set name</th><th>Cards</th></tr>`;
+  Object.entries(setNameCounts).sort((a,b)=>b[1]-a[1]).forEach(([nm,ct]) => {
+    html += `<tr><td>${nm}</td><td>${ct}</td></tr>`;
+  });
+  html += `</table>`;
+
+  html += `<h2>Sample: structure of a card in multiple sets</h2>`;
+  html += `<pre>${variantSample.replace(/</g,'&lt;')}</pre>`;
+
+  if (betaMissingExamples.length) {
+    html += `<h2>Examples of Alpha cards with NO Beta entry</h2>`;
+    html += `<pre>${betaMissingExamples.join('\n').replace(/</g,'&lt;')}</pre>`;
+  }
+
+  out.innerHTML = html;
+}
+run();
+</script>
+</body>
+</html>
