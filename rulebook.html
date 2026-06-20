@@ -170,17 +170,17 @@
   .rb-section { scroll-margin-top: 150px; margin-bottom: 30px; padding-bottom: 6px; outline: none; }
   .rb-section:target { } /* handled via JS focus */
   .rb-section-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
-  .rb-section-title { font-family: 'Cinzel', serif; font-size: 1.32rem; font-weight: 700; letter-spacing: 0.03em; color: var(--gold); }
+  .rb-section-title { font-family: 'Cinzel', serif; font-size: 1.32rem; font-weight: 700; letter-spacing: 0.03em; color: var(--gold); overflow-wrap: break-word; min-width: 0; }
   .rb-group > .rb-section-head .rb-section-title { font-family: 'Cinzel Decorative', serif; font-size: 1.5rem; }
   .rb-page-badge { font-family: 'Cinzel', serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--rune); background: rgba(155,135,212,0.08); border: 1px solid var(--border); border-radius: 20px; padding: 2px 9px; white-space: nowrap; }
-  .rb-para { margin: 0 0 11px; line-height: 1.62; color: var(--parchment); }
+  .rb-para { margin: 0 0 11px; line-height: 1.62; color: var(--parchment); overflow-wrap: break-word; }
   .rb-para:last-child { margin-bottom: 0; }
 
   /* GLOSSARY / QUICK REFERENCE TERMS */
   .rb-terms { display: flex; flex-direction: column; gap: 4px; }
   .rb-term { scroll-margin-top: 150px; padding: 12px 14px; border: 1px solid var(--border); border-left: 3px solid var(--border-strong); border-radius: 6px; background: rgba(17,16,24,0.5); outline: none; }
   .rb-term-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 5px; }
-  .rb-term-name { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 700; color: var(--shimmer); }
+  .rb-term-name { font-family: 'Cinzel', serif; font-size: 1rem; font-weight: 700; color: var(--shimmer); overflow-wrap: break-word; min-width: 0; }
   .rb-term-def .rb-para { font-size: 0.98rem; color: var(--parchment); }
   .rb-term-def .rb-para:first-child { margin-top: 0; }
 
