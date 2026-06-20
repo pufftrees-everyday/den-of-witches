@@ -344,8 +344,10 @@
       ${renderText(s.text, q)}
     </section>`;
   }
-  function renderTerm(t, q){
-    return `<div class="rb-term" id="r-${esc(t.id)}" data-page="${t.page}" tabindex="-1">
+  // Terms get a distinct anchor prefix (r-g- glossary, r-q- quick ref) so they
+  // never collide with section ids that share the same slug (e.g. "mana").
+  function renderTerm(t, q, prefix){
+    return `<div class="rb-term" id="${prefix}${esc(t.id)}" data-page="${t.page}" tabindex="-1">
       <div class="rb-term-head">
         <span class="rb-term-name">${highlight(t.term, q)}</span>
         <span class="rb-page-badge" title="Page ${t.page}">Page ${t.page}</span>
@@ -353,10 +355,10 @@
       <div class="rb-term-def">${renderText(t.definition, q)}</div>
     </div>`;
   }
-  function renderTermGroup(id, title, terms, q){
+  function renderTermGroup(id, title, terms, q, prefix){
     return `<section class="rb-section rb-group" id="${id}" tabindex="-1">
       <div class="rb-section-head"><h2 class="rb-section-title">${esc(title)}</h2></div>
-      <div class="rb-terms">${terms.map(t => renderTerm(t, q)).join('')}</div>
+      <div class="rb-terms">${terms.map(t => renderTerm(t, q, prefix)).join('')}</div>
     </section>`;
   }
 
@@ -372,10 +374,10 @@
     sections.forEach(s => { html += renderSection(s, q); total++; });
 
     const gloss = q ? glossarySorted.filter(t => termMatches(t, q)) : glossarySorted;
-    if (gloss.length){ html += renderTermGroup('r-glossary', 'Glossary', gloss, q); total += gloss.length; }
+    if (gloss.length){ html += renderTermGroup('r-glossary', 'Glossary', gloss, q, 'r-g-'); total += gloss.length; }
 
     const qref = q ? DATA.quickReference.filter(t => termMatches(t, q)) : DATA.quickReference;
-    if (qref.length){ html += renderTermGroup('r-quick-reference', 'Quick Reference', qref, q); total += qref.length; }
+    if (qref.length){ html += renderTermGroup('r-quick-reference', 'Quick Reference', qref, q, 'r-q-'); total += qref.length; }
 
     if (q && total === 0){
       html = `<div class="rb-noresults">No rules or terms match “<b>${esc(rawQuery.trim())}</b>”.<br>Try a different word.</div>`;
@@ -434,11 +436,16 @@
     input.value = n;
     // First block (section, then glossary, then quick reference) on that page;
     // if the exact page has nothing, fall to the next page that does.
-    const ordered = [...DATA.sections, ...glossarySorted, ...DATA.quickReference];
+    // Each entry carries its own anchor (terms use the r-g-/r-q- prefixes).
+    const ordered = [
+      ...DATA.sections.map(x => ({ page: x.page, anchor: 'r-' + x.id })),
+      ...glossarySorted.map(x => ({ page: x.page, anchor: 'r-g-' + x.id })),
+      ...DATA.quickReference.map(x => ({ page: x.page, anchor: 'r-q-' + x.id }))
+    ];
     let target = ordered.find(x => x.page === n) || ordered.filter(x => x.page >= n).sort((a,b)=>a.page-b.page)[0];
     if (!target) return;
     clearSearchIfActive();
-    requestAnimationFrame(() => scrollToAnchor('r-' + target.id));
+    requestAnimationFrame(() => scrollToAnchor(target.anchor));
   }
 
   function toggleToc(){
