@@ -677,8 +677,8 @@
   .add-btn:hover { background: var(--rune); color: #fff; }
 
   .status { padding: 60px 24px; text-align: center; color:var(--rune); font-style: italic; }
-  .status .loading-rune { font-size: 2.5rem; display: block; margin-bottom: 16px; animation: pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:0.3} 50%{opacity:1} }
+  .status .loading-rune { display: block; width: 34px; height: 34px; margin: 0 auto 16px; border: 3px solid var(--mist); border-top-color: var(--arcane); border-radius: 50%; animation: spin 0.9s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
   /* MODAL */
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(11,10,15,0.85); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
@@ -839,41 +839,41 @@
           <div class="filter-stone">
             <div class="stone-label">Type <button class="stone-clear" onclick="clearGroup('type')">clear</button></div>
             <div class="stone-options">
-              <button class="stone-option" data-group="type" data-value="Avatar" onclick="toggleChip(this)"><span class="rune-mark">✦</span>Avatar</button>
-              <button class="stone-option" data-group="type" data-value="Minion" onclick="toggleChip(this)"><span class="rune-mark">✦</span>Minion</button>
-              <button class="stone-option" data-group="type" data-value="Magic" onclick="toggleChip(this)"><span class="rune-mark">✦</span>Magic</button>
-              <button class="stone-option" data-group="type" data-value="Artifact" onclick="toggleChip(this)"><span class="rune-mark">✦</span>Artifact</button>
-              <button class="stone-option" data-group="type" data-value="Aura" onclick="toggleChip(this)"><span class="rune-mark">✦</span>Aura</button>
-              <button class="stone-option" data-group="type" data-value="Site" onclick="toggleChip(this)"><span class="rune-mark">✦</span>Site</button>
+              <button class="stone-option" data-group="type" data-value="Avatar" onclick="toggleChip(this)"><span class="rune-mark"></span>Avatar</button>
+              <button class="stone-option" data-group="type" data-value="Minion" onclick="toggleChip(this)"><span class="rune-mark"></span>Minion</button>
+              <button class="stone-option" data-group="type" data-value="Magic" onclick="toggleChip(this)"><span class="rune-mark"></span>Magic</button>
+              <button class="stone-option" data-group="type" data-value="Artifact" onclick="toggleChip(this)"><span class="rune-mark"></span>Artifact</button>
+              <button class="stone-option" data-group="type" data-value="Aura" onclick="toggleChip(this)"><span class="rune-mark"></span>Aura</button>
+              <button class="stone-option" data-group="type" data-value="Site" onclick="toggleChip(this)"><span class="rune-mark"></span>Site</button>
             </div>
           </div>
           <div class="filter-stone">
             <div class="stone-label">Set <button class="stone-clear" onclick="clearGroup('set')">clear</button></div>
             <div class="stone-options">
-              <button class="stone-option" data-group="set" data-value="Alpha" onclick="toggleChip(this)"><span class="rune-mark">✦</span>Alpha</button>
-              <button class="stone-option" data-group="set" data-value="Beta" onclick="toggleChip(this)"><span class="rune-mark">✦</span>Beta</button>
-              <button class="stone-option" data-group="set" data-value="Arthurian Legends" onclick="toggleChip(this)"><span class="rune-mark">✦</span>Arthurian Legends</button>
-              <button class="stone-option" data-group="set" data-value="Gothic" onclick="toggleChip(this)"><span class="rune-mark">✦</span>Gothic</button>
-              <button class="stone-option" data-group="set" data-value="Dragonlord" onclick="toggleChip(this)"><span class="rune-mark">✦</span>Dragonlord</button>
-              <button class="stone-option" data-group="set" data-value="Promotional" onclick="toggleChip(this)"><span class="rune-mark">✦</span>Promotional</button>
+              <button class="stone-option" data-group="set" data-value="Alpha" onclick="toggleChip(this)"><span class="rune-mark"></span>Alpha</button>
+              <button class="stone-option" data-group="set" data-value="Beta" onclick="toggleChip(this)"><span class="rune-mark"></span>Beta</button>
+              <button class="stone-option" data-group="set" data-value="Arthurian Legends" onclick="toggleChip(this)"><span class="rune-mark"></span>Arthurian Legends</button>
+              <button class="stone-option" data-group="set" data-value="Gothic" onclick="toggleChip(this)"><span class="rune-mark"></span>Gothic</button>
+              <button class="stone-option" data-group="set" data-value="Dragonlord" onclick="toggleChip(this)"><span class="rune-mark"></span>Dragonlord</button>
+              <button class="stone-option" data-group="set" data-value="Promotional" onclick="toggleChip(this)"><span class="rune-mark"></span>Promotional</button>
             </div>
           </div>
           <div class="filter-stone">
             <div class="stone-label">Rarity <button class="stone-clear" onclick="clearGroup('rarity')">clear</button></div>
             <div class="stone-options">
-              <button class="stone-option" data-group="rarity" data-value="Ordinary" onclick="toggleChip(this)"><span class="rune-mark">✦</span>Ordinary</button>
-              <button class="stone-option" data-group="rarity" data-value="Exceptional" onclick="toggleChip(this)"><span class="rune-mark">✦</span>Exceptional</button>
-              <button class="stone-option" data-group="rarity" data-value="Elite" onclick="toggleChip(this)"><span class="rune-mark">✦</span>Elite</button>
-              <button class="stone-option" data-group="rarity" data-value="Unique" onclick="toggleChip(this)"><span class="rune-mark">✦</span>Unique</button>
+              <button class="stone-option" data-group="rarity" data-value="Ordinary" onclick="toggleChip(this)"><span class="rune-mark"></span>Ordinary</button>
+              <button class="stone-option" data-group="rarity" data-value="Exceptional" onclick="toggleChip(this)"><span class="rune-mark"></span>Exceptional</button>
+              <button class="stone-option" data-group="rarity" data-value="Elite" onclick="toggleChip(this)"><span class="rune-mark"></span>Elite</button>
+              <button class="stone-option" data-group="rarity" data-value="Unique" onclick="toggleChip(this)"><span class="rune-mark"></span>Unique</button>
             </div>
           </div>
           <div class="filter-stone">
             <div class="stone-label">Element <button class="stone-clear" onclick="clearGroup('element')">clear</button></div>
             <div class="stone-options">
-              <button class="stone-option" data-group="element" data-value="Air" onclick="toggleChip(this)"><span class="rune-mark">✦</span>Air</button>
-              <button class="stone-option" data-group="element" data-value="Earth" onclick="toggleChip(this)"><span class="rune-mark">✦</span>Earth</button>
-              <button class="stone-option" data-group="element" data-value="Fire" onclick="toggleChip(this)"><span class="rune-mark">✦</span>Fire</button>
-              <button class="stone-option" data-group="element" data-value="Water" onclick="toggleChip(this)"><span class="rune-mark">✦</span>Water</button>
+              <button class="stone-option" data-group="element" data-value="Air" onclick="toggleChip(this)"><span class="rune-mark"></span>Air</button>
+              <button class="stone-option" data-group="element" data-value="Earth" onclick="toggleChip(this)"><span class="rune-mark"></span>Earth</button>
+              <button class="stone-option" data-group="element" data-value="Fire" onclick="toggleChip(this)"><span class="rune-mark"></span>Fire</button>
+              <button class="stone-option" data-group="element" data-value="Water" onclick="toggleChip(this)"><span class="rune-mark"></span>Water</button>
               <button class="element-lock-btn" id="element-lock-btn" onclick="toggleElementLock()" title="Element Lock: only show cards whose elements are all within your selection">🔒 Element Lock</button>
             </div>
           </div>
@@ -1007,7 +1007,7 @@
       </div>
     </div>
     <div id="card-grid" class="card-grid">
-      <div class="status"><span class="loading-rune">⧫</span>Consulting the arcane archives…</div>
+      <div class="status"><span class="loading-rune"></span>Consulting the arcane archives…</div>
     </div>
   </div>
 
@@ -1174,7 +1174,7 @@ async function loadCards() {
     if (document.getElementById('my-decks-section')?.style.display !== 'none') renderMyDecks();
   } catch(e) {
     console.error('loadCards failed:', e);
-    document.getElementById('card-grid').innerHTML = `<div class="status"><span class="loading-rune" style="animation:none;opacity:0.5">✦</span>Could not load cards.json.<br><small style="font-size:0.8rem;margin-top:8px;display:block">Error: ${e.message}<br>Make sure cards.json is in your GitHub repo alongside index.html.</small></div>`;
+    document.getElementById('card-grid').innerHTML = `<div class="status">Could not load cards.json.<br><small style="font-size:0.8rem;margin-top:8px;display:block">Error: ${e.message}<br>Make sure cards.json is in your GitHub repo alongside index.html.</small></div>`;
   }
 }
 

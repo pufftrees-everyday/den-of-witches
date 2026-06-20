@@ -459,8 +459,8 @@
     opacity: 0.9; transform: rotate(3deg);
     transition: none;
   }
-  .loading-rune { font-size: 2rem; display: block; margin-bottom: 10px; animation: pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:0.3} 50%{opacity:1} }
+  .loading-rune { display: block; width: 30px; height: 30px; margin: 0 auto 10px; border: 3px solid var(--mist); border-top-color: var(--arcane); border-radius: 50%; animation: spin 0.9s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
   /* RIGHT — DECK PANEL */
   .deck-panel {
@@ -1211,7 +1211,7 @@
 
     <div class="card-list">
       <div class="card-list-grid" id="card-grid">
-        <div class="status"><span class="loading-rune">⧫</span>Loading cards…</div>
+        <div class="status"><span class="loading-rune"></span>Loading cards…</div>
       </div>
     </div>
 

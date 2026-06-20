@@ -65,7 +65,10 @@ then variant where `finish==='Standard' && product==='Booster'`. Example real sl
 ---
 
 ## Pages (all in repo root)
-- **index.html** — Card Explorer homepage. 4 views (Text/Details/Card/Large), threshold toggle.
+- **index.html** — Card Explorer homepage. 2 card views: **grid** (thumbnails) and **list**
+  (text rows), toggled by the "Change View" button. Stone filters (Type/Set/Rarity/Element +
+  Element-Lock), advanced filters (subtypes/keyword/cost/power), sorting (Random/A–Z/Mana), and
+  the **"Invoke"** advanced-search query language. No deck-building here (builder is on deckbuilder.html).
 - **collection.html** — "My Vault." Foil/Standard toggle + prices (only page with prices via prices.json).
   Sections (in order): Card Search, **Vault** (owned), **Trades**, **Wants**.
   Data: `collection[cardId] = {have,want,trade,haveFoil,wantFoil,tradeFoil}` (cloud + localStorage `grimoire_collection`).
@@ -73,14 +76,15 @@ then variant where `finish==='Standard' && product==='Booster'`. Example real sl
   Trade moves the card (and its qty) out of the Vault into Trades; un-flagging returns it. `want` is
   independent. "Total Collection Value" = Vault value + Trades value (both finishes).
 - **archive.html** — "The Archive" public deck gallery. Loads from the **public_decks_with_likes**
-  view (has `like_count`, `author`, `views`). Sort: Newest / Most Viewed / Most Liked. Each card
-  shows 👁 views, ♥ likes, 💬 comments (counted client-side from deck_comments), and a 📜 icon
-  when the deck's Scroll (deck_data.d) is non-empty.
+  view (has `like_count`, `views`); author usernames are fetched separately from **profiles** by
+  `owner_id` (the view has no `author` column). Sort: Newest / Most Viewed / Most Liked. Each card
+  shows 👁 views, ♥ likes (rendered on the card), 💬 comments (counted client-side from
+  deck_comments), and a 📜 icon when the deck's Scroll (deck_data.d) is non-empty.
 - **decks.html** — "My Workshop" (user's own decks).
 - **deckbuilder.html** — deck building interface. Spellbook **and** Collection have a **TYPE**
-  toggle (top of the section) that groups cards into Minions/Magics/Artifacts/Auras; off = flat
-  list. One shared preference across both sections and deck.html via localStorage
-  `grimoire_spell_typegroup` (default off).
+  toggle (top of the section) that groups cards by type into Minion/Magic/Artifact/Aura (+ an
+  "Other" bucket); off = flat list. One shared preference across both sections and deck.html via
+  localStorage `grimoire_spell_typegroup` (default off).
 - **deck.html** — read-only deck view (?d=CODE). Stats panel, 4 views, like button, share.
   View counter (👁) next to the like button; increments once per browser session per deck
   via the `increment_deck_views` RPC — see gotcha below. Comments section under the deck
@@ -94,9 +98,12 @@ then variant where `finish==='Standard' && product==='Booster'`. Example real sl
   search (sections + glossary, highlights matches), clickable TOC sidebar (collapsible on mobile),
   page-number jump (3–37), per-section page badges, \n→paragraphs. The site's "Rulebook" nav link
   (More menu + mobile nav on all pages) points here now, not the old Drive PDF.
-- **videos.html**, **gallery.html** — supporting pages.
+- **videos.html** — "Community Channels" page (hardcoded YouTube channels). Linked in nav.
+- **gallery.html** — redirect stub to archive.html (preserves query/hash, `noindex`); not a real page.
 - **set-inspector.html** — diagnostic, unlinked (can be deleted).
-- **cr-auth.js** — shared auth (window.CR). Bump `?v=N` when edited.
+- **cr-auth.js** — shared auth module exposing `window.CR`. ⚠️ Only **collection.html** and
+  **rulebook.html** actually load it. deckbuilder/deck/archive/decks/profile each inline their own
+  Supabase client + auth (duplicated logic); avatar/tracker/videos use no auth. Bump `?v=N` when edited.
 
 ## Design system / palette
 CSS vars: `--void:#0b0a0f --abyss:#111018 --dusk:#1a1826 --twilight:#252338
@@ -105,9 +112,12 @@ CSS vars: `--void:#0b0a0f --abyss:#111018 --dusk:#1a1826 --twilight:#252338
 Fonts: Cinzel, Cinzel Decorative, Crimson Pro.
 Element colors: air #8cb4d2, earth #a08246, fire #c4614a, water #5a96b0.
 Element images: `wind.png` (=Air), `earth.png`, `fire.png`, `water.png` (site root).
-**Owner dislikes decorative diamond/star glyphs (✦ ⧫ ❖).**
-Brand mark: glowing crescent **moon** — `moon-glow.png` (+ icon-192/512/1024,
-favicon-32, apple-touch-icon all use this moon).
+**Owner dislikes decorative diamond/star glyphs (✦ ⧫ ❖).** These have been stripped from the
+live pages (filter checkboxes are now plain boxes, loaders use a CSS ring spinner, tracker panel
+corners have no star) — don't reintroduce them.
+Brand mark: glowing crescent **moon** (moon artwork). The header logo uses `icon-192.png`; the
+favicon/apple-touch use `favicon-32.png` / `apple-touch-icon.png`. `moon-glow.png` is the source
+moon art (used by the OG Worker); it isn't referenced directly in the page markup.
 
 ## Deck OG link previews (the Worker)
 GitHub Pages can't do per-deck OG tags. Solution: a Cloudflare Worker renders a
@@ -170,7 +180,6 @@ NO blur/glow. Element symbols + moon are loaded as real PNGs from the site.
 
 ## Open / future ideas
 - Swap permanent Discord invite when available.
-- Like counts on archive gallery cards (authors link done, counts not).
 - Port "Invoke" feature to deckbuilder/vault.
 - Trade matching between collections.
 - Rulebook flipbook (pending permission).
