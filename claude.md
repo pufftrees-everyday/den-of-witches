@@ -74,7 +74,8 @@ then variant where `finish==='Standard' && product==='Booster'`. Example real sl
   independent. "Total Collection Value" = Vault value + Trades value (both finishes).
 - **archive.html** — "The Archive" public deck gallery. Loads from the **public_decks_with_likes**
   view (has `like_count`, `author`, `views`). Sort: Newest / Most Viewed / Most Liked. Each card
-  shows 👁 views + ♥ likes.
+  shows 👁 views, ♥ likes, 💬 comments (counted client-side from deck_comments), and a 📜 icon
+  when the deck's Scroll (deck_data.d) is non-empty.
 - **decks.html** — "My Workshop" (user's own decks).
 - **deckbuilder.html** — deck building interface. Spellbook **and** Collection have a **TYPE**
   toggle (top of the section) that groups cards into Minions/Magics/Artifacts/Auras; off = flat

@@ -151,10 +151,12 @@
   .deck-card-avatar-name { font-family: 'Crimson Pro', serif; font-style: italic; font-size: 0.85rem; color: var(--gold); }
   .dc-avatar-link { color: var(--gold); text-decoration: none; border-bottom: 1px dotted rgba(200,169,110,0.5); transition: color 0.15s, border-color 0.15s; }
   .dc-avatar-link:hover { color: var(--shimmer); border-bottom-color: var(--shimmer); }
-  .deck-card-stats { display: flex; gap: 14px; margin: 7px 0 2px; }
+  .deck-card-stats { display: flex; flex-wrap: wrap; gap: 12px 14px; margin: 7px 0 2px; }
   .dc-stat { display: inline-flex; align-items: center; gap: 5px; font-family: 'Cinzel', serif; font-size: 0.78rem; font-weight: 600; color: var(--rune); }
   .dc-stat .dc-eye { opacity: 0.8; }
   .dc-stat .dc-heart { color: var(--ember); }
+  .dc-stat .dc-comment { opacity: 0.85; }
+  .dc-stat.dc-scroll { color: var(--gold); }
   .dc-stat b { color: var(--gold); font-weight: 700; }
   .deck-card-actions { display: flex; gap: 8px; margin-top: auto; padding-top: 10px; }
   .deck-card-actions .btn { flex: 1; text-align: center; }
@@ -524,6 +526,7 @@ function profileMenuOutside(e) {
 // ── GALLERY ──
 let galleryDecks = [];   // cached public decks
 let galleryAuthors = {}; // id → username
+let galleryCommentCounts = {}; // deck_id → comment count
 let archiveSort = 'newest'; // newest | views | likes
 
 function setArchiveSort(v) { archiveSort = v; applyArchiveFilters(); }
@@ -643,6 +646,14 @@ async function loadGallery() {
       const { data: profs } = await supa.from('profiles').select('id, username').in('id', ownerIds);
       (profs || []).forEach(p => galleryAuthors[p.id] = p.username);
     }
+
+    // Tally comment counts per deck (RLS returns only comments on public decks).
+    // Degrades to 0 if the deck_comments table isn't set up yet.
+    galleryCommentCounts = {};
+    try {
+      const { data: cc } = await supa.from('deck_comments').select('deck_id');
+      (cc || []).forEach(r => { galleryCommentCounts[r.deck_id] = (galleryCommentCounts[r.deck_id] || 0) + 1; });
+    } catch (e) { /* table may not exist yet */ }
 
     galleryDecks = decks;
     await loadCardElements();
@@ -819,6 +830,8 @@ function renderDeckCard(d, authors) {
     ? `<div class="deck-card-avatar"><img src="${avImg}" alt="${escapeHtml(av || '')}" loading="lazy" onerror="this.parentElement.style.display='none'"></div>`
     : '';
 
+  const hasScroll = !!(((d.deck_data && d.deck_data.d) || '').trim());
+
   return `<div class="deck-card${avImg ? ' has-avatar' : ''}">
     ${avatarBlock}
     <div class="deck-card-body">
@@ -828,6 +841,8 @@ function renderDeckCard(d, authors) {
       <div class="deck-card-stats">
         <span class="dc-stat" title="Views"><span class="dc-eye">👁</span> <b>${d.views || 0}</b></span>
         <span class="dc-stat" title="Likes"><span class="dc-heart">♥</span> <b>${d.like_count || 0}</b></span>
+        <span class="dc-stat" title="Comments"><span class="dc-comment">💬</span> <b>${galleryCommentCounts[d.id] || 0}</b></span>
+        ${hasScroll ? `<span class="dc-stat dc-scroll" title="This deck has a Scroll (notes from the author)">📜</span>` : ''}
       </div>
       <div class="deck-card-actions">
         <button class="btn btn-primary" onclick="openDeck('${d.short_code}')">View Deck</button>
