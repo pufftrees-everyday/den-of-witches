@@ -1409,6 +1409,9 @@ let lastSharedCode = null; // short code of the most recently shared deck (for p
 let deck = { avatar: {}, atlas: {}, spellbook: {}, collection: {} };
 let deckScroll = ''; // the deck's "Scroll" (free-text description / strategy notes)
 
+// Guest deck storage (localStorage). Mirrors the helper in index.html.
+function getSavedDecks() { try { return JSON.parse(localStorage.getItem('grimoire_decks') || '{}'); } catch { return {}; } }
+
 // Toggle the Scroll editor — converts the left explorer panel into a text editor
 function toggleScrollEditor() {
   const exp = document.querySelector('.explorer');
