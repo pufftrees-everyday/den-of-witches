@@ -101,9 +101,10 @@ then variant where `finish==='Standard' && product==='Booster'`. Example real sl
 - **videos.html** — "Community Channels" page (hardcoded YouTube channels). Linked in nav.
 - **gallery.html** — redirect stub to archive.html (preserves query/hash, `noindex`); not a real page.
 - **set-inspector.html** — diagnostic, unlinked (can be deleted).
-- **cr-auth.js** — shared auth module exposing `window.CR`. ⚠️ Only **collection.html** and
-  **rulebook.html** actually load it. deckbuilder/deck/archive/decks/profile each inline their own
-  Supabase client + auth (duplicated logic); avatar/tracker/videos use no auth. Bump `?v=N` when edited.
+- **cr-auth.js** — shared auth module exposing `window.CR`. Loaded by **index.html**,
+  **collection.html**, **rulebook.html**, and **about.html**. deckbuilder/deck/archive/decks/profile
+  each inline their own Supabase client + auth (duplicated logic); avatar/tracker/videos use no auth.
+  Bump `?v=N` (currently `?v=11`) in those four files when edited.
 
 ## Design system / palette
 CSS vars: `--void:#0b0a0f --abyss:#111018 --dusk:#1a1826 --twilight:#252338
