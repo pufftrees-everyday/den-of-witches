@@ -470,15 +470,26 @@
     flex-shrink: 0;
   }
 
-  .deck-name-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .deck-name-row { display: flex; align-items: flex-end; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+  .deck-name-field { display: flex; flex-direction: column; gap: 3px; flex: 1 1 240px; min-width: 200px; }
+  .deck-name-label { font-family: 'Cinzel', serif; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--rune); }
 
   #deck-name-input {
     background: transparent; border: none; border-bottom: 1px solid var(--border);
     color: var(--gold); font-family: 'Cinzel', serif; font-size: 1.1rem; font-weight: 600;
-    padding: 3px 0 5px; letter-spacing: 0.04em; flex: 1; outline: none;
+    padding: 3px 0 5px; letter-spacing: 0.04em; width: 100%; outline: none;
   }
   #deck-name-input:focus { border-bottom-color: var(--gold); }
   #deck-name-input::placeholder { color:var(--rune); font-style: italic; font-family: 'Crimson Pro', serif; font-size: 0.95rem; font-weight: 400; letter-spacing: 0; }
+  /* Unnamed deck → draw attention so people name it (esp. on mobile) */
+  #deck-name-input.is-empty {
+    border: 1px dashed var(--gold); border-radius: 6px;
+    background: rgba(200,169,110,0.07); padding: 8px 12px;
+    animation: deckNameNudge 2.2s ease-in-out infinite;
+  }
+  #deck-name-input.is-empty::placeholder { color: var(--gold); font-style: normal; opacity: 0.95; }
+  .deck-name-field:has(#deck-name-input.is-empty) .deck-name-label { color: var(--gold); }
+  @keyframes deckNameNudge { 0%,100% { box-shadow: 0 0 0 0 rgba(200,169,110,0); } 50% { box-shadow: 0 0 0 3px rgba(200,169,110,0.14); } }
 
   .deck-actions { display: flex; gap: 6px; flex-wrap: wrap; }
 
@@ -892,6 +903,13 @@
     }
     .divider { display: none; }
     .deck-panel { order: 1; }
+    /* Make the deck-name field obvious and full-width above the action buttons */
+    .deck-name-field { flex: 1 1 100%; }
+    #deck-name-input {
+      border: 1px solid var(--border-strong); border-radius: 6px;
+      background: #0b0a0f; padding: 11px 13px; font-size: 1.05rem;
+    }
+    #deck-name-input.is-empty { border-style: dashed; border-color: var(--gold); }
     .explorer {
       order: 2;
       border-right: none;
@@ -1216,7 +1234,10 @@
     <!-- Editable header (shown when building your own deck) -->
     <div class="deck-header" id="edit-header">
       <div class="deck-name-row">
-        <input type="text" id="deck-name-input" placeholder="Name your deck…">
+        <div class="deck-name-field">
+          <label class="deck-name-label" for="deck-name-input">✎ Deck Name</label>
+          <input type="text" id="deck-name-input" placeholder="Tap to name your deck…" oninput="refreshDeckNameState()">
+        </div>
         <div class="deck-actions">
           <button class="btn btn-ghost" onclick="saveDeck()">Save</button>
           <button class="btn btn-primary" onclick="shareDeck()">Share</button>
@@ -1411,6 +1432,12 @@ let deckScroll = ''; // the deck's "Scroll" (free-text description / strategy no
 
 // Guest deck storage (localStorage). Mirrors the helper in index.html.
 function getSavedDecks() { try { return JSON.parse(localStorage.getItem('grimoire_decks') || '{}'); } catch { return {}; } }
+
+// Highlight the deck-name field when it's blank so people know to name their deck.
+function refreshDeckNameState() {
+  const el = document.getElementById('deck-name-input');
+  if (el) el.classList.toggle('is-empty', el.value.trim() === '');
+}
 
 // Toggle the Scroll editor — converts the left explorer panel into a text editor
 function toggleScrollEditor() {
@@ -2737,6 +2764,7 @@ function loadDeck(id) {
   }
   activeDeckId = id;
   document.getElementById('deck-name-input').value = name;
+  refreshDeckNameState();
   renderDeck();
   renderCardGrid();
   toast(`"${name}" loaded`);
@@ -3216,6 +3244,7 @@ function applyDeckPayload(payload) {
   activeDeckId = null;
   activeDeckPublic = false;
   document.getElementById('deck-name-input').value = payload.n || 'Shared Deck';
+  refreshDeckNameState();
   renderDeck();
   renderCardGrid();
   renderVisibilityBar();
@@ -3620,6 +3649,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.addEventListener('keydown', e => { if (e.key==='Escape') { closeModal({}); closeImport({}); closeAvatarPicker(); closeDeckStats(); closeExport({}); } });
   setupDivider();
   syncDeckViewToggle();
+  refreshDeckNameState();
   if (showThresholds) document.body.classList.add('show-thresholds');
   document.querySelector('.card-list').addEventListener('scroll', function() {
     if (visibleCount >= currentCards.length) return;
