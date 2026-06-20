@@ -290,6 +290,9 @@
   /* CARD / LARGE grid view */
   .deck-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
   .deck-grid.large { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px; }
+  /* Bigger Spellbook card images (normal + large views) in the deck viewer */
+  #section-Spellbook .deck-grid { grid-template-columns: repeat(auto-fill, minmax(195px, 1fr)); }
+  #section-Spellbook .deck-grid.large { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
   .deck-card-cell { position: relative; border-radius: 9px; overflow: hidden; border: 1px solid var(--border); background: var(--dusk); cursor: pointer; transition: transform 0.15s, border-color 0.15s; }
   .deck-card-cell:hover { transform: translateY(-3px); border-color: var(--arcane); z-index: 2; }
   .cell-img-wrap { position: relative; width: 100%; aspect-ratio: 5/7; overflow: hidden; }
@@ -376,6 +379,8 @@
     .deck-hero-name { font-size: 1.5rem; }
     .deck-grid { grid-template-columns: repeat(auto-fill, minmax(110px,1fr)); gap: 9px; }
     .deck-grid.large { grid-template-columns: repeat(auto-fill, minmax(150px,1fr)); }
+    #section-Spellbook .deck-grid { grid-template-columns: repeat(auto-fill, minmax(140px,1fr)); }
+    #section-Spellbook .deck-grid.large { grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); }
     /* keep sites spanning 2 on mobile too (they read better large), but never overflow */
     .deck-card-cell.is-site { grid-column: span 2; }
   }
