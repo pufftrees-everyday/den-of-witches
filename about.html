@@ -164,6 +164,11 @@
   .section .lede { max-width: 64ch; }
   .section p + p { margin-top: 0.9em; }
 
+  .glossary { list-style: none; margin: 22px 0 18px; padding: 0; max-width: 64ch; }
+  .glossary li { padding: 11px 2px; border-top: 1px solid var(--border); font-size: 1.05rem; color: var(--shimmer); }
+  .glossary li:first-child { border-top: none; }
+  .glossary .term { font-family: 'Cinzel', serif; font-weight: 600; letter-spacing: 0.03em; color: var(--gold); margin-right: 12px; }
+
   .features { margin-top: 24px; display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
   .feature { display: block; background: var(--abyss); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; transition: border-color .18s ease, transform .18s ease; }
   .feature:hover { border-color: var(--border-strong); transform: translateY(-2px); }
@@ -250,8 +255,14 @@
   <main>
     <section class="section">
       <h2>What this is</h2>
-      <p class="lede">Cursed Realm started as a simple wish: one place to look up a card, sketch out a deck, and check what's in your collection without juggling five tabs. It has grown into a full companion for Sorcery players — fan-made, free, and built in the open.</p>
-      <p>Everything here runs on the official card data, refreshed as new sets arrive. No account is needed to browse; sign in only when you want to save decks or track what you own.</p>
+      <p class="lede"><em>Sorcery: Contested Realm</em> is all about fun and imagination, so a few features here are named in the same spirit. If a name doesn't sound familiar, here's the key:</p>
+      <ul class="glossary">
+        <li><span class="term">Workshop</span> the deck builder</li>
+        <li><span class="term">Archive</span> where public decks are kept</li>
+        <li><span class="term">Scrolls</span> deck primers</li>
+        <li><span class="term">Vault</span> your collection</li>
+      </ul>
+      <p>If you have any questions, let me know!</p>
     </section>
 
     <section class="section">
@@ -288,7 +299,7 @@
 
     <section class="section">
       <h2>Who's behind it</h2>
-      <p class="lede">Cursed Realm is built and maintained by <strong>Pufftrees</strong>, a Sorcery player who got tired of spreadsheets. It's a labor of love rather than a business, and suggestions and bug reports are always welcome.</p>
+      <p class="lede">Cursed Realm is built and maintained by <strong>Pufftrees</strong>, a veteran TCG nerd fueled by their passion for Sorcery.</p>
     </section>
 
     <section class="section">
