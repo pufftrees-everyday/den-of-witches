@@ -1,0 +1,1067 @@
+{
+  "title": "Sorcery: Contested Realm — Rulebook",
+  "released": "December 2025",
+  "pageCount": 38,
+  "toc": [
+    {
+      "group": "Getting Started",
+      "items": [
+        "Introduction",
+        "Using this Rulebook",
+        "Gameplay",
+        "How to Win",
+        "Decks"
+      ]
+    },
+    {
+      "group": "The Four Elements",
+      "items": [
+        "The Four Elements"
+      ]
+    },
+    {
+      "group": "Cards",
+      "items": [
+        "Cards",
+        "The Golden Rule",
+        "Card Types",
+        "Avatars",
+        "Sites",
+        "Spells",
+        "Minions",
+        "Artifacts",
+        "Auras",
+        "Magics"
+      ]
+    },
+    {
+      "group": "Game Zones",
+      "items": [
+        "Game Zones",
+        "The Realm",
+        "Atlas and Spellbook Decks",
+        "Cemetery",
+        "Hand"
+      ]
+    },
+    {
+      "group": "Setup & Winning",
+      "items": [
+        "Setup",
+        "Winning the Game",
+        "Death's Door & Death Blow"
+      ]
+    },
+    {
+      "group": "Navigating the Realm",
+      "items": [
+        "Navigating the Realm",
+        "Areas of the Realm",
+        "The Void",
+        "Water and Land Sites",
+        "Groups of Water & Land",
+        "Surface & Subsurface of Sites",
+        "Regions",
+        "Locating Areas of the Realm",
+        "Location",
+        "Here and There",
+        "Targeting",
+        "Adjacent and Nearby",
+        "Adjacent and Nearby Locations",
+        "Steps"
+      ]
+    },
+    {
+      "group": "Turns",
+      "items": [
+        "Turn Summary",
+        "Start Phase",
+        "Main Phase",
+        "End Phase"
+      ]
+    },
+    {
+      "group": "Casting Spells",
+      "items": [
+        "Casting Spells",
+        "Mana",
+        "Elemental Threshold",
+        "Casting Minions",
+        "Casting Artifacts",
+        "Casting Auras",
+        "Casting Magics"
+      ]
+    },
+    {
+      "group": "Abilities & Combat",
+      "items": [
+        "Activating Abilities",
+        "Tapping a Card",
+        "Playing Sites",
+        "Basic Abilities",
+        "Move and Attack",
+        "Attacking the Enemy",
+        "Damage to Minions",
+        "Damage to Avatars",
+        "Defend",
+        "Intercept",
+        "Pick Up or Drop Artifacts"
+      ]
+    },
+    {
+      "group": "Deckbuilding",
+      "items": [
+        "Building Your Own Decks"
+      ]
+    },
+    {
+      "group": "Advanced Concepts",
+      "items": [
+        "Advanced Concepts: Special Abilities",
+        "Advanced Movement Concepts",
+        "Damage Grids",
+        "Occupying Multiple Sites",
+        "Ownership and Control",
+        "Projectiles",
+        "Static/Ongoing Effects",
+        "The Storyline"
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "id": "introduction",
+      "title": "Introduction",
+      "page": 3,
+      "text": "In the unfathomable depths of the infinite void, great beings vie for control of fantastical realms, where powerful magic imbues every living thing, and even the land itself. Take on the role of a powerful Avatar in one of these realms, and tap into the arcane energies of the four elements—Air, Earth, Fire, and Water—to summon mythical beasts, conjure ancient artifacts, and cast an array of powerful spells beyond all imagining. Will you claim dominion over this contested realm?"
+    },
+    {
+      "id": "using-this-rulebook",
+      "title": "Using this Rulebook",
+      "page": 3,
+      "text": "The goal of this rulebook is to get you up to speed and ready to play your first games of Sorcery: Contested Realm. For new players, carry on from here, have someone guide you through a game, or visit www.sorcerytcg.com/how-to-play where you'll find tutorial videos and more. For experienced players, this rulebook will handle most of your queries, but you can also explore the Codex (curiosa.io/codex) for even more detail.\n\nThe game uses terms and keywords that are important to know. When these come up, they have been bolded to help you identify important words and concepts, and to tell you that you can find more information about that word in the glossary, starting on page 32."
+    },
+    {
+      "id": "gameplay",
+      "title": "Gameplay",
+      "page": 3,
+      "text": "In a game of Sorcery: Contested Realm, you interact with the realm as a powerful Avatar. You will have a spellbook, a deck of cards that will allow you to cast spells that summon minions, conjure artifacts, and more. You will also have access to your atlas, a deck of cards that allow you to add wondrous sites to the play area that both expand your domain and empower you to cast even more devastating spells."
+    },
+    {
+      "id": "how-to-win",
+      "title": "How to Win",
+      "page": 3,
+      "text": "Avatars are summoned to a contested realm with one goal: to vanquish their opponents and claim sole dominion. In order to win, you must defeat any opposing Avatar by first reducing their life total to zero, placing them at death's door, and then delivering a final death blow to the weakened Avatar. This severs the enemy's connection to the realm and grants you victory!"
+    },
+    {
+      "id": "decks",
+      "title": "Decks",
+      "page": 3,
+      "text": "For your first few games, you might want to use preconstructed decks, which will get you straight into the action. Or you can craft your own decks, balancing and tuning their powers to fit your play style (see page 26). The world of Sorcery grants you endless possibilities!"
+    },
+    {
+      "id": "the-four-elements",
+      "title": "The Four Elements",
+      "page": 4,
+      "text": "Sorcery: Contested Realm is built around the four classical elements: Air, Earth, Fire, and Water. Most spells in a spellbook are tied to these elements, giving Avatars the power to manipulate the magic of the realms. Each element has strengths and weaknesses. Certain abilities can be common in one element yet very rare in another.\n\nAir is the element of Knowledge and Power, dabbling in forces beyond mortal control to acquire the magical means to respond to any battlefield situation. An attunement with air grants you both mobility and tactical options thanks to its ability to teleport units around the realm and to increase its available spells.\n\nEarth is the element of Enduring Strength, defined by its focus on fielding and enhancing martial forces throughout the realm. An attunement with earth grants you the ability to affect your atlas and minions that can dominate the battle through teamwork and sheer fighting power.\n\nFire is the element of Desire and Destruction, willing to do whatever it takes to secure victory in the realm. An attunement with fire grants you an array of explosive spells and abilities that can create bursts of speed or burn friend and foe alike in great gouts of flame.\n\nWater is the element of Charm and Trickery, ready to adapt and disrupt the strategies of the enemy as it manipulates all. An attunement with water grants you a powerful homefield advantage that will slowly engulf the realm and the ability to position the enemy right where you want them."
+    },
+    {
+      "id": "cards",
+      "title": "Cards",
+      "page": 5,
+      "text": "In Sorcery: Contested Realm, your cards are what allow you to influence the realm and do battle with your opponent. Some cards will bend or even break the rules in this rulebook; in these cases the card's text takes precedence. Before we dig into how cards function in detail, it is important to keep one key rule in mind at all times."
+    },
+    {
+      "id": "the-golden-rule",
+      "title": "The Golden Rule",
+      "page": 5,
+      "text": "Some text is intentionally informal or necessarily compact. Use common sense and be cool."
+    },
+    {
+      "id": "card-types",
+      "title": "Card Types",
+      "page": 5,
+      "text": "There are three main categories of cards: Avatars, sites, and spells. Spells further break down into four card types: minion, artifact, aura, and magic."
+    },
+    {
+      "id": "avatars",
+      "title": "Avatars",
+      "page": 5,
+      "text": "Your Avatar represents you and your connection to the realm. Though but a pale echo of your true might, everything you do within the realm is done through your Avatar. Avatars have some key characteristics:\n• Each Avatar has a name.\n• Avatars have a starting life, which will rise and fall during the game and tells you how much the Avatar can endure before being placed at death's door. This is also the Avatar's maximum life, which cannot be exceeded.\n• Avatars also have an attack power rating that tells you how hard they hit in combat.\n• Avatars have a game text box that describes their special abilities.\nAll Avatars are Spellcasters, which means they can cast spells, most often from your hand. Finally, Avatars can never enter a region other than the surface and ignore many negative effects.\n\nUnits: A unit is a collective term that includes both Avatars and minions. Some cards might specify one of these types of units, but most affect units in general."
+    },
+    {
+      "id": "sites",
+      "title": "Sites",
+      "page": 6,
+      "text": "A site is a locus of power within the realm that you may explore and exploit. Sites are usually played by activating your Avatar's ability, though they may enter the realm in other ways. You and your opponent can also attack each other's sites to cause your Avatars to lose life, so make sure to defend yours.\nSites have some key characteristics:\n• Sites have a name.\n• Sites have a typeline that describes key things about that card, such as rarity.\n• Most sites have elemental symbols that increase your elemental affinity, which you will harness to use spells and abilities (see page 18).\n• Sites have a game text box that describes their special abilities.\n• Sites will provide you with mana, an important resource that you will need to play cards and use abilities during your turn (see page 17).\n• Sites have two levels: surface and subsurface (see page 13).\n\nRubble: When a site is destroyed it is placed in its owner's cemetery as normal, but rather than creating a new void, the site is instead replaced with rubble. Rubble is a neutral land site that no player controls, and provides no mana or threshold."
+    },
+    {
+      "id": "spells",
+      "title": "Spells",
+      "page": 7,
+      "text": "Spells represent all of the magical might you are able to bring to bear on this realm. These include minions to help you defend your lands and attack the enemy, powerful artifacts that will help you tip the balance of power, magics of channeled energy that will overpower foes, and auras of lasting elemental magic to impose your will on areas of the realm."
+    },
+    {
+      "id": "minions",
+      "title": "Minions",
+      "page": 7,
+      "text": "Minions are your greatest allies, assisting you with myriad unique abilities in offense and defense. Minions have a few key characteristics on their card:\n• Each minion has a name.\n• Each minion has a mana cost that you must pay in order to play it.\n• Minions have an elemental threshold that your elemental affinity must meet in order to be played.\n• Minions have a power rating that reflects how hard they hit in combat. It also describes how much damage they can take before dying. If the minion receives damage equal to or greater than that value, it dies.\n• Minions have a type line that describes key things about that card, such as subtypes and rarity.\n• Minions have a game text box that describes their special abilities.\n\nToken Minions: Tokens are small-sized cards that work more or less the same as regular cards while in the realm. The major difference between cards and tokens is that tokens are never part of a player's deck, and they can never formally exist in any zone except within the realm. If a token would be placed anywhere else, it is instead removed from the game entirely."
+    },
+    {
+      "id": "artifacts",
+      "title": "Artifacts",
+      "page": 8,
+      "text": "Artifacts are various relics, edifices, tools, gear, gadgets, devices, and baubles, often charged with lasting enchantments by wizards of old. Artifacts have some key characteristics on their card:\n• Each artifact has a name.\n• Each artifact has a mana cost that you must pay to play it.\n• Artifacts have a type line that describes key things about that card, such as subtypes and rarity.\n• Artifacts have a game text box that describes their special abilities.\nNote: Unlike other spells, artifacts do not typically require an elemental threshold to play.\n\nArtifact Subtypes: Artifacts have a variety of subtypes, including armor, weapons, relics, devices, documents, automatons, or monuments. While most artifacts are standard objects that can be carried into battle, others such as automatons and monuments have further characteristics and restrictions.\n\nAutomatons are artifacts that are minions. As such, they have a power rating, have the same basic abilities as regular minions, and cannot be carried like regular artifacts.\n\nMonuments are an artifact subtype that cannot be carried."
+    },
+    {
+      "id": "auras",
+      "title": "Auras",
+      "page": 9,
+      "text": "Auras are mostly incorporeal, but lasting, manifestations of elemental power. They usually impact a large area within the realm, conferring boons or conditions within their reach. Auras have some key characteristics on their card:\n• Each aura has a name.\n• Each aura has a mana cost that you must pay in order to play it.\n• Auras also have an elemental threshold that your elemental affinity must meet in order to be played.\n• Auras have a type line that describes key things about that card, such as rarity.\n• Auras have a game text box that describes their special abilities."
+    },
+    {
+      "id": "magics",
+      "title": "Magics",
+      "page": 9,
+      "text": "Magics are transient spells that have immediate impact and then dissipate as soon as they resolve. Magics have some key characteristics on their card:\n• Each magic has a name.\n• Each magic has a mana cost that you must pay in order to play it.\n• Magics also have an elemental threshold that your elemental affinity must meet in order to be played.\n• Magics have a type line that describes key things about that card, such as rarity.\n• Magics have a game text box that describes their special abilities."
+    },
+    {
+      "id": "game-zones",
+      "title": "Game Zones",
+      "page": 10,
+      "text": "In Sorcery: Contested Realm, players share the main and biggest part of the play area—the realm. However, each player has their own decks, cemetery, and hand. These are the game's main zones."
+    },
+    {
+      "id": "the-realm",
+      "title": "The Realm",
+      "page": 10,
+      "text": "The realm is a 5x4 square grid where most cards are played. These twenty squares begin as pieces of the void that you and your opponent may fill in with sites as you expand your domains."
+    },
+    {
+      "id": "atlas-and-spellbook-decks",
+      "title": "Atlas and Spellbook Decks",
+      "page": 10,
+      "text": "Each player has two decks of cards—an atlas of at least 30 site cards, containing maps to domains waiting to be explored, and a spellbook of at least 60 spell cards, filled with all of a player's accumulated magical knowledge. Players will draw cards from these decks over the course of a game.\n• The exact order of the cards in these decks is unpredictable, thus whenever you search your atlas or spellbook for a card, you must shuffle it afterward.\n• Some effects allow you to place or reorder known cards on the bottoms or tops of decks. After doing so, you do not shuffle it."
+    },
+    {
+      "id": "cemetery",
+      "title": "Cemetery",
+      "page": 10,
+      "text": "Each player has a cemetery which represents a record of spent magic, dead minions, and broken artifacts. Whenever any of your cards are discarded, destroyed, resolved, or otherwise expired, place them face-up in your cemetery. Players may freely examine the contents of any cemetery at any time and the order of the cards in a cemetery is irrelevant."
+    },
+    {
+      "id": "hand",
+      "title": "Hand",
+      "page": 10,
+      "text": "Cards drawn from your spellbook or atlas decks are kept in your hand. Your hand should remain hidden from your opponents, however the number of atlas and spellbook cards you hold may be observed and asked, due to the card backs being distinguishable. There is no maximum hand size and the order of the cards in your hand is irrelevant."
+    },
+    {
+      "id": "setup",
+      "title": "Setup",
+      "page": 11,
+      "text": "Follow these steps to set up a two-player game of Sorcery.\nStep 1: Set Up the Realm — Clear some space in the middle of the table for the realm.\nStep 2: Place Avatars — Players place their Avatars on the square in the middle of their bottom row.\nStep 3: Prepare Decks — Players shuffle and place their atlas and spellbook decks nearby, leaving some space for their cemeteries.\nStep 4: Determine First Player — Players may either decide who has the first turn, or otherwise randomly choose who goes first.\nStep 5: Draw Starting Hand — Each player draws three cards from their atlas and three cards from their spellbook. If you're not satisfied with your initial hand, you may take one mulligan. To take a mulligan, return up to three cards from your hand to the bottom of their respective decks in any order, then redraw the same number of cards you returned from each deck."
+    },
+    {
+      "id": "winning-the-game",
+      "title": "Winning the Game",
+      "page": 11,
+      "text": "The game ends when a player has vanquished all opposing Avatars, securing their hold on the realm! In order to do this, you'll need to get them to death's door, then follow up with a death blow. Alternatively, if either player attempts to draw a card from an empty deck, they immediately lose."
+    },
+    {
+      "id": "death-s-door-death-blow",
+      "title": "Death's Door & Death Blow",
+      "page": 11,
+      "text": "As an Avatar loses life, from either taking damage directly or their sites being attacked, its connection with the realm weakens. When an Avatar's life is reduced to 0, they are now at death's door and can no longer gain life. At that moment, the wounded Avatar becomes immune to damage for the rest of that turn. After that brief and desperate window, any damage dealt to the Avatar is a death blow, finally severing their connection to the realm and signaling their defeat."
+    },
+    {
+      "id": "navigating-the-realm",
+      "title": "Navigating the Realm",
+      "page": 12,
+      "text": "In Sorcery: Contested Realm battles are often won or lost in the way you position and maneuver your units. The following sections cover how to navigate both the square grid and the layers of the realm."
+    },
+    {
+      "id": "areas-of-the-realm",
+      "title": "Areas of the Realm",
+      "page": 12,
+      "text": "The realm is split into twenty squares. These squares begin as pieces of the void that you and your opponent may fill in with sites as you expand your domains."
+    },
+    {
+      "id": "the-void",
+      "title": "The Void",
+      "page": 12,
+      "text": "The void is a region of incorporeal nothingness on top of which you will build your physical domain. Any minion that somehow finds its way into the void (whether in whole or in part) is immediately banished (removed from the game) unless it has an ability that specifically allows it to exist there (such as Voidwalk)."
+    },
+    {
+      "id": "water-and-land-sites",
+      "title": "Water and Land Sites",
+      "page": 12,
+      "text": "Sites can be separated into two main types. Water sites are identified by the water threshold icon. All other sites are considered land sites, including sites with no threshold icons and rubble."
+    },
+    {
+      "id": "groups-of-water-land",
+      "title": "Groups of Water & Land",
+      "page": 12,
+      "text": "As sites are played, they will begin to form bodies of water and spans of land. A contiguous cluster of adjacent water sites is known as a body of water. Similarly, a contiguous cluster of adjacent land sites forms a span of land. It is possible to have more than one of each, or for the realm to be completely land or water. Only adjacent sites are considered and not those placed diagonally."
+    },
+    {
+      "id": "surface-subsurface-of-sites",
+      "title": "Surface & Subsurface of Sites",
+      "page": 13,
+      "text": "Each site is made up of two levels, above and below the card. A site's upper level is generally referred to as the surface and its lower one is the subsurface.\n\nThe Surface: The upper level of all sites form a region known as the surface. This is where units will typically move and wage war on the enemy. All units above a site are considered to be on the surface.\n\nThe Subsurface: The subsurface is divided into two regions, depending on what type of site it is. The lower level of a land site is part of the underground region. Similarly, the lower level of a water site is part of the underwater region. Existing in the subsurface is extremely hazardous and minions that somehow find their way there immediately die, unless otherwise allowed to do so with special abilities.\n\nAtop and Under: When cards enter a site's surface level, place it atop the site to show that it is on the surface, or slide it under the site to show that it occupies the subsurface. If a card refers to something atop a site, it applies to something on the surface of the site, but not anything below it. Similarly, if a card refers to something under a site, it applies to something in the subsurface of the site, but not anything above it."
+    },
+    {
+      "id": "regions",
+      "title": "Regions",
+      "page": 13,
+      "text": "Altogether, there are four regions in the game: void, surface, underground, and underwater.\nNote: Most abilities from cards in the realm affect things within the region where the card is located. Similarly, in the case of spells, their effects typically apply to the same region as its Spellcaster. However, some cards can affect specific areas, regions, or even the whole realm, regardless of the card's own region."
+    },
+    {
+      "id": "locating-areas-of-the-realm",
+      "title": "Locating Areas of the Realm",
+      "page": 14,
+      "text": "Perhaps the single most important key concept to understand is how to identify areas in the realm relative to your card's position."
+    },
+    {
+      "id": "location",
+      "title": "Location",
+      "page": 14,
+      "text": "A location is defined as one region in one square."
+    },
+    {
+      "id": "here-and-there",
+      "title": "Here and There",
+      "page": 14,
+      "text": "\"Here\" and \"There\" are used to contextually refer to the location(s) that a card occupies. For most cards, such as avatars, minions, and artifacts, that means one location. For most auras, it means the 2x2 area they occupy. For sites, it means two locations, their surface and subsurface."
+    },
+    {
+      "id": "targeting",
+      "title": "Targeting",
+      "page": 14,
+      "text": "Sometimes you will need to target things in the realm. Spells and abilities can only target things within the Spellcaster's or referencing card's same region."
+    },
+    {
+      "id": "adjacent-and-nearby",
+      "title": "Adjacent and Nearby",
+      "page": 14,
+      "text": "Sometimes a card will need to identify something in an adjacent or nearby square.\n• Adjacent: Refers to the card's own square, and the squares that it shares a border with. (Five squares are adjacent to a card.)\n• Nearby: Refers to the card's own square, and all squares that surround it, including those diagonally. (Nine squares are nearby a card.)"
+    },
+    {
+      "id": "adjacent-and-nearby-locations",
+      "title": "Adjacent and Nearby Locations",
+      "page": 15,
+      "text": "Only locations that are in the same region as the referencing card (or its Spellcaster) are considered adjacent or nearby locations. A unit in a different region (for example, burrowed or submerged) is not adjacent or nearby to units on the surface, even if they share or border a square."
+    },
+    {
+      "id": "steps",
+      "title": "Steps",
+      "page": 15,
+      "text": "A step is the minimum unit of distance between two adjacent locations. Some card abilities will have an effect that will happen a step away or even several steps away from where the card is or its origin point. In these cases, it will say that it happens X steps away."
+    },
+    {
+      "id": "turn-summary",
+      "title": "Turn Summary",
+      "page": 16,
+      "text": "Sorcery: Contested Realm is played over a series of turns. Players take their turns, one at a time, following a sequence of phases: the Start Phase, the Main Phase, and the End Phase."
+    },
+    {
+      "id": "start-phase",
+      "title": "Start Phase",
+      "page": 16,
+      "text": "The start phase is the first phase you complete during your turn. All abilities that last \"Until next turn\" now end. Then:\nStep 1. All of your cards that are tapped now untap.\nStep 2. All of your sites now provide their mana for this turn.\nStep 3. Trigger abilities that happen at the start of the turn.\nStep 4. Finally, draw a card from either your spellbook or atlas.\nNote: If you are the first player to take a turn in the game, skip Step 4 of the Start Phase."
+    },
+    {
+      "id": "main-phase",
+      "title": "Main Phase",
+      "page": 16,
+      "text": "The main phase is where most of Sorcery's actions and events take place. During this phase, your units can be ordered to do two types of actions. They can:\n• Cast a spell from your hand if they are a spellcaster (see page 17), or\n• Activate one of their abilities (see page 20).\nYou may have your units do these as many times as you have resources to do so, and in any order you like.\nEstablishing Your Domain: During your first Main Phase, your Avatar needs to establish their domain within the realm. To do this, you must use your Avatar's ability to play a site to your Avatar's square."
+    },
+    {
+      "id": "end-phase",
+      "title": "End Phase",
+      "page": 16,
+      "text": "The end phase is the last phase you complete during your turn.\nStep 1. Trigger abilities that happen at the end of the turn.\nStep 2. Players remove all damage from their minions in the realm.\nStep 3. Effects that last for your turn now end.\nStep 4. Your turn ends.\nNote: Avatars do not heal automatically at the end of the turn in the same way as damage is removed from minions, however they can heal using spells and other card effects."
+    },
+    {
+      "id": "casting-spells",
+      "title": "Casting Spells",
+      "page": 17,
+      "text": "Spells are the main way Avatars and other Spellcasters influence the realm. Any card in your hand that is not a site is a spell. You cast these spells to summon minions, conjure artifacts or auras, and invoke magics. To cast a spell from your hand, you need to identify a Spellcaster under your control to cast it. The Spellcaster and its location are by whom and where the spell is being cast. Once you have identified the Spellcaster, spells often have two requirements to play: a mana cost and an elemental threshold."
+    },
+    {
+      "id": "mana",
+      "title": "Mana",
+      "page": 17,
+      "text": "All of your Spellcasters use mana to cast their spells and some abilities may also draw from this power. You can only gain mana during your turn and lose any unspent mana at the end of your turn.\n\nGaining Mana: At the start of your turn, all of your sites provide one mana each, forming a mana pool for you to draw from. When one of your sites enters the realm, it immediately provides one mana. If you lose a site, the mana it provided this turn is not removed from your mana pool. If you gain control of an enemy's site during your turn, it does not provide you with mana until your next turn.\n\nUsing Mana: Spells cost mana to cast, identified by the card's mana cost in the upper left hand corner. To cast that spell, you must be able to pay the cost from your available mana. You cannot pay a mana cost if the amount required exceeds the mana available."
+    },
+    {
+      "id": "elemental-threshold",
+      "title": "Elemental Threshold",
+      "page": 18,
+      "text": "In addition to mana, you will often need to meet an elemental threshold to cast most spells or use some abilities. Spells and some abilities will have one or more elemental symbols (fire, air, water, earth) next to the mana cost on spells, or to the left of abilities in text boxes. To play that card or use that ability, you must have at least as many matching symbols on the sites you control, plus any others granted by spells or abilities.\nElemental threshold is not spent like mana. It is simply a minimum affinity you must have for the specified elements to use some cards. All artifacts and most abilities have no threshold at all.\n\nMultiple Element Threshold: Some spells might require affinity with different elements. You must be able to meet all of a spell's required threshold in order to cast it. Cards that have different element symbols count as a spell of each of those affinities."
+    },
+    {
+      "id": "casting-minions",
+      "title": "Casting Minions",
+      "page": 19,
+      "text": "When a minion spell has been cast, it summons the minion under your control atop any of your sites, and they remain in the realm until something causes them to leave play.\nNote: There is no limit to the number of minions that may occupy the same site.\n\nSummoning Sickness: A minion that entered the realm this turn, whether from being cast or from another card's effect, suffers from summoning sickness until the end of turn. A minion suffering from summoning sickness cannot tap, or be tapped, to pay for costs associated with any ability. This includes abilities granted by spells and artifacts.\nNote: When you summon a minion on your turn, it enters play untapped, so you may use it to defend on your opponent's turn."
+    },
+    {
+      "id": "casting-artifacts",
+      "title": "Casting Artifacts",
+      "page": 19,
+      "text": "When an artifact spell is cast, it is conjured into the realm atop any site you control or directly into the waiting hands of one of your units. A unit can carry any number of artifacts."
+    },
+    {
+      "id": "casting-auras",
+      "title": "Casting Auras",
+      "page": 19,
+      "text": "When an aura spell is cast, it conjures the aura at the intersection of four squares, though some specify the border between two, or even just a single square. Auras are said to occupy the surface of any sites at those squares, as well as any void, affecting them in some way."
+    },
+    {
+      "id": "casting-magics",
+      "title": "Casting Magics",
+      "page": 19,
+      "text": "Magics are the only cards in the game that do not enter play when they are cast, and do not have a lasting presence in the realm. A magic spell simply does what it says it does, and then goes to its owner's cemetery."
+    },
+    {
+      "id": "activating-abilities",
+      "title": "Activating Abilities",
+      "page": 20,
+      "text": "Avatars, minions, artifacts, and auras may all have abilities that can be activated by stating your intention to do so, making any relevant choices (like picking targets), and paying any associated costs. Unlike spells, which use mana costs most often, abilities will use a variety of costs including tapping, paying life, sacrificing a minion, or discarding cards. Only the controller of a card can use its activated abilities, and only during the main phase of their own turn when nothing else is already happening."
+    },
+    {
+      "id": "tapping-a-card",
+      "title": "Tapping a Card",
+      "page": 20,
+      "text": "Cards in the realm can be tapped as a resource, spending their energy as a cost to activate various abilities. Tap abilities are usually written as \"Tap → Ability text.\" A player may also need to tap a card as a cost related to other spells or abilities on other cards.\nTo tap a card, turn it 90° to the right from its upright position. A card turned this way is \"tapped,\" while an upright card is \"untapped.\" To untap, turn it 90° to the left back into its upright position.\nNote: Players can only tap untapped cards and untap tapped cards. Minions you have summoned this turn have Summoning Sickness and cannot be tapped to pay for the costs of abilities."
+    },
+    {
+      "id": "playing-sites",
+      "title": "Playing Sites",
+      "page": 20,
+      "text": "Sites come into play through your Avatar's activated ability: \"Tap → Play or draw a site.\" Other cards can also bring them into play. When you play a site, it must be placed:\n• on void or rubble, and\n• adjacent to another site that you control, or as close as possible to your Avatar if you control no sites.\nThere can only be one site per grid square, which means sites are generally placed on an adjacent void, permanently extending the physical boundaries of your domain. Sites can also be played on rubble, replacing it entirely."
+    },
+    {
+      "id": "basic-abilities",
+      "title": "Basic Abilities",
+      "page": 21,
+      "text": "All units (Avatars and minions) have access to five basic abilities that are not printed on their card. Three are activated abilities: Move and Attack (the one you'll use most often), Pick Up, and Drop. The remaining two are triggered abilities that units can perform during the opponent's turn: Defend and Intercept."
+    },
+    {
+      "id": "move-and-attack",
+      "title": "Move and Attack",
+      "page": 21,
+      "text": "Every unit can tap to activate the Move and Attack ability, which allows it to optionally move, then optionally attack something at its location. When using this ability, declare the intended movement path and resolve it. After resolving all the movement, then decide if you attack at that location.\nMoving Your Units: When moving a unit, its journey is broken down into individual steps. By default, units can move one step. However, some abilities allow units to take additional steps (such as Movement +X), take steps diagonally, or move into different regions. To move a unit, first declare each step the unit will take, then resolve the steps in order. The only restriction is that you may not repeat specific steps. As you resolve each step, you confirm that it is a legal step at that moment. If your unit takes at least one step, it has moved; if it takes zero steps, it has not moved."
+    },
+    {
+      "id": "attacking-the-enemy",
+      "title": "Attacking the Enemy",
+      "page": 22,
+      "text": "You may only attack enemy units or the surface of enemy sites that are at your location. When using the Move and Attack basic ability, you must resolve any movement before declaring and resolving your attack.\n\nAttacking Enemy Units: If you attack an enemy unit, the units involved will fight. To fight, units strike each other simultaneously. When a unit strikes, it deals damage equal to its power.\n\nStriking First: Units that strike first resolve their strikes before their target can resolve theirs. If multiple units in the same fight are able to strike first, they all strike at the same time. Then any surviving units without that ability make their strikes.\n\nMultiple Combatants: If more than two units are involved in a fight (usually as a result of intercepting or defending), the controller of each side may allocate their units' damage among the enemy as they wish.\n\nMinions with Split Power: Some minions have their Power split into an Attack Power and a Defense Power. When it strikes, use the first; when damage is being allocated to them, use the second. Cards that modify a unit's Power do so to both Attack and Defense Power."
+    },
+    {
+      "id": "damage-to-minions",
+      "title": "Damage to Minions",
+      "page": 23,
+      "text": "Damage dealt to minions persists until the end of the turn. A minion that accumulates damage greater than or equal to its power immediately dies and is placed in its owner's cemetery.\nNote: Zero damage is not any damage at all, so units with 0 power must take at least 1 damage to die."
+    },
+    {
+      "id": "damage-to-avatars",
+      "title": "Damage to Avatars",
+      "page": 23,
+      "text": "Throughout the game, you track your Avatar's life. Damage dealt to an Avatar with one or more life reduces their life by that amount. Damage dealt to an Avatar on death's door causes a death blow and ends the game.\n\nAttacking the Surface of an Enemy Site: If you attack the surface of an enemy site and your opponent doesn't defend, simply strike the site, damaging it and causing the controlling Avatar to lose that much life. Importantly, attacking a site cannot deliver a death blow because it causes the controlling Avatar to lose life, not take damage directly. You can still attack the sites of an Avatar at death's door, but it will not usually affect them."
+    },
+    {
+      "id": "defend",
+      "title": "Defend",
+      "page": 24,
+      "text": "Defend is one of two basic abilities that you can use on your opponent's turn, because it is a triggered ability (the other is Intercept). When an enemy attacks another unit or site in your unit's range of motion, your unit may tap to defend, moving to the attack's location and joining the fight. Any number of units may defend against an attacker. During this movement a defending unit may use any of its movement abilities, such as Airborne, Burrowing, Movement +X, Submerge, or Voidwalk.\nIf the original target of the attack was a unit, the defender's controller may decide if that unit remains in the fight, or is removed. If the original target was a site, it is automatically removed.\nRemember: Only \"attacks\" can be defended; attacks are only caused by the Move and Attack basic ability, or very specific card text that uses the word \"attack.\""
+    },
+    {
+      "id": "intercept",
+      "title": "Intercept",
+      "page": 25,
+      "text": "Intercept is one of two basic abilities that you can use on your opponent's turn, because it is a triggered ability (the other is Defend). When an enemy using the Move and Attack ability finishes its movement and then chooses not to attack, any of your units there may tap to intercept and fight that enemy. Units can not move when they intercept. They must already be at the enemy's location."
+    },
+    {
+      "id": "pick-up-or-drop-artifacts",
+      "title": "Pick Up or Drop Artifacts",
+      "page": 25,
+      "text": "Each unit can activate their Pick Up basic ability once per turn, which allows it to pick up any number of target artifacts at its location that are not currently being carried. The Drop basic ability allows a unit to drop any number of artifacts it's carrying, once per turn, as long as it hasn't interacted with the realm this turn.\n\nCarrying Artifacts: A unit can carry any number of artifacts, which will move with the unit throughout the realm. If a unit is carrying any artifacts when it leaves the realm, the artifacts are dropped. If a unit and an artifact it is carrying stop sharing a location due to some effect, the artifact ceases to be carried.\n\nControlling Artifacts: Artifacts carried by a unit are controlled by the player who controls that unit. Artifacts that could be carried but are not currently being carried are uncontrolled. Artifacts that cannot be carried normally (e.g. Automatons and Monuments) are controlled by the player who conjured them."
+    },
+    {
+      "id": "building-your-own-decks",
+      "title": "Building Your Own Decks",
+      "page": 26,
+      "text": "Sorcery: Contested Realm is a customizable trading card game, which means that you can choose what cards go into your deck. When you're ready to construct your own deck, there are a few rules you must follow:\n• You need to choose and include exactly one Avatar card.\n• Your Atlas must contain at least 30 site cards.\n• Your Spellbook must contain at least 60 spell cards.\nYou may have larger decks as long as you can reasonably shuffle them.\n\nRarity: The type line of a spell or site describes the card's rarity. This tells you how many copies of that card you can have in your deck. Each player may include:\n• up to four copies of any ordinary cards\n• up to three copies of any exceptional cards\n• up to two copies of any elite cards\n• only one copy of any unique cards in a deck\nYour Avatar does not count toward any of those totals."
+    },
+    {
+      "id": "advanced-concepts-special-abilities",
+      "title": "Advanced Concepts: Special Abilities",
+      "page": 27,
+      "text": "Most cards in Sorcery have one or more special abilities printed in their game text box that change the default rules of the game or grant new interactions outside of the basic abilities.\n\nPassive Ability: A passive ability has an ongoing effect that is always active, as long as the card is in the relevant game zone. Typically this zone is the realm, but some cards have abilities that work while in your hand, cemetery, etc.\n\nKeyword Ability: A keyword is a word or phrase that functions as shorthand for a longer piece of rules text. You can find these longer explanations in the glossary on page 32.\n\nActivated Ability: An activated ability takes effect by stating your intention to do so and paying any related costs, such as tapping or spending mana. By default, only the controller of a card can use its activated abilities, and only during the main phase of their own turn.\n\nTriggered Ability: A triggered ability requires that a specified condition is met, or a specified event occurs, to automatically take effect. These abilities use words such as \"when,\" \"whenever,\" and \"at [a specified moment].\""
+    },
+    {
+      "id": "advanced-movement-concepts",
+      "title": "Advanced Movement Concepts",
+      "page": 28,
+      "text": "Entering a Location, Site, or Void: A unit is said to have entered a location, site, or void if it was not occupying that spot and now it is (even if just for a moment), or when it was summoned or conjured there.\n\nTeleporting: Teleportation effects move a unit directly to a specified location without taking any steps in between.\n\nMoving Freely: Some cards can move freely within the realm or a defined area. When a unit uses the Move and Attack or Defend abilities they spend no steps when moving, as long as the starting and ending locations of the step satisfy the moves freely condition.\n\nSpecial Movement Effects: Some effects will push, pull, or drag things, or simply cause them to be moved. This is forced movement, and is not modified by a unit's abilities such as Airborne, Burrowing, Submerge, or Voidwalk. A unit that is forcibly moved does not tap and cannot be intercepted, as it is not moving as part of the Move and Attack basic ability.\n\nWhen Sites Move: If a site moves to another square, everything atop and under it moves with it (though those cards are not considered to have moved). Generally, a site can only move to a void. Any cards in that void are now placed atop the site that was moved in.\n\nCarrying Units: Some units can carry other units, picking them up or dropping them in the same manner as artifacts. Units that have Airborne, Burrowing, Submerge, or Voidwalk confer those abilities to units they are carrying. A carried unit may still cast spells or activate abilities. If the carried unit moves to a location the carrying unit doesn't occupy, it ceases to be carried."
+    },
+    {
+      "id": "damage-grids",
+      "title": "Damage Grids",
+      "page": 29,
+      "text": "Some cards have abilities that deal damage or otherwise affect units or multiple sites over a wide area. To illustrate the extent of these spells, some cards contain a damage grid in their rules box. Damage grids may use a bold square to indicate the center of the card's effect, or a dot to show the Spellcaster's location on the grid. By default, a damage grid indicates that the ability deals damage to each unit at locations within the area of effect and within the same region, though cards may specify otherwise."
+    },
+    {
+      "id": "occupying-multiple-sites",
+      "title": "Occupying Multiple Sites",
+      "page": 29,
+      "text": "Units normally occupy only one location while in the realm, however some units may occupy multiple locations at once due to their enormous size. Such oversized units follow the regular rules for summoning. As they enter the realm, you choose a 2x2 area that it can legally occupy, which must include the summoning location. Place the card at the intersection of those sites.\nAn oversized unit is at each of the sites it occupies, so it can stand on both land and water sites at the same time. If grid damage is dealt to multiple such locations, oversized units take damage equal to the sum of the damage dealt on all locations they occupy. When an oversized unit moves, you choose a direction and all parts move in that direction; if any part can't move that direction, it can't move that direction at all. When attacking, oversized units still target only a single enemy or site.\n\nTeleporting Oversized Units: When teleported, it must be to a location or set of locations that conforms to its size restrictions and is otherwise legal for it to occupy."
+    },
+    {
+      "id": "ownership-and-control",
+      "title": "Ownership and Control",
+      "page": 30,
+      "text": "You have ownership of all of the cards you bring to a game. The owner of a card does not change during the game. A card is always returned to its owner's hand, shuffled into its owner's deck, or sent to its owner's cemetery regardless of who controls the card when it leaves play. While the owner of a card is most often its controller, control of cards in play may change over the course of a game. When rules text uses phrases like \"your minions\" or \"your sites,\" that refers to those things that you control, and not to those things that you own."
+    },
+    {
+      "id": "projectiles",
+      "title": "Projectiles",
+      "page": 30,
+      "text": "A projectile's flight begins at the shooting unit's location and travels within the same region in a cardinal direction. Its flight continues until it either reaches the edge of its region or it reaches the first unit (enemy or ally) along its path, ignoring any allies at the projectile's starting location. Different projectiles will have different effects, but will most often deal damage to the impacted unit. In the event of multiple valid units, the player that fired the projectile chooses which unit the projectile hits."
+    },
+    {
+      "id": "static-ongoing-effects",
+      "title": "Static/Ongoing Effects",
+      "page": 30,
+      "text": "Auras and minions with passive abilities will have an ongoing impact on the realm. These static effects should be applied at all times, even while resolving other effects or actions, and take precedence over triggered abilities."
+    },
+    {
+      "id": "the-storyline",
+      "title": "The Storyline",
+      "page": 31,
+      "text": "When the story being told during a game of Sorcery starts to get complicated, particularly when multiple abilities trigger at the same time, you can use the Storyline to help resolve them. A Storyline begins each time a unit casts a spell or activates an ability, at which point one or more events are placed at the relevant points on the Storyline and are then resolved in order, one at a time. Sometimes the resolution of a spell, effect, or event will cause it to split into several smaller events (e.g. the individual steps within a unit's movement), which are each placed on the Storyline at their relevant points. Target units or locations must be chosen as an event is being added to the Storyline.\n\nTriggered Abilities: If the resolution of one event triggers an ability, a new event is inserted into the storyline at the current moment, temporarily interrupting any remaining events. Once resolved, the story continues. If multiple events are competing to be added at the same point, the non-active player places their events first, then the active player places theirs. If a card leaves the realm, any of its events stay on the Storyline but are unable to resolve; if any event is unable to resolve, ignore it and continue to the next event."
+    }
+  ],
+  "glossary": [
+    {
+      "id": "adjacent",
+      "term": "Adjacent",
+      "definition": "Refers to the card's own square, and the squares that it shares a border with.",
+      "page": 32
+    },
+    {
+      "id": "airborne",
+      "term": "Airborne",
+      "definition": "This unit may fly while on the surface, gaining the following benefits: When taking a step this unit may move diagonally and can only be intercepted by other units if they have Airborne or Ranged. This unit cannot be targeted by attacks, unless the attacking unit has the Airborne ability.",
+      "page": 32
+    },
+    {
+      "id": "ally-allied",
+      "term": "Ally/Allied",
+      "definition": "A unit that you control (including your Avatar).",
+      "page": 32
+    },
+    {
+      "id": "banish",
+      "term": "Banish",
+      "definition": "Remove from the game.",
+      "page": 32
+    },
+    {
+      "id": "body-of-water",
+      "term": "Body of Water",
+      "definition": "A contiguous cluster of adjacent water sites.",
+      "page": 32
+    },
+    {
+      "id": "broken",
+      "term": "Broken",
+      "definition": "Broken cards are artifacts that can be found in any cemetery.",
+      "page": 32
+    },
+    {
+      "id": "burrowing",
+      "term": "Burrowing",
+      "definition": "This unit can be safely summoned to, exist in, and operate normally underground. When taking a step, it can instead move from the surface of a land site to the underground level there, or vice versa.",
+      "page": 32
+    },
+    {
+      "id": "can-t-be-modified",
+      "term": "Can't Be Modified",
+      "definition": "This card can't be disabled, silenced, immobilized, or transformed, can't gain or lose abilities, and its characteristics (like power) can't be changed.",
+      "page": 32
+    },
+    {
+      "id": "cardinal-directions",
+      "term": "Cardinal Directions",
+      "definition": "When a card talks about a cardinal direction, it includes all of the squares in the direction indicated on the card to its front, rear, left and right.",
+      "page": 32
+    },
+    {
+      "id": "carrying-units",
+      "term": "Carrying Units",
+      "definition": "Some units can carry other units. A unit with this ability picks them up or drops them in the same manner and time as it would artifacts (see page 25). Units that have Airborne, Burrowing, Submerge, or Voidwalk confer those abilities to units they are carrying while they are carried. A unit being carried may still cast spells or activate abilities as normal. If the carried unit moves to a location that the carrying unit doesn't occupy, the unit ceases to be carried.",
+      "page": 32
+    },
+    {
+      "id": "charge",
+      "term": "Charge",
+      "definition": "This unit can tap, or be tapped, to pay for costs associated with any ability on the turn it is summoned.",
+      "page": 32
+    },
+    {
+      "id": "collection",
+      "term": "Collection",
+      "definition": "Your collection consists of cards you own that didn't start the game in your decks. When a card is added from your collection, it persists across all game zones. In tournaments, it is recommended to play with a 10-card collection that adheres to rarity rules in combination with your Spellbook and Atlas.",
+      "page": 32
+    },
+    {
+      "id": "conjure",
+      "term": "Conjure",
+      "definition": "When a card is conjured, put it directly into play.",
+      "page": 32
+    },
+    {
+      "id": "damage-and-life-loss",
+      "term": "Damage and Life Loss",
+      "definition": "Generally, units take damage from fighting and from the effects of spells and abilities. Damage dealt to minions accumulates until the end of turn when it is healed, while damage dealt to an Avatar causes them to lose life instead. Sometimes an Avatar will suffer life loss directly from things like a site being damaged. When a minion has damage on it equal to or greater than its power, it dies. Note: When an Avatar is at death's door, only damage will deliver a death blow.",
+      "page": 32
+    },
+    {
+      "id": "dead",
+      "term": "Dead",
+      "definition": "Dead cards are minions that can be found in any cemetery.",
+      "page": 32
+    },
+    {
+      "id": "death-blow",
+      "term": "Death Blow",
+      "definition": "When an Avatar is at death's door, any damage dealt to them is a death blow, signaling their defeat.",
+      "page": 32
+    },
+    {
+      "id": "death-s-door",
+      "term": "Death's Door",
+      "definition": "When an Avatar's life is reduced to 0, they are now at death's door and can no longer gain life. At that moment, the Avatar becomes immune to damage for the rest of the current turn. After that brief and desperate window, any damage dealt to the Avatar is a death blow, ending the game.",
+      "page": 32
+    },
+    {
+      "id": "deathrite",
+      "term": "Deathrite",
+      "definition": "When this unit dies, do what is stated before placing it in the cemetery.",
+      "page": 32
+    },
+    {
+      "id": "dies-destroyed-killed",
+      "term": "Dies, Destroyed, & Killed",
+      "definition": "When a card dies, is destroyed, or is killed, place it in the cemetery.",
+      "page": 32
+    },
+    {
+      "id": "disable",
+      "term": "Disable",
+      "definition": "While disabled, a minion loses all abilities (including basic abilities like Move and Attack), doesn't strike when fighting, can't cast spells, and can't take any action granted by another card or effect (i.e. strike, shoot a projectile, take a step, etc.). A disabled minion can still be forcibly moved or tapped by effects.",
+      "page": 32
+    },
+    {
+      "id": "elemental-affinity-and-threshold",
+      "term": "Elemental Affinity and Threshold",
+      "definition": "Sites and other cards provide elemental affinity. Elemental threshold is the minimum affinity required to cast a given spell, or to trigger or activate some abilities.",
+      "page": 32
+    },
+    {
+      "id": "elite",
+      "term": "Elite",
+      "definition": "You may include two copies of a card that has the keyword \"Elite\" in its type line.",
+      "page": 32
+    },
+    {
+      "id": "enemy",
+      "term": "Enemy",
+      "definition": "A unit (including Avatars) that is controlled by an opponent.",
+      "page": 32
+    },
+    {
+      "id": "evil",
+      "term": "Evil",
+      "definition": "A minion is considered evil if it is a demon, undead, or monster. Evil minions can't be warded.",
+      "page": 32
+    },
+    {
+      "id": "exceptional",
+      "term": "Exceptional",
+      "definition": "You may include three copies of a card that has the keyword \"Exceptional\" in its type line.",
+      "page": 32
+    },
+    {
+      "id": "fight",
+      "term": "Fight",
+      "definition": "When two units fight, they strike each other simultaneously. If more than two units are involved in a fight, the controller of each side may allocate their units' damage among the enemy as they wish.",
+      "page": 32
+    },
+    {
+      "id": "flooded",
+      "term": "Flooded",
+      "definition": "A flooded site has a minimum of one water affinity, in addition to any other affinities it provides. Therefore, it's a water site.",
+      "page": 32
+    },
+    {
+      "id": "genesis",
+      "term": "Genesis",
+      "definition": "When this card enters the realm, do what is stated.",
+      "page": 32
+    },
+    {
+      "id": "ground-movement",
+      "term": "Ground Movement",
+      "definition": "Ground movement is any step that a unit takes between the surface of two sites (except Airborne and teleportation).",
+      "page": 32
+    },
+    {
+      "id": "here-there",
+      "term": "Here & There",
+      "definition": "\"Here\" and \"There\" refer to the location(s) that a card occupies. For most cards, such as avatars, minions, and artifacts, that means one location. For most auras, it means the 2x2 area they occupy. For sites, it means two locations, their surface and subsurface.",
+      "page": 32
+    },
+    {
+      "id": "immobile",
+      "term": "Immobile",
+      "definition": "This unit can't take steps.",
+      "page": 32
+    },
+    {
+      "id": "interact",
+      "term": "Interact",
+      "definition": "A unit interacts with the realm if it strikes, deals damage, casts a spell, or activates a special ability.",
+      "page": 32
+    },
+    {
+      "id": "lance",
+      "term": "Lance",
+      "definition": "A minion with the Lance keyword enters play carrying a lance artifact token. They could use it for themselves or give it to another minion. The first time a unit strikes while carrying a lance, it deals an extra damage and strikes first (see page 22) if in a fight. Then the lance breaks. Lance tokens are artifacts for all intents and purposes. They can be picked up and dropped (and stolen), just like other artifacts. When they are broken, they are removed from the realm like other tokens.",
+      "page": 32
+    },
+    {
+      "id": "land-sites",
+      "term": "Land Sites",
+      "definition": "All sites that are not water sites are considered land sites, including sites with no element icons and Rubble.",
+      "page": 32
+    },
+    {
+      "id": "lethal",
+      "term": "Lethal",
+      "definition": "Any strictly positive amount of damage this card deals to a minion is enough to kill.",
+      "page": 32
+    },
+    {
+      "id": "life",
+      "term": "Life",
+      "definition": "Life represents the amount of damage that your Avatar can endure before it is placed on death's door. As your Avatar incurs damage, its overall life will decrease accordingly.",
+      "page": 32
+    },
+    {
+      "id": "location",
+      "term": "Location",
+      "definition": "The exact location of a card is determined by its square and by the region that it occupies.",
+      "page": 32
+    },
+    {
+      "id": "mana",
+      "term": "Mana",
+      "definition": "Mana can come from several sources, but sites are the most common. When they first come into play as well as at the start of your turn, sites provide one mana each. Other cards might add to this total. You use this mana to cast spells or activate abilities. At the end of your turn, any remaining mana is lost, whether or not you used it that turn.",
+      "page": 32
+    },
+    {
+      "id": "movement-x",
+      "term": "Movement +X",
+      "definition": "This unit may move up to X additional steps when using the Move and Attack or Defend basic abilities. To move multiple steps at once, choose a destination and a path to it then traverse that path one at a time. You may need to resolve automatic triggers (or apply \"always on\" passive abilities), some of which may prematurely stop the motion of the unit.",
+      "page": 32
+    },
+    {
+      "id": "moves-freely",
+      "term": "Moves Freely",
+      "definition": "When this unit uses the Move and Attack or Defend abilities they spend no steps when moving, as long as the starting and ending locations of the step satisfy the moves freely condition.",
+      "page": 32
+    },
+    {
+      "id": "nearby",
+      "term": "Nearby",
+      "definition": "Refers to the card's own square, and all squares that surround it, including those diagonally.",
+      "page": 32
+    },
+    {
+      "id": "ordinary",
+      "term": "Ordinary",
+      "definition": "You may include four copies of a card that has the keyword \"Ordinary\" in its type line.",
+      "page": 32
+    },
+    {
+      "id": "projectiles",
+      "term": "Projectiles",
+      "definition": "A projectile's flight begins at the shooting unit's location and travels within the same region in a cardinal direction. Its flight continues until it either reaches the edge of its region or it reaches the first unit (enemy or ally) along its path, ignoring any allies at the projectile's starting location. Different projectiles will have different effects, but will most often deal damage to the impacted unit. In the event of multiple valid units, the player that fired the projectile chooses which unit the projectile hits.",
+      "page": 32
+    },
+    {
+      "id": "range-of-motion",
+      "term": "Range of Motion",
+      "definition": "Every location a unit can reach if it used the Move and Attack basic ability.",
+      "page": 32
+    },
+    {
+      "id": "ranged-x",
+      "term": "Ranged X",
+      "definition": "This unit has \"Tap → Shoot a projectile that stops after 1 (or X) steps. Strike the impacted unit\". This unit may also intercept Airborne units.",
+      "page": 32
+    },
+    {
+      "id": "realm",
+      "term": "Realm",
+      "definition": "The realm includes all the squares in the game zone.",
+      "page": 32
+    },
+    {
+      "id": "region",
+      "term": "Region",
+      "definition": "There are four distinct regions in the realm: surface, underground, underwater, or in the void.",
+      "page": 32
+    },
+    {
+      "id": "rubble",
+      "term": "Rubble",
+      "definition": "A site that has been destroyed is placed in its owner's cemetery as normal, but rather than reverting back to the void, the site is instead replaced with rubble. Rubble is a neutral land site that no player controls, and provides no mana or threshold. Note: Use Rubble tokens or a face down site to represent rubble on a square.",
+      "page": 32
+    },
+    {
+      "id": "sacrifice",
+      "term": "Sacrifice",
+      "definition": "Sacrificing is removing something you control from the realm and placing it directly in its owner's cemetery. A player may be forced to sacrifice something if an effect instructs them to do so. When a minion is sacrificed, it does indeed die, and its Deathrite triggers, if applicable. If something is sacrificed to pay the cost of an ability, it is not placed in the cemetery until after that ability has resolved. An indestructible unit cannot be sacrificed. When a site is sacrificed, it is replaced by rubble. Even indestructible things can be sacrificed, if a cost or effect otherwise informs you of the need to sacrifice something.",
+      "page": 32
+    },
+    {
+      "id": "silence",
+      "term": "Silence",
+      "definition": "A card that is silenced loses all printed and granted abilities. Avatars cannot be silenced.",
+      "page": 32
+    },
+    {
+      "id": "span-of-land",
+      "term": "Span of Land",
+      "definition": "A contiguous cluster of adjacent land sites.",
+      "page": 32
+    },
+    {
+      "id": "spellcaster",
+      "term": "Spellcaster",
+      "definition": "This card may cast spells. Some spellcasters may only cast spells that match a specific element. For example, Fire Spellcasters may only cast spells that have a Fire threshold icon.",
+      "page": 32
+    },
+    {
+      "id": "square",
+      "term": "Square",
+      "definition": "One grid square in the realm, that includes all cards present there.",
+      "page": 32
+    },
+    {
+      "id": "stealth",
+      "term": "Stealth",
+      "definition": "Minions with Stealth cannot be targeted by spells or abilities from your opponents (including attacks), they can't be intercepted, their attacks can't be defended, and projectiles cannot hit them. Stealth is tracked with a stealth token, and it's lost after the minion interacts with the realm. Non-minions cannot have Stealth, but an Artifact carried by a minion with Stealth gains the same benefits.",
+      "page": 32
+    },
+    {
+      "id": "step",
+      "term": "Step",
+      "definition": "A step is the minimum unit of distance between two adjacent locations.",
+      "page": 32
+    },
+    {
+      "id": "storyline",
+      "term": "Storyline",
+      "definition": "A sequence of events that is currently resolving. A unit that casts a spell, or activates an ability will start a storyline and add events to it. Triggered abilities can insert events into a storyline during its resolution, interrupting future events.",
+      "page": 32
+    },
+    {
+      "id": "strike",
+      "term": "Strike",
+      "definition": "A unit deals damage equal to its power.",
+      "page": 32
+    },
+    {
+      "id": "strike-first",
+      "term": "Strike First",
+      "definition": "Units that strike first resolve their strikes before their target can resolve theirs. If multiple units in the same fight are able to strike first, they all strike at the same time. Then any surviving units without that ability make their strikes.",
+      "page": 32
+    },
+    {
+      "id": "stronger-strongest-weaker-and-weakest",
+      "term": "Stronger, Strongest, Weaker, and Weakest",
+      "definition": "Some effects compare the power of two units: Stronger means strictly more power than; Strongest means strictly highest power; Weaker means strictly less power than; Weakest means strictly lowest power. In the case of ties, the active player chooses. When comparing a minion with split power, use the average of the two power values, rounding down if needed.",
+      "page": 32
+    },
+    {
+      "id": "submerge",
+      "term": "Submerge",
+      "definition": "This unit can be safely summoned to, exist in, and operate normally underwater. When taking a step, it can instead move from the surface of a water site to the underwater level there or vice versa.",
+      "page": 32
+    },
+    {
+      "id": "summon",
+      "term": "Summon",
+      "definition": "When a card is summoned, put it directly into play.",
+      "page": 32
+    },
+    {
+      "id": "tapping-a-card",
+      "term": "Tapping a Card",
+      "definition": "Cards in the realm can be tapped as a cost to activate various abilities. A player may also need to tap a card as a cost related to other spells or abilities on other cards. To tap a card, turn it 90° to the right, from an upright position. Only untapped cards and tokens in play can be tapped. All of your cards in play automatically (and necessarily) untap at the start of your turn.",
+      "page": 32
+    },
+    {
+      "id": "target",
+      "term": "Target",
+      "definition": "Sometimes you will need to target things in the realm. Spells and abilities can only target things within the Spellcaster's or referencing card's same region.",
+      "page": 32
+    },
+    {
+      "id": "transform",
+      "term": "Transform",
+      "definition": "When a card is transformed it is considered the same game object as its previous version. It is controlled by the same player and does not suffer a new turn of summoning sickness. If one card transforms into another card, the original card is removed from the game after the transformation.",
+      "page": 32
+    },
+    {
+      "id": "underground",
+      "term": "Underground",
+      "definition": "The lower level of a land site is part of the underground region.",
+      "page": 32
+    },
+    {
+      "id": "underwater",
+      "term": "Underwater",
+      "definition": "The lower level of a water site is part of the underwater region.",
+      "page": 32
+    },
+    {
+      "id": "unique",
+      "term": "Unique",
+      "definition": "You may include one copy of a card that has the keyword \"Unique\" in its type line.",
+      "page": 32
+    },
+    {
+      "id": "units",
+      "term": "Units",
+      "definition": "Units are a collective term that includes Avatars and minions.",
+      "page": 32
+    },
+    {
+      "id": "void",
+      "term": "Void",
+      "definition": "A square without a site is a part of the void region. Avatars can never enter void locations. Minions there are banished unless they have Voidwalk.",
+      "page": 32
+    },
+    {
+      "id": "voidwalk",
+      "term": "Voidwalk",
+      "definition": "This unit can be summoned to any void location and safely exist and operate there. When taking a step it can move into an adjacent void, or out of the void and onto the surface of an adjacent site (or directly to the subsurface if they can operate there).",
+      "page": 32
+    },
+    {
+      "id": "ward",
+      "term": "Ward",
+      "definition": "If a warded site or unit would be damaged, destroyed, or targeted by an opponent's spell or special ability, the Ward breaks instead. A unit or site can't have multiple Wards, and Evil minions can't be warded.",
+      "page": 32
+    },
+    {
+      "id": "water-sites",
+      "term": "Water Sites",
+      "definition": "Water sites are identified by the water icon. All other sites are considered land sites, including sites with no threshold icons and rubble.",
+      "page": 32
+    },
+    {
+      "id": "x-bound",
+      "term": "[X]bound",
+      "definition": "This minion is disabled while not occupying a certain type of location. For example, a minion with Waterbound is disabled while not occupying a water location, etc.",
+      "page": 32
+    }
+  ],
+  "quickReference": [
+    {
+      "id": "the-golden-rule",
+      "term": "The Golden Rule",
+      "definition": "Some text is intentionally informal or necessarily compact. Use common sense and be cool.",
+      "page": 37
+    },
+    {
+      "id": "the-four-elements",
+      "term": "The Four Elements",
+      "definition": "Sorcery: Contested Realm is built around the four classical elements: Air, Earth, Fire, and Water.",
+      "page": 37
+    },
+    {
+      "id": "turn-sequence-start-phase",
+      "term": "Turn Sequence — Start Phase",
+      "definition": "Step 1: Untap all of your cards in the realm. Step 2: All of your sites provide their mana. Step 3: Trigger abilities that happen at the start of the turn. Step 4: End the Start Phase by drawing a card from either your spellbook or atlas.",
+      "page": 37
+    },
+    {
+      "id": "turn-sequence-main-phase",
+      "term": "Turn Sequence — Main Phase",
+      "definition": "Your units can cast spells and activate their abilities. You may take these actions as many times as you have resources to do so, and in any order you like.",
+      "page": 37
+    },
+    {
+      "id": "turn-sequence-end-phase",
+      "term": "Turn Sequence — End Phase",
+      "definition": "Step 1: Trigger abilities that happen at the end of the turn. Step 2: Players remove all damage from their minions in the realm. Step 3: Effects that last for your turn now end. Step 4: Your turn ends.",
+      "page": 37
+    },
+    {
+      "id": "navigation-regions",
+      "term": "Navigation — Regions",
+      "definition": "Surface, Underground, Underwater, and the Void are all separate regions in the game.",
+      "page": 37
+    },
+    {
+      "id": "navigation-location",
+      "term": "Navigation — Location",
+      "definition": "The exact location of a card is determined by its square and by the region that it occupies.",
+      "page": 37
+    },
+    {
+      "id": "navigation-target",
+      "term": "Navigation — Target",
+      "definition": "Spells and abilities can only target things within the Spellcaster's or referencing card's same region.",
+      "page": 37
+    },
+    {
+      "id": "navigation-adjacent",
+      "term": "Navigation — Adjacent",
+      "definition": "Refers to the card's own square and the squares that it shares a border with.",
+      "page": 37
+    },
+    {
+      "id": "navigation-nearby",
+      "term": "Navigation — Nearby",
+      "definition": "Refers to the card's own square and all squares that surround it, including those diagonally.",
+      "page": 37
+    },
+    {
+      "id": "navigation-adjacent-nearby-locations",
+      "term": "Navigation — Adjacent & Nearby Locations",
+      "definition": "Only locations that are in the same region as the referencing card (or its spellcaster) are considered adjacent or nearby locations.",
+      "page": 37
+    },
+    {
+      "id": "navigation-steps",
+      "term": "Navigation — Steps",
+      "definition": "A step is the minimum unit of distance between two adjacent locations.",
+      "page": 37
+    },
+    {
+      "id": "remember",
+      "term": "Remember",
+      "definition": "If the text of a card contradicts the rulebook, the card text takes precedence (pg 5). If you are the first player, you do not draw a card on your first turn (pg 16). Cards and abilities add events to the Storyline (pg 31); if multiple events compete to be added at the same moment, the non-active player's events are added and resolved first, then the active player's.",
+      "page": 37
+    }
+  ]
+}
