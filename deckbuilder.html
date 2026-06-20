@@ -592,8 +592,16 @@
     transition: color 0.15s;
   }
   .sub-section-header:hover { color: var(--gold-bright, #e8c87a); }
-  .sub-section-header-left { display: flex; align-items: center; gap: 6px; }
-  .sub-section-arrow { font-size: 0.55rem; color:var(--rune); transition: transform 0.2s; }
+  .sub-section-header-left { display: flex; align-items: center; gap: 8px; }
+  .sub-section-arrow {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 19px; height: 19px; flex-shrink: 0;
+    border: 1px solid var(--border-strong); border-radius: 5px;
+    background: rgba(155,135,212,0.1); color: var(--arcane);
+    font-size: 0.52rem; line-height: 1;
+    transition: transform 0.2s, background 0.15s, border-color 0.15s;
+  }
+  .sub-section-header:hover .sub-section-arrow { background: rgba(155,135,212,0.22); border-color: var(--arcane); color: var(--shimmer); }
   .sub-section-arrow.collapsed { transform: rotate(-90deg); }
   .sub-section-count { font-family: 'Crimson Pro', serif; font-style: normal; letter-spacing: 0; font-size: 0.85rem; color: var(--arcane); font-weight: 400; }
 
@@ -2558,9 +2566,9 @@ function renderSection(title, section, entries, reqMsg, isOk, req, groups) {
       const isCollapsed = subCollapsed[subKey] || false;
       const cards = grp.map(({key,card,qty}) => renderDeckCard(section, key, card, qty)).join('');
       return `
-        <div class="sub-section-header" style="grid-column:1/-1" onclick="toggleSubSection('${section}','${type}')">
+        <div class="sub-section-header" style="grid-column:1/-1" onclick="toggleSubSection('${section}','${type}')" title="Show or hide this type">
           <div class="sub-section-header-left">
-            <span class="sub-section-arrow${isCollapsed ? ' collapsed' : ''}" id="sub-arrow-${subKey}">▼</span>
+            <span class="sub-section-arrow${isCollapsed ? ' collapsed' : ''}" id="sub-arrow-${subKey}" aria-hidden="true">▼</span>
             ${type}
           </div>
           <span class="sub-section-count">${grpQty}</span>

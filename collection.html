@@ -203,7 +203,15 @@
     background: var(--mist); transition: background 0.2s;
   }
   .filter-toggle-bar.has-active .filter-dot { background: var(--arcane); }
-  .filter-toggle-bar .filter-arrow { font-size: 0.7rem; color:var(--rune); transition: transform 0.2s; }
+  .filter-toggle-bar .filter-arrow {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; flex-shrink: 0;
+    border: 1px solid var(--border-strong); border-radius: 6px;
+    background: rgba(155,135,212,0.1); color: var(--arcane);
+    font-size: 0.62rem; line-height: 1;
+    transition: transform 0.2s, background 0.15s, border-color 0.15s;
+  }
+  .filter-toggle-bar:hover .filter-arrow { background: rgba(155,135,212,0.22); border-color: var(--arcane); color: var(--shimmer); }
   .filter-toggle-bar.open .filter-arrow { transform: rotate(180deg); }
   .filter-stones-panel { display: none; }
   .filter-stones-panel.open { display: block; }
@@ -238,7 +246,15 @@
   .advanced-toggle-label { font-family: 'Cinzel', serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--rune); display: flex; align-items: center; gap: 7px; }
   .adv-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--mist); transition: background 0.2s; }
   .advanced-toggle.has-active .adv-dot { background: var(--arcane); }
-  .advanced-toggle-arrow { font-size: 0.6rem; color:var(--rune); transition: transform 0.2s; }
+  .advanced-toggle-arrow {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 22px; height: 22px; flex-shrink: 0;
+    border: 1px solid var(--border-strong); border-radius: 6px;
+    background: rgba(155,135,212,0.1); color: var(--arcane);
+    font-size: 0.6rem; line-height: 1;
+    transition: transform 0.2s, background 0.15s, border-color 0.15s;
+  }
+  .advanced-toggle:hover .advanced-toggle-arrow { background: rgba(155,135,212,0.22); border-color: var(--arcane); color: var(--shimmer); }
   .advanced-toggle.open .advanced-toggle-arrow { transform: rotate(180deg); }
   .advanced-panel { display: none; flex-direction: column; gap: 14px; background: #0a0910; border: 1px solid #2a2640; border-top: none; padding: 14px 16px; }
   .advanced-panel.open { display: flex; }
@@ -606,7 +622,7 @@
       <button class="clear-all-btn" onclick="clearAllFilters()">✕ Clear</button>
     </div>
 
-    <div class="filter-toggle-bar" id="filter-toggle-bar" onclick="toggleFilters()">
+    <div class="filter-toggle-bar" id="filter-toggle-bar" onclick="toggleFilters()" title="Show or hide filters">
       <div class="filter-toggle-bar-label"><span class="filter-dot"></span>Filters</div>
       <span class="filter-arrow">▼</span>
     </div>
@@ -662,7 +678,7 @@
   </div>
 
   <!-- ADVANCED FILTERS -->
-  <div class="advanced-toggle" id="advanced-toggle" onclick="toggleAdvanced()">
+  <div class="advanced-toggle" id="advanced-toggle" onclick="toggleAdvanced()" title="Show or hide advanced filters">
     <div class="advanced-toggle-label"><span class="adv-dot"></span>Advanced Filters</div>
     <span class="advanced-toggle-arrow">▼</span>
   </div>
