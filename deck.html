@@ -160,6 +160,18 @@
   .comment-action.danger:hover { color: var(--ember); }
   .comment-empty { color: var(--rune); font-style: italic; padding: 6px 0 4px; }
   .comment-reply-box { margin: 10px 0 2px; }
+  .comment-body strong { color: var(--shimmer); font-weight: 700; }
+  .comment-body em { font-style: italic; }
+  /* Comment formatting toolbar */
+  .comment-toolbar { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+  .ctb-btn { width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; background: var(--dusk); border: 1px solid var(--border-strong); border-radius: 6px; color: var(--shimmer); font-family: 'Crimson Pro', serif; font-size: 0.95rem; cursor: pointer; transition: all 0.15s; padding: 0; }
+  .ctb-btn:hover { border-color: var(--arcane); color: var(--arcane); }
+  .ctb-btn b, .ctb-btn i { line-height: 1; }
+  .ctb-emoji { font-size: 1rem; }
+  .ctb-hint { font-size: 0.74rem; color: var(--rune); font-style: italic; margin-left: 4px; }
+  .emoji-pop { position: absolute; z-index: 1600; width: 248px; max-height: 200px; overflow-y: auto; background: var(--dusk); border: 1px solid var(--border-strong); border-radius: 10px; box-shadow: 0 12px 34px rgba(0,0,0,0.6); padding: 8px; display: none; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+  .emoji-cell { background: none; border: none; cursor: pointer; font-size: 1.2rem; line-height: 1; padding: 5px 0; border-radius: 6px; transition: background 0.12s; }
+  .emoji-cell:hover { background: rgba(155,135,212,0.18); }
 
   /* ── DECK SECTIONS ── */
   .deck-section { margin-bottom: 26px; }
@@ -1341,6 +1353,7 @@
     let html = `<div class="comments-head">Comments <span class="cc-count">${rows.length ? '· ' + rows.length : ''}</span></div>`;
     if (currentUser) {
       html += `<div class="comment-form">
+        ${commentToolbarHtml('comment-new')}
         <textarea class="comment-input" id="comment-new" maxlength="2000" placeholder="Add a comment…"></textarea>
         <div class="comment-form-actions"><button class="btn btn-primary" onclick="postComment(null)">Post Comment</button></div>
       </div>`;
@@ -1373,7 +1386,7 @@
     if (canDelete) actions += `<button class="comment-action danger" onclick="deleteComment('${c.id}')">Delete</button>`;
     return `<div class="comment${isReply ? ' is-reply' : ''}" data-id="${c.id}">
       <div class="comment-top">${authorLink}${badge}<span class="comment-time">${timeAgo(c.created_at)}</span></div>
-      <div class="comment-body">${escHtml(c.body)}</div>
+      <div class="comment-body">${formatCommentBody(c.body)}</div>
       ${actions ? `<div class="comment-actions">${actions}</div>` : ''}
       <div class="comment-reply-slot" id="reply-slot-${c.id}"></div>
     </div>`;
@@ -1386,6 +1399,7 @@
     if (slot.dataset.open === '1') { slot.innerHTML = ''; slot.dataset.open = '0'; return; }
     slot.dataset.open = '1';
     slot.innerHTML = `<div class="comment-reply-box">
+      ${commentToolbarHtml('reply-input-' + parentId)}
       <textarea class="comment-input" id="reply-input-${parentId}" maxlength="2000" placeholder="Write a reply…"></textarea>
       <div class="comment-form-actions" style="margin-top:8px;">
         <button class="btn btn-primary" onclick="postComment('${parentId}')">Reply</button>
@@ -1434,6 +1448,57 @@
     const days = Math.floor(h/24); if (days < 30) return days + 'd ago';
     return d.toLocaleDateString();
   }
+
+  // ── Comment formatting (basic markdown-lite + emoji) ──
+  // Render: escape first, then apply a safe subset — **bold**, _italic_.
+  function formatCommentBody(raw) {
+    let s = escHtml(raw);
+    s = s.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
+    s = s.replace(/_([^_\n]+)_/g, '<em>$1</em>');
+    return s;
+  }
+  // onmousedown preventDefault keeps the textarea selection while clicking a tool
+  function commentToolbarHtml(taId) {
+    return `<div class="comment-toolbar">
+      <button type="button" class="ctb-btn" title="Bold (**text**)" onmousedown="event.preventDefault()" onclick="wrapCommentText('${taId}','**','**')"><b>B</b></button>
+      <button type="button" class="ctb-btn" title="Italic (_text_)" onmousedown="event.preventDefault()" onclick="wrapCommentText('${taId}','_','_')"><i>I</i></button>
+      <button type="button" class="ctb-btn ctb-emoji" title="Emoji" onmousedown="event.preventDefault()" onclick="toggleEmojiPicker(event,'${taId}')">😀</button>
+      <span class="ctb-hint">**bold**, _italic_</span>
+    </div>`;
+  }
+  function wrapCommentText(taId, pre, post) {
+    const ta = document.getElementById(taId); if (!ta) return;
+    const start = ta.selectionStart, end = ta.selectionEnd;
+    const sel = ta.value.slice(start, end) || 'text';
+    ta.value = ta.value.slice(0, start) + pre + sel + post + ta.value.slice(end);
+    ta.focus();
+    ta.setSelectionRange(start + pre.length, start + pre.length + sel.length);
+  }
+  function insertAtCursor(taId, text) {
+    const ta = document.getElementById(taId); if (!ta) return;
+    const start = ta.selectionStart ?? ta.value.length, end = ta.selectionEnd ?? ta.value.length;
+    ta.value = ta.value.slice(0, start) + text + ta.value.slice(end);
+    const pos = start + text.length;
+    ta.focus(); ta.setSelectionRange(pos, pos);
+  }
+  const COMMENT_EMOJIS = ['😀','😂','😅','😍','😎','🤔','😢','😡','🥳','😴','👍','👎','👏','🙏','🤝','💪','🫡','👀','❤️','🔥','✨','⭐','💯','✅','❌','⚡','💀','⚔️','🛡️','🐉','👑','🧙','🏆','🎲','🃏','💨','🌍','💧'];
+  function toggleEmojiPicker(ev, taId) {
+    ev.stopPropagation();
+    let pop = document.getElementById('emoji-pop');
+    if (pop && pop.dataset.for === taId && pop.style.display === 'grid') { pop.style.display = 'none'; return; }
+    if (!pop) { pop = document.createElement('div'); pop.id = 'emoji-pop'; pop.className = 'emoji-pop'; document.body.appendChild(pop); }
+    pop.dataset.for = taId;
+    pop.innerHTML = COMMENT_EMOJIS.map(e => `<button type="button" class="emoji-cell" onmousedown="event.preventDefault()" onclick="pickEmoji('${taId}','${e}')">${e}</button>`).join('');
+    const r = ev.currentTarget.getBoundingClientRect();
+    pop.style.display = 'grid';
+    pop.style.left = Math.max(8, Math.min(r.left, window.innerWidth - 264)) + 'px';
+    pop.style.top = (r.bottom + window.scrollY + 6) + 'px';
+  }
+  function pickEmoji(taId, e) { insertAtCursor(taId, e); const p = document.getElementById('emoji-pop'); if (p) p.style.display = 'none'; }
+  document.addEventListener('click', (e) => {
+    const pop = document.getElementById('emoji-pop');
+    if (pop && pop.style.display === 'grid' && !pop.contains(e.target) && !(e.target.closest && e.target.closest('.ctb-emoji'))) pop.style.display = 'none';
+  });
 
   // ── utils ──
   function escHtml(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
