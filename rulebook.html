@@ -161,7 +161,25 @@
     border-right: 1px solid var(--border); padding-right: 8px;
   }
   .rb-toc-group { margin-bottom: 16px; }
-  .rb-toc-title { font-family: 'Cinzel', serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); margin-bottom: 7px; padding-bottom: 4px; border-bottom: 1px solid var(--border); }
+  /* Collapsible group heading — same caret affordance used across the site */
+  .rb-toc-title {
+    display: flex; align-items: center; width: 100%;
+    font-family: 'Cinzel', serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold);
+    margin: 0 0 7px; padding: 0 0 4px; border: none; border-bottom: 1px solid var(--border);
+    background: none; text-align: left; cursor: pointer; user-select: none;
+  }
+  .rb-toc-title:hover { color: var(--shimmer); }
+  .rb-toc-caret {
+    display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+    width: 20px; height: 20px; margin-right: 8px;
+    border: 1px solid var(--border-strong); border-radius: 5px;
+    background: rgba(155,135,212,0.1); color: var(--arcane);
+    font-size: 0.66rem; line-height: 1;
+    transition: transform 0.18s, background 0.15s, border-color 0.15s;
+  }
+  .rb-toc-title:hover .rb-toc-caret { background: rgba(155,135,212,0.22); border-color: var(--arcane); color: var(--shimmer); }
+  .rb-toc-group.collapsed .rb-toc-caret { transform: rotate(-90deg); }
+  .rb-toc-group.collapsed .rb-toc-body { display: none; }
   .rb-toc-link { display: block; font-size: 0.93rem; color: var(--rune); text-decoration: none; padding: 4px 8px; border-radius: 5px; border-left: 2px solid transparent; transition: color 0.12s, background 0.12s, border-color 0.12s; cursor: pointer; }
   .rb-toc-link:hover { color: var(--shimmer); background: rgba(155,135,212,0.08); border-left-color: var(--arcane); }
 
@@ -409,23 +427,38 @@
     count.textContent = q ? `${total} result${total===1?'':'s'} for “${rawQuery.trim()}”` : '';
   }
 
+  // Groups start collapsed so the long sidebar isn't overwhelming; click a
+  // heading (caret) to expand it. Mirrors the collapse pattern used site-wide.
+  function tocGroup(title, linksHtml){
+    return `<div class="rb-toc-group collapsed">
+      <button class="rb-toc-title" type="button" aria-expanded="false" onclick="toggleTocGroup(this)" title="Show or hide this group">
+        <span class="rb-toc-caret" aria-hidden="true">▾</span>${esc(title)}
+      </button>
+      <div class="rb-toc-body">${linksHtml}</div>
+    </div>`;
+  }
   function buildToc(){
     const nav = $('rb-toc');
     let html = '';
     DATA.toc.forEach(group => {
-      html += `<div class="rb-toc-group"><div class="rb-toc-title">${esc(group.group)}</div>`;
+      let links = '';
       (group.items || []).forEach(item => {
         const id = titleToId[String(item).toLowerCase()];
         const anchor = id ? 'r-' + id : '';
-        html += `<a class="rb-toc-link" href="#${anchor}" onclick="return tocGo(event,'${anchor}')">${esc(item)}</a>`;
+        links += `<a class="rb-toc-link" href="#${anchor}" onclick="return tocGo(event,'${anchor}')">${esc(item)}</a>`;
       });
-      html += `</div>`;
+      html += tocGroup(group.group, links);
     });
-    // Reference groups for the glossary + quick reference
-    html += `<div class="rb-toc-group"><div class="rb-toc-title">Reference</div>
-      <a class="rb-toc-link" href="#r-glossary" onclick="return tocGo(event,'r-glossary')">Glossary</a>
-      <a class="rb-toc-link" href="#r-quick-reference" onclick="return tocGo(event,'r-quick-reference')">Quick Reference</a></div>`;
+    // Reference group for the glossary + quick reference
+    html += tocGroup('Reference',
+      `<a class="rb-toc-link" href="#r-glossary" onclick="return tocGo(event,'r-glossary')">Glossary</a>
+       <a class="rb-toc-link" href="#r-quick-reference" onclick="return tocGo(event,'r-quick-reference')">Quick Reference</a>`);
     nav.innerHTML = html;
+  }
+  function toggleTocGroup(btn){
+    const g = btn.closest('.rb-toc-group');
+    const collapsed = g.classList.toggle('collapsed');
+    btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
   }
 
   function clearSearchIfActive(){
