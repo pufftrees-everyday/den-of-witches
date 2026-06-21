@@ -671,6 +671,8 @@
   .pc-leg b { color: var(--gold); }
   .pc-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
   .pc-note { color: var(--rune); font-style: italic; }
+  .pc-source { font-size: 0.72rem; font-style: italic; color: var(--rune); margin-top: 7px; line-height: 1.4; }
+  .pc-source b { color: var(--gold); font-style: normal; font-weight: 600; }
 
   @media (max-width: 680px) {
     /* Centered sheet, sized to content up to 90dvh. dvh keeps the iOS address
@@ -1745,7 +1747,7 @@ function renderPriceChartSVG(rows) {
     + (series.foil.length ? `<span class="pc-leg"><span class="pc-dot" style="background:var(--arcane)"></span>Foil <b>${latest('foil')}</b></span>` : '')
     + (times.length === 1 ? `<span class="pc-leg pc-note">one data point so far</span>` : '')
     + `</div>`;
-  return `<svg viewBox="0 0 ${W} ${H}" class="pc-svg" role="img" aria-label="Price history line chart">${grid}${paths}${dots}${yLab}${xLab}</svg>${legend}`;
+  return `<svg viewBox="0 0 ${W} ${H}" class="pc-svg" role="img" aria-label="Price history line chart">${grid}${paths}${dots}${yLab}${xLab}</svg>${legend}<div class="pc-source">Source: <b>TCGplayer Market</b> · via JustTCG</div>`;
 }
 
 // Map a set name to a compact lettered, color-coded badge
