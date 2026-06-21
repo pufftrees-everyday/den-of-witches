@@ -1,5 +1,5 @@
 {
-  "generated": "2026-06-21T10:47:27.463Z",
+  "generated": "2026-06-21T15:31:34.423Z",
   "source": "JustTCG (justtcg.com)",
   "game": "Sorcery: Contested Realm",
   "counts": {
@@ -243,7 +243,7 @@
       "market": 25.24
     },
     "Imposter": {
-      "market": 24.35
+      "market": 24.43
     },
     "Mount Ussar Sanctuary": {
       "market": 24.12
@@ -381,7 +381,7 @@
       "market": 14.87
     },
     "Wuthering Heights": {
-      "market": 14.65
+      "market": 14.85
     },
     "Draco Corvus": {
       "market": 14.1
@@ -423,7 +423,7 @@
       "market": 6.8
     },
     "Mix Ignis": {
-      "market": 3.07
+      "market": 3.14
     },
     "Kiss of Judas": {
       "market": 12
@@ -552,7 +552,7 @@
       "market": 1.71
     },
     "Mix Aqua": {
-      "market": 3.54
+      "market": 3.56
     },
     "Sir Mordred": {
       "market": 7.65
@@ -627,7 +627,7 @@
       "market": 6.54
     },
     "Mix Terra": {
-      "market": 2.19
+      "market": 2.21
     },
     "Saintweald": {
       "market": 6.49
@@ -659,14 +659,14 @@
     "Windmill": {
       "market": 2.79
     },
+    "Sturmgeist": {
+      "market": 5.83
+    },
     "River Rapids": {
       "market": 5.81
     },
     "Sea of Ash": {
       "market": 5.81
-    },
-    "Sturmgeist": {
-      "market": 5.8
     },
     "Apostles of Thamariel": {
       "market": 5.75
@@ -759,7 +759,7 @@
       "market": 4.92
     },
     "Midland Army": {
-      "market": 1.85
+      "market": 1.83
     },
     "Fail-not Bow": {
       "market": 4.9
@@ -828,7 +828,7 @@
       "market": 4.25
     },
     "Selfsame Simulacrum": {
-      "market": 2.58
+      "market": 2.62
     },
     "Battlemage": {
       "market": 1.05
@@ -912,7 +912,7 @@
       "market": 0.78
     },
     "Draconian Bonekite": {
-      "market": 3.42
+      "market": 3.39
     },
     "Sir Gareth": {
       "market": 3.35
@@ -996,10 +996,10 @@
       "market": 2.24
     },
     "Primordial Spring": {
-      "market": 0.73
+      "market": 0.74
     },
     "Imperial Road": {
-      "market": 1.08
+      "market": 1.07
     },
     "Daperyll Vampire": {
       "market": 1.34
@@ -1272,7 +1272,7 @@
       "market": 0.6
     },
     "Karkemish Chimera": {
-      "market": 0.28
+      "market": 0.27
     },
     "Divine Healing": {
       "market": 0.36
@@ -1328,11 +1328,11 @@
     "No Man's Land": {
       "market": 0.7
     },
-    "Lord of Destruction": {
-      "market": 0.69
-    },
     "Battlefield": {
       "market": 0.44
+    },
+    "Lord of Destruction": {
+      "market": 0.68
     },
     "Far East Assassin": {
       "market": 0.45
@@ -1361,9 +1361,6 @@
     "Ironclad": {
       "market": 0.65
     },
-    "Into the Abyss": {
-      "market": 0.64
-    },
     "Bridge Troll": {
       "market": 0.17
     },
@@ -1378,6 +1375,9 @@
     },
     "Quarrelsome Kobolds": {
       "market": 0.4
+    },
+    "Into the Abyss": {
+      "market": 0.61
     },
     "Plague Pits": {
       "market": 0.61
@@ -1544,9 +1544,6 @@
     "Leap Attack": {
       "market": 0.44
     },
-    "Clairvoyant": {
-      "market": 0.49
-    },
     "False Idol": {
       "market": 0.49
     },
@@ -1566,6 +1563,9 @@
       "market": 0.17
     },
     "Cursed Land": {
+      "market": 0.48
+    },
+    "Clairvoyant": {
       "market": 0.48
     },
     "Hyperparasite": {
@@ -1661,9 +1661,6 @@
     "Sir Agravaine": {
       "market": 0.42
     },
-    "Sir Lamorak": {
-      "market": 0.42
-    },
     "Thin Ice": {
       "market": 0.42
     },
@@ -1748,6 +1745,9 @@
     "Iron Maiden": {
       "market": 0.4
     },
+    "Mayor of Milborne": {
+      "market": 0.4
+    },
     "Necronomiconcert": {
       "market": 0.4
     },
@@ -1793,9 +1793,6 @@
     "The Wild Hunt": {
       "market": 0.38
     },
-    "Mayor of Milborne": {
-      "market": 0.38
-    },
     "Awakened Mummies": {
       "market": 0.18
     },
@@ -1818,6 +1815,9 @@
       "market": 0.16
     },
     "Coy Nixie": {
+      "market": 0.37
+    },
+    "Sir Lamorak": {
       "market": 0.37
     },
     "Shackled Demon": {
@@ -2597,6 +2597,9 @@
     "Gift of the Serpent": {
       "market": 0.14
     },
+    "Guardian Angel": {
+      "market": 0.14
+    },
     "Intrepid Hero": {
       "market": 0.14
     },
@@ -2706,9 +2709,6 @@
       "market": 0.13
     },
     "Gravedigger": {
-      "market": 0.13
-    },
-    "Guardian Angel": {
       "market": 0.13
     },
     "Hand of Glory": {
@@ -3863,7 +3863,7 @@
       "market": 8.15
     },
     "Vivien the Enchantress": {
-      "market": 73.81
+      "market": 73.97
     },
     "Nosferatu": {
       "market": 71.59
@@ -3959,7 +3959,7 @@
       "market": 60
     },
     "Primordial Spring": {
-      "market": 5.71
+      "market": 5.6
     },
     "Bower of Bliss": {
       "market": 59.64
@@ -4592,7 +4592,7 @@
       "market": 1.5
     },
     "Cornerstone": {
-      "market": 1.85
+      "market": 1.83
     },
     "Sleep": {
       "market": 1.74
@@ -4604,7 +4604,7 @@
       "market": 18.11
     },
     "Iceberg": {
-      "market": 2.33
+      "market": 2.29
     },
     "Grim Guisarme": {
       "market": 18.07
@@ -4976,7 +4976,7 @@
       "market": 11.54
     },
     "Mudflow": {
-      "market": 2.15
+      "market": 2.16
     },
     "Hillock Basilisk": {
       "market": 4.88
@@ -5636,7 +5636,7 @@
       "market": 4.75
     },
     "Magellan Globe": {
-      "market": 4.72
+      "market": 4.74
     },
     "Redmane Hyena": {
       "market": 4.72
@@ -5965,14 +5965,14 @@
     "Sewer Rats": {
       "market": 2.65
     },
+    "Town": {
+      "market": 2.64
+    },
     "Grief Larvae": {
       "market": 2.64
     },
     "Shatter Strike": {
       "market": 2.62
-    },
-    "Town": {
-      "market": 2.61
     },
     "Clay Golem": {
       "market": 2.6
@@ -5982,9 +5982,6 @@
     },
     "Broomstick Witch": {
       "market": 2.59
-    },
-    "Lookout": {
-      "market": 2.57
     },
     "Vanishment": {
       "market": 2.56
@@ -5997,6 +5994,9 @@
     },
     "Wave of Eviction": {
       "market": 2.54
+    },
+    "Lookout": {
+      "market": 2.52
     },
     "Undead Ambush": {
       "market": 2.52
@@ -6080,7 +6080,7 @@
       "market": 2.12
     },
     "Bitter Departed": {
-      "market": 2.11
+      "market": 2.1
     },
     "Raze": {
       "market": 2.1
@@ -6110,7 +6110,7 @@
       "market": 1.98
     },
     "Impenetrable Copse": {
-      "market": 1.96
+      "market": 1.95
     },
     "White Knight": {
       "market": 1.95
@@ -6139,10 +6139,10 @@
     "Croll Morlocks": {
       "market": 1.87
     },
-    "Haystack": {
-      "market": 1.84
-    },
     "Accusation": {
+      "market": 1.83
+    },
+    "Haystack": {
       "market": 1.83
     },
     "Dredge": {
@@ -6337,11 +6337,11 @@
     "Mandrake Jars": {
       "market": 1.19
     },
-    "Pile of Skulls": {
+    "Ghost Town": {
       "market": 1.18
     },
-    "Ghost Town": {
-      "market": 1.17
+    "Pile of Skulls": {
+      "market": 1.18
     },
     "Driftwood Marrows": {
       "market": 1.15
@@ -6449,7 +6449,7 @@
       "market": 0.92
     },
     "Leyline Henge": {
-      "market": 0.9
+      "market": 0.89
     },
     "Burning Hands": {
       "market": 0.88
@@ -6538,10 +6538,10 @@
       "market": 168.75
     },
     "Beta - Booster Box": {
-      "market": 159.02
+      "market": 158.82
     },
     "Arthurian Legends Booster Box": {
-      "market": 131.27
+      "market": 131.26
     },
     "Druid (Box Topper) (Foil)": {
       "market": 101
