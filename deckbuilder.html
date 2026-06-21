@@ -338,6 +338,9 @@
   .text-row .tr-qty { font-family: 'Cinzel', serif; font-weight: 700; color: var(--gold); min-width: 24px; font-size: 0.9rem; flex-shrink: 0; }
   .text-row .tr-name { flex: 1; color: var(--shimmer); font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
   .text-row .tr-th { display: inline-flex; gap: 4px; align-items: center; flex-shrink: 0; }
+  .text-row .db-row-add { flex-shrink: 0; }
+  /* Text view packs more columns (compact rows); the explorer pane is narrow so it adapts */
+  .card-list-grid.list-view.text-view { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
 
   /* VIEW MODE TOGGLE */
   .viewmode-toggle { display: flex; border: 2px solid #2a2640; border-radius: 4px; overflow: hidden; flex-shrink: 0; }

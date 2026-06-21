@@ -636,6 +636,8 @@
   .tr-name { flex: 1; color: var(--shimmer); font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
   .tr-th { display: inline-flex; gap: 4px; align-items: center; flex-shrink: 0; }
   .tr-price { color: var(--sage); font-size: 0.85rem; flex-shrink: 0; min-width: 52px; text-align: right; font-variant-numeric: tabular-nums; }
+  /* Text view packs more columns (compact rows) — 3–4 on wide screens, fewer when narrow */
+  .card-grid.list-view.text-view { grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); }
   .card-row {
     display: grid; grid-template-columns: auto 1fr auto auto auto;
     align-items: center; gap: 10px;

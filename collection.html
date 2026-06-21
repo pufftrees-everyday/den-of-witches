@@ -312,6 +312,8 @@
   .tr-name { flex: 1; color: var(--shimmer); font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
   .tr-th { display: inline-flex; gap: 4px; align-items: center; flex-shrink: 0; }
   .tr-price { color: var(--sage); font-size: 0.85rem; flex-shrink: 0; min-width: 52px; text-align: right; font-variant-numeric: tabular-nums; }
+  /* Text view packs more columns (compact rows) — 3–4 on wide screens, fewer when narrow */
+  .card-grid.list-view.text-view { grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); }
   /* Friendly empty state for Collection / Wants / Trade sections */
   .vault-empty { grid-column: 1 / -1; text-align: center; padding: 60px 24px; display: flex; flex-direction: column; align-items: center; }
   .vault-empty-icon { font-size: 3rem; margin-bottom: 14px; opacity: 0.85; }
