@@ -139,6 +139,12 @@ then variant where `finish==='Standard' && product==='Booster'`. Example real sl
   **collection.html**, **rulebook.html**, and **about.html**. deckbuilder/deck/archive/decks/profile
   each inline their own Supabase client + auth (duplicated logic); avatar/tracker/videos use no auth.
   Bump `?v=N` (currently `?v=11`) in those four files when edited.
+- **price-chart.js** — shared price-history chart renderer exposing `window.CRPriceChart`
+  (`load(cardName, elOrId)` + `renderSVG(rows)`). Dependency-free inline-SVG line chart (standard +
+  foil) read from the public `price_history` table via the Supabase REST API; shows a "Source:
+  TCGplayer Market · via JustTCG" attribution under the graph. Loaded by **index.html** (card modal),
+  **collection.html** (Vault card modal), and **avatar.html**. The `.pc-*` styles live in each page's
+  own stylesheet. Bump `?v=N` (currently `?v=1`) in those three files when edited.
 
 ## Design system / palette
 CSS vars: `--void:#0b0a0f --abyss:#111018 --dusk:#1a1826 --twilight:#252338
