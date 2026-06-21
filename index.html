@@ -638,6 +638,19 @@
   .tr-price { color: var(--sage); font-size: 0.85rem; flex-shrink: 0; min-width: 52px; text-align: right; font-variant-numeric: tabular-nums; }
   /* Text view packs more columns (compact rows) — 3–4 on wide screens, fewer when narrow */
   .card-grid.list-view.text-view { grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); }
+  /* Price history chart (card modal) */
+  .modal-pricechart { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 12px; }
+  .pc-title { font-family: 'Cinzel', serif; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+  .pc-title .pc-sub { color: var(--rune); font-weight: 400; font-size: 0.7rem; text-transform: none; letter-spacing: 0; margin-left: 6px; }
+  .pc-status { color: var(--rune); font-style: italic; font-size: 0.85rem; padding: 4px 0; }
+  .pc-svg { width: 100%; height: auto; display: block; background: rgba(11,10,15,0.4); border: 1px solid var(--border); border-radius: 8px; }
+  .pc-axis { fill: var(--rune); font-family: 'Crimson Pro', serif; font-size: 9px; }
+  .pc-grid { stroke: var(--border); stroke-width: 1; }
+  .pc-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 8px; font-size: 0.82rem; color: var(--parchment); }
+  .pc-leg { display: inline-flex; align-items: center; gap: 6px; }
+  .pc-leg b { color: var(--gold); }
+  .pc-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .pc-note { color: var(--rune); font-style: italic; }
   .card-row {
     display: grid; grid-template-columns: auto 1fr auto auto auto;
     align-items: center; gap: 10px;
@@ -1057,6 +1070,7 @@
       <div><div class="modal-name" id="modal-name"></div><div class="modal-type" id="modal-type"></div></div>
       <div class="modal-text" id="modal-text"></div>
       <div class="modal-stats" id="modal-stats"></div>
+      <div class="modal-pricechart" id="modal-pricechart" style="display:none;"></div>
       <button class="modal-add" id="modal-add-btn">+ Add to Deck</button>
     </div>
     <button class="modal-close" onclick="closeModal()">✕</button>
@@ -1146,6 +1160,8 @@ let currentModalCard = null;
 let activeDeckId = null;
 const IMAGE_BASE = 'https://pub-5999238092ad418ca60e7a9ad641cf57.r2.dev/';
 const PAGE_SIZE = 200;
+const SUPABASE_URL = 'https://nuizkjkcephopnbcmtlz.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_9er9B3YGFuvNO8Y8W6yr2g_sR5tXvKH';
 
 // LOAD CARDS
 async function loadCards() {
@@ -2018,7 +2034,73 @@ function openModal(id) {
   document.getElementById('modal-stats').innerHTML = stats.map(s=>`<div class="modal-stat"><b>${s.l}:</b> ${s.v}</div>`).join('');
   document.getElementById('modal-add-btn').style.display = 'none';
   document.getElementById('modal-overlay').classList.add('open');
+  loadPriceChart(card.name);
   if (typeof hpHide === 'function') hpHide();
+}
+
+// ── PRICE HISTORY CHART (per card, from the price_history table) ──
+let _priceChartToken = 0;
+async function loadPriceChart(cardName) {
+  const el = document.getElementById('modal-pricechart');
+  if (!el) return;
+  const token = ++_priceChartToken;
+  el.style.display = '';
+  el.innerHTML = '<div class="pc-title">Price History</div><div class="pc-status">Loading…</div>';
+  let rows = [];
+  try {
+    const url = `${SUPABASE_URL}/rest/v1/price_history?card_name=eq.${encodeURIComponent(cardName)}&select=captured_at,finish,market&order=captured_at.asc`;
+    const res = await fetch(url, { headers: { apikey: SUPABASE_ANON, Authorization: 'Bearer ' + SUPABASE_ANON } });
+    if (res.ok) rows = await res.json();
+  } catch (e) { /* offline / table missing → empty state */ }
+  if (token !== _priceChartToken) return; // a newer modal opened; ignore stale result
+  if (!rows.length) {
+    el.innerHTML = '<div class="pc-title">Price History</div><div class="pc-status">No price history yet — check back as daily prices are recorded.</div>';
+    return;
+  }
+  el.innerHTML = '<div class="pc-title">Price History <span class="pc-sub">market, USD</span></div>' + renderPriceChartSVG(rows);
+}
+
+function renderPriceChartSVG(rows) {
+  const W = 360, H = 150, padL = 44, padR = 16, padT = 12, padB = 24;
+  const series = { standard: [], foil: [] };
+  rows.forEach(r => { if (series[r.finish] && r.market != null) series[r.finish].push({ t: Date.parse(r.captured_at), v: +r.market }); });
+  const all = [...series.standard, ...series.foil].map(p => p.v).filter(v => !isNaN(v));
+  const times = [...series.standard, ...series.foil].map(p => p.t).filter(t => !isNaN(t));
+  if (!all.length) return '<div class="pc-status">No price history yet.</div>';
+  let minV = Math.min(...all), maxV = Math.max(...all);
+  if (minV === maxV) { minV = Math.max(0, minV * 0.9); maxV = maxV * 1.1 || 1; }
+  let minT = Math.min(...times), maxT = Math.max(...times);
+  const xOf = t => maxT === minT ? (padL + (W - padL - padR) / 2) : padL + (t - minT) / (maxT - minT) * (W - padL - padR);
+  const yOf = v => padT + (1 - (v - minV) / (maxV - minV)) * (H - padT - padB);
+  const colors = { standard: 'var(--gold)', foil: 'var(--arcane)' };
+  let paths = '', dots = '';
+  for (const f of ['standard', 'foil']) {
+    const pts = series[f].sort((a, b) => a.t - b.t);
+    if (!pts.length) continue;
+    if (pts.length === 1) {
+      dots += `<circle cx="${xOf(pts[0].t).toFixed(1)}" cy="${yOf(pts[0].v).toFixed(1)}" r="3.5" fill="${colors[f]}"></circle>`;
+    } else {
+      const d = pts.map((p, i) => `${i ? 'L' : 'M'}${xOf(p.t).toFixed(1)},${yOf(p.v).toFixed(1)}`).join(' ');
+      paths += `<path d="${d}" fill="none" stroke="${colors[f]}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"></path>`;
+      const last = pts[pts.length - 1];
+      dots += `<circle cx="${xOf(last.t).toFixed(1)}" cy="${yOf(last.v).toFixed(1)}" r="3" fill="${colors[f]}"></circle>`;
+    }
+  }
+  const money = v => '$' + v.toFixed(2);
+  const fmtDate = t => { const d = new Date(t); return (d.getMonth() + 1) + '/' + d.getDate(); };
+  const grid = `<line x1="${padL}" y1="${yOf(maxV).toFixed(1)}" x2="${W - padR}" y2="${yOf(maxV).toFixed(1)}" class="pc-grid"></line>`
+             + `<line x1="${padL}" y1="${yOf(minV).toFixed(1)}" x2="${W - padR}" y2="${yOf(minV).toFixed(1)}" class="pc-grid"></line>`;
+  const yLab = `<text x="${padL - 6}" y="${(yOf(maxV) + 3).toFixed(1)}" class="pc-axis" text-anchor="end">${money(maxV)}</text>`
+             + `<text x="${padL - 6}" y="${(yOf(minV) + 3).toFixed(1)}" class="pc-axis" text-anchor="end">${money(minV)}</text>`;
+  const xLab = `<text x="${padL}" y="${H - 7}" class="pc-axis" text-anchor="start">${fmtDate(minT)}</text>`
+             + `<text x="${W - padR}" y="${H - 7}" class="pc-axis" text-anchor="end">${fmtDate(maxT)}</text>`;
+  const latest = f => { const p = series[f]; return p.length ? money(p[p.length - 1].v) : ''; };
+  const legend = `<div class="pc-legend">`
+    + `<span class="pc-leg"><span class="pc-dot" style="background:var(--gold)"></span>Standard <b>${latest('standard')}</b></span>`
+    + (series.foil.length ? `<span class="pc-leg"><span class="pc-dot" style="background:var(--arcane)"></span>Foil <b>${latest('foil')}</b></span>` : '')
+    + (times.length === 1 ? `<span class="pc-leg pc-note">one data point so far</span>` : '')
+    + `</div>`;
+  return `<svg viewBox="0 0 ${W} ${H}" class="pc-svg" role="img" aria-label="Price history line chart">${grid}${paths}${dots}${yLab}${xLab}</svg>${legend}`;
 }
 
 document.getElementById('modal-add-btn').onclick = () => { if (currentModalCard) { addCard(currentModalCard); closeModal(); } };
