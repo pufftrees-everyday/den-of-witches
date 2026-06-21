@@ -624,6 +624,9 @@
   /* LIST (TEXT) VIEW */
   .card-grid.list-view { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 10px; }
   .card-grid.list-view.sites-only { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .card-grid.large-view { grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)); }
+  /* Text view = compact rows (hide the detail columns); Detailed view shows them */
+  .card-grid.compact-view .cr-set, .card-grid.compact-view .cr-rarity, .card-grid.compact-view .cr-type { display: none; }
   .card-row {
     display: grid; grid-template-columns: auto 1fr auto auto auto;
     align-items: center; gap: 10px;
@@ -1001,8 +1004,10 @@
       <div class="viewmode-wrap">
         <span class="viewmode-label">Change View</span>
         <div class="viewmode-toggle">
-          <button class="viewmode-btn active" id="vm-grid" onclick="setViewMode('grid')" title="Card view" aria-label="Card view">⊞</button>
           <button class="viewmode-btn" id="vm-list" onclick="setViewMode('list')" title="Text view" aria-label="Text view">☰</button>
+          <button class="viewmode-btn" id="vm-details" onclick="setViewMode('details')" title="Detailed view" aria-label="Detailed view">▤</button>
+          <button class="viewmode-btn active" id="vm-grid" onclick="setViewMode('grid')" title="Card view" aria-label="Card view">⊞</button>
+          <button class="viewmode-btn" id="vm-large" onclick="setViewMode('large')" title="Large card view" aria-label="Large card view">⊡</button>
         </div>
       </div>
     </div>
@@ -1223,7 +1228,10 @@ function renderCards(cards, append = false) {
   const grid = document.getElementById('card-grid');
   // Rotate site cards whenever every card shown is a Site (any filter combo, e.g. Site + Fire)
   const sitesOnly = cards.length > 0 && cards.every(c => c.type === 'Site');
-  grid.classList.toggle('list-view', viewMode === 'list');
+  const rowsView = viewMode === 'list' || viewMode === 'details';
+  grid.classList.toggle('list-view', rowsView);
+  grid.classList.toggle('compact-view', viewMode === 'list');
+  grid.classList.toggle('large-view', viewMode === 'large');
   if (!append) {
     currentCards = cards;
     visibleCount = PAGE_SIZE;
@@ -1234,7 +1242,7 @@ function renderCards(cards, append = false) {
     grid.classList.toggle('sites-only', sitesOnly && viewMode === 'grid');
   }
   const shown = currentCards.slice(append ? visibleCount - PAGE_SIZE : 0, visibleCount);
-  const html = shown.map(card => viewMode === 'list' ? renderCardRow(card) : renderCardThumb(card)).join('');
+  const html = shown.map(card => rowsView ? renderCardRow(card) : renderCardThumb(card)).join('');
   if (append) { grid.insertAdjacentHTML('beforeend', html); }
   else { grid.innerHTML = html; }
   document.getElementById('result-count').textContent = `Showing ${Math.min(visibleCount, currentCards.length)} of ${currentCards.length} cards`;
@@ -1279,8 +1287,10 @@ function setBadge(setName) {
 function setViewMode(mode) {
   viewMode = mode;
   sessionStorage.setItem('cr_explorer_view', mode);
-  document.getElementById('vm-grid').classList.toggle('active', mode === 'grid');
-  document.getElementById('vm-list').classList.toggle('active', mode === 'list');
+  ['list','details','grid','large'].forEach(m => {
+    const b = document.getElementById('vm-' + m);
+    if (b) b.classList.toggle('active', mode === m);
+  });
   filterCards();
 }
 
@@ -2048,8 +2058,10 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeModal({});clo
 })();
 
 // INIT
-document.getElementById('vm-grid').classList.toggle('active', viewMode === 'grid');
-document.getElementById('vm-list').classList.toggle('active', viewMode === 'list');
+['list','details','grid','large'].forEach(m => {
+  const b = document.getElementById('vm-' + m);
+  if (b) b.classList.toggle('active', viewMode === m);
+});
 loadCards();
 
 // Auth: render bar, refresh session, re-render decks once known

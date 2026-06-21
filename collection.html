@@ -301,6 +301,8 @@
   /* CARD GRID */
   .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
   .card-grid.large-view { grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 18px; }
+  /* Text view = compact rows (hide detail columns); Detailed view shows them */
+  .card-grid.compact-view .col-set, .card-grid.compact-view .row-rarity, .card-grid.compact-view .col-type, .card-grid.compact-view .col-price { display: none; }
   /* Friendly empty state for Collection / Wants / Trade sections */
   .vault-empty { grid-column: 1 / -1; text-align: center; padding: 60px 24px; display: flex; flex-direction: column; align-items: center; }
   .vault-empty-icon { font-size: 3rem; margin-bottom: 14px; opacity: 0.85; }
@@ -843,6 +845,7 @@
         <span class="viewmode-label">Change View</span>
         <div class="viewmode-toggle">
           <button class="viewmode-btn active" id="vm-list" onclick="setViewMode('list')" title="Text view" aria-label="Text view">☰</button>
+          <button class="viewmode-btn" id="vm-details" onclick="setViewMode('details')" title="Detailed view" aria-label="Detailed view">▤</button>
           <button class="viewmode-btn" id="vm-grid" onclick="setViewMode('grid')" title="Card view" aria-label="Card view">⊞</button>
           <button class="viewmode-btn" id="vm-large" onclick="setViewMode('large')" title="Large card view" aria-label="Large card view">⊡</button>
         </div>
@@ -1472,8 +1475,10 @@ function emptyStateMessage() {
 function renderCards(cards, append = false) {
   const grid = document.getElementById('card-grid');
   const sitesOnly = activeFilters.type.size === 1 && activeFilters.type.has('Site');
+  const rowsView = viewMode === 'list' || viewMode === 'details';
   grid.classList.toggle('sites-only', sitesOnly && viewMode === 'grid');
-  grid.classList.toggle('list-view', viewMode === 'list');
+  grid.classList.toggle('list-view', rowsView);
+  grid.classList.toggle('compact-view', viewMode === 'list');
   grid.classList.toggle('large-view', viewMode === 'large');
 
   if (!append) {
@@ -1485,7 +1490,7 @@ function renderCards(cards, append = false) {
 
   const col = getCollection();
   const shown = currentCards.slice(append ? visibleCount - PAGE_SIZE : 0, visibleCount);
-  const html = shown.map(card => viewMode === 'list'
+  const html = shown.map(card => rowsView
     ? renderCardRow(card, col)
     : renderCardThumb(card, col)
   ).join('');
@@ -1581,10 +1586,10 @@ function rarityAbbr(r) {
 function setViewMode(mode) {
   viewMode = mode;
   localStorage.setItem('grimoire_vault_view_mode', mode);
-  document.getElementById('vm-grid').classList.toggle('active', mode === 'grid');
-  document.getElementById('vm-list').classList.toggle('active', mode === 'list');
-  const lg = document.getElementById('vm-large');
-  if (lg) lg.classList.toggle('active', mode === 'large');
+  ['list','details','grid','large'].forEach(m => {
+    const b = document.getElementById('vm-' + m);
+    if (b) b.classList.toggle('active', mode === m);
+  });
   filterCards();
 }
 
@@ -1906,9 +1911,10 @@ window.addEventListener('scroll', () => {
 document.getElementById('search-input').addEventListener('input', filterCards);
 
 // Restore saved view mode toggle state
-document.getElementById('vm-grid').classList.toggle('active', viewMode === 'grid');
-document.getElementById('vm-list').classList.toggle('active', viewMode === 'list');
-{ const _vl = document.getElementById('vm-large'); if (_vl) _vl.classList.toggle('active', viewMode === 'large'); }
+['list','details','grid','large'].forEach(m => {
+  const b = document.getElementById('vm-' + m);
+  if (b) b.classList.toggle('active', viewMode === m);
+});
 
 loadCards();
 

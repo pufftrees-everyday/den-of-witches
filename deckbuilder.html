@@ -328,6 +328,8 @@
   .card-list-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
   .card-list-grid.large-view { grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 14px; }
   .card-list-grid.large-view.sites-only { grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)); }
+  /* Text view = compact rows (hide detail columns); Detailed view shows them */
+  .card-list-grid.compact-view .db-set, .card-list-grid.compact-view .db-row-rarity, .card-list-grid.compact-view .db-type { display: none; }
 
   /* VIEW MODE TOGGLE */
   .viewmode-toggle { display: flex; border: 2px solid #2a2640; border-radius: 4px; overflow: hidden; flex-shrink: 0; }
@@ -647,6 +649,9 @@
   .deck-viewmode-wrap { display: flex; align-items: center; gap: 7px; margin-top: 8px; }
   .dvm-btn { font-size: 0.9rem; line-height: 1; background: #13111e; border: none; color: var(--rune); padding: 4px 10px; cursor: pointer; transition: all 0.15s; }
   .dvm-btn.active { background: var(--rune); color: #fff; }
+  /* Deck panel: Text view = compact rows (hide rarity + thresholds); Detailed shows them */
+  .deck-card-list.compact-mode .db-row-rarity, .deck-card-list.compact-mode .dr-thresholds,
+  .sub-section-cards.compact-mode .db-row-rarity, .sub-section-cards.compact-mode .dr-thresholds { display: none; }
   .dvm-btn:not(.active):hover { background: #1a1728; color: var(--arcane); }
 
   /* Read-only viewing header */
@@ -1049,6 +1054,7 @@
           <span class="viewmode-label">Change View</span>
           <div class="viewmode-toggle">
             <button class="viewmode-btn" id="vm-list" onclick="setViewMode('list')" title="Text view" aria-label="Text view">☰</button>
+            <button class="viewmode-btn" id="vm-details" onclick="setViewMode('details')" title="Detailed view" aria-label="Detailed view">▤</button>
             <button class="viewmode-btn active" id="vm-grid" onclick="setViewMode('grid')" title="Card view" aria-label="Card view">⊞</button>
             <button class="viewmode-btn" id="vm-large" onclick="setViewMode('large')" title="Large card view" aria-label="Large card view">⊡</button>
           </div>
@@ -1250,6 +1256,7 @@
         <span class="viewmode-label">Change View</span>
         <div class="deck-viewmode" id="deck-viewmode">
           <button class="dvm-btn" id="dvm-list" onclick="setDeckViewMode('list')" title="Text view" aria-label="Text view">☰</button>
+          <button class="dvm-btn" id="dvm-details" onclick="setDeckViewMode('details')" title="Detailed view" aria-label="Detailed view">▤</button>
           <button class="dvm-btn" id="dvm-grid" onclick="setDeckViewMode('grid')" title="Card view" aria-label="Card view">⊞</button>
           <button class="dvm-btn" id="dvm-large" onclick="setDeckViewMode('large')" title="Large card view" aria-label="Large card view">⊡</button>
         </div>
@@ -1283,6 +1290,7 @@
         <span class="viewmode-label">Change View</span>
         <div class="deck-viewmode" id="deck-viewmode-edit">
           <button class="dvm-btn" id="dvm-list-edit" onclick="setDeckViewMode('list')" title="Text view" aria-label="Text view">☰</button>
+          <button class="dvm-btn" id="dvm-details-edit" onclick="setDeckViewMode('details')" title="Detailed view" aria-label="Detailed view">▤</button>
           <button class="dvm-btn" id="dvm-grid-edit" onclick="setDeckViewMode('grid')" title="Card view" aria-label="Card view">⊞</button>
           <button class="dvm-btn" id="dvm-large-edit" onclick="setDeckViewMode('large')" title="Large card view" aria-label="Large card view">⊡</button>
         </div>
@@ -1806,12 +1814,14 @@ function renderCardGrid(append = false) {
   // Rotate site cards whenever every card currently shown is a Site — regardless of
   // which filter combination produced that (e.g. Site + Fire selected together).
   const sitesOnly = currentCards.length > 0 && currentCards.every(c => c.type === 'Site');
+  const rowsView = viewMode === 'list' || viewMode === 'details';
   grid.classList.toggle('sites-only', sitesOnly && viewMode === 'grid');
   grid.classList.toggle('sites-only-large', sitesOnly && viewMode === 'large');
-  grid.classList.toggle('list-view', viewMode === 'list');
+  grid.classList.toggle('list-view', rowsView);
+  grid.classList.toggle('compact-view', viewMode === 'list');
   grid.classList.toggle('large-view', viewMode === 'large');
   const shown = currentCards.slice(append ? visibleCount - PAGE_SIZE : 0, visibleCount);
-  const html = shown.map(card => viewMode === 'list'
+  const html = shown.map(card => rowsView
     ? renderDbCardRow(card)
     : renderDbCardItem(card)
   ).join('');
@@ -1869,10 +1879,10 @@ function quickAddToDeck(id) {
 function setViewMode(mode) {
   viewMode = mode;
   localStorage.setItem('grimoire_view_mode', mode);
-  document.getElementById('vm-grid').classList.toggle('active', mode === 'grid');
-  document.getElementById('vm-list').classList.toggle('active', mode === 'list');
-  const lg = document.getElementById('vm-large');
-  if (lg) lg.classList.toggle('active', mode === 'large');
+  ['list','details','grid','large'].forEach(m => {
+    const b = document.getElementById('vm-' + m);
+    if (b) b.classList.toggle('active', mode === m);
+  });
   renderCardGrid();
   renderDeck();
 }
@@ -2573,7 +2583,7 @@ function renderSection(title, section, entries, reqMsg, isOk, req, groups) {
           </div>
           <span class="sub-section-count">${grpQty}</span>
         </div>
-        <div class="sub-section-cards${isCollapsed ? ' hidden' : ''}${deckViewMode === 'list' ? ' list-mode' : ''}${deckViewMode === 'large' ? ' large-mode' : ''}" id="sub-cards-${subKey}">
+        <div class="sub-section-cards${isCollapsed ? ' hidden' : ''}${(deckViewMode === 'list' || deckViewMode === 'details') ? ' list-mode' : ''}${deckViewMode === 'list' ? ' compact-mode' : ''}${deckViewMode === 'large' ? ' large-mode' : ''}" id="sub-cards-${subKey}">
           ${cards}
         </div>`;
     }).join('');
@@ -2593,13 +2603,13 @@ function renderSection(title, section, entries, reqMsg, isOk, req, groups) {
       </div>
       <div class="deck-section-body">
         ${reqMsg && !isOk ? `<div class="violation">${reqMsg}</div>` : ''}
-        ${groups ? `<div style="display:flex;flex-direction:column;">${cardsHtml}</div>` : `<div class="${deckViewMode === 'list' ? 'deck-card-list' : (deckViewMode === 'large' ? 'deck-card-grid deck-card-grid-large' : 'deck-card-grid')}">${cardsHtml}</div>`}
+        ${groups ? `<div style="display:flex;flex-direction:column;">${cardsHtml}</div>` : `<div class="${deckViewMode === 'list' ? 'deck-card-list compact-mode' : (deckViewMode === 'details' ? 'deck-card-list' : (deckViewMode === 'large' ? 'deck-card-grid deck-card-grid-large' : 'deck-card-grid'))}">${cardsHtml}</div>`}
       </div>
     </div>`;
 }
 
 function renderDeckCard(section, key, card, qty) {
-  if (deckViewMode === 'list') return renderDeckCardRow(section, key, card, qty);
+  if (deckViewMode === 'list' || deckViewMode === 'details') return renderDeckCardRow(section, key, card, qty);
   const isSite = card.type === 'Site';
   const controls = readOnly ? '' : `<div class="dvg-controls">
       ${section !== 'avatar' ? `<button class="qty-btn" onclick="event.stopPropagation();changeQty('${section}','${key}',-1)">−</button>
@@ -3445,11 +3455,11 @@ function toggleThresholds() {
 }
 
 function syncDeckViewToggle() {
-  [['dvm-grid','dvm-list','dvm-large'],['dvm-grid-edit','dvm-list-edit','dvm-large-edit']].forEach(([g,l,lg]) => {
-    const gb = document.getElementById(g), lb = document.getElementById(l), lgb = document.getElementById(lg);
-    if (gb) gb.classList.toggle('active', deckViewMode === 'grid');
-    if (lb) lb.classList.toggle('active', deckViewMode === 'list');
-    if (lgb) lgb.classList.toggle('active', deckViewMode === 'large');
+  ['list','details','grid','large'].forEach(m => {
+    ['', '-edit'].forEach(sfx => {
+      const b = document.getElementById('dvm-' + m + sfx);
+      if (b) b.classList.toggle('active', deckViewMode === m);
+    });
   });
 }
 
@@ -3762,12 +3772,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // Restore saved view mode toggle state
-  const vg = document.getElementById('vm-grid'), vl = document.getElementById('vm-list'), vlg = document.getElementById('vm-large');
-  if (vg && vl) {
-    vg.classList.toggle('active', viewMode === 'grid');
-    vl.classList.toggle('active', viewMode === 'list');
-    if (vlg) vlg.classList.toggle('active', viewMode === 'large');
-  }
+  ['list','details','grid','large'].forEach(m => {
+    const b = document.getElementById('vm-' + m);
+    if (b) b.classList.toggle('active', viewMode === m);
+  });
 
   // Auth: resolve session FIRST so deck-ownership checks work on load
   renderAuthBar();
