@@ -328,8 +328,16 @@
   .card-list-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
   .card-list-grid.large-view { grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 14px; }
   .card-list-grid.large-view.sites-only { grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)); }
-  /* Text view = compact rows (hide detail columns); Detailed view shows them */
-  .card-list-grid.compact-view .db-set, .card-list-grid.compact-view .db-row-rarity, .card-list-grid.compact-view .db-type { display: none; }
+  /* Clean Text view rows: cost · in-deck count · name · threshold symbols */
+  .th-group { display: inline-flex; gap: 2px; align-items: center; }
+  .th-row-icon { width: 15px; height: 15px; object-fit: contain; display: inline-block; vertical-align: middle; }
+  .card-list-grid .text-row { display: flex; align-items: center; gap: 10px; padding: 5px 10px; border-radius: 4px; cursor: pointer; line-height: 1.3; transition: background 0.12s; }
+  .card-list-grid .text-row:hover { background: rgba(155,135,212,0.08); }
+  .text-row .tr-cost { font-family: 'Cinzel', serif; font-size: 0.72rem; color: var(--rune); width: 21px; height: 21px; border: 1px solid var(--border-strong); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .text-row .tr-cost.empty { opacity: 0; }
+  .text-row .tr-qty { font-family: 'Cinzel', serif; font-weight: 700; color: var(--gold); min-width: 24px; font-size: 0.9rem; flex-shrink: 0; }
+  .text-row .tr-name { flex: 1; color: var(--shimmer); font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .text-row .tr-th { display: inline-flex; gap: 4px; align-items: center; flex-shrink: 0; }
 
   /* VIEW MODE TOGGLE */
   .viewmode-toggle { display: flex; border: 2px solid #2a2640; border-radius: 4px; overflow: hidden; flex-shrink: 0; }
@@ -649,9 +657,9 @@
   .deck-viewmode-wrap { display: flex; align-items: center; gap: 7px; margin-top: 8px; }
   .dvm-btn { font-size: 0.9rem; line-height: 1; background: #13111e; border: none; color: var(--rune); padding: 4px 10px; cursor: pointer; transition: all 0.15s; }
   .dvm-btn.active { background: var(--rune); color: #fff; }
-  /* Deck panel: Text view = compact rows (hide rarity + thresholds); Detailed shows them */
-  .deck-card-list.compact-mode .db-row-rarity, .deck-card-list.compact-mode .dr-thresholds,
-  .sub-section-cards.compact-mode .db-row-rarity, .sub-section-cards.compact-mode .dr-thresholds { display: none; }
+  /* Deck panel: Text view hides rarity (keeps threshold symbols); Detailed shows rarity too */
+  .deck-card-list.compact-mode .db-row-rarity,
+  .sub-section-cards.compact-mode .db-row-rarity { display: none; }
   .dvm-btn:not(.active):hover { background: #1a1728; color: var(--arcane); }
 
   /* Read-only viewing header */
@@ -1818,12 +1826,12 @@ function renderCardGrid(append = false) {
   grid.classList.toggle('sites-only', sitesOnly && viewMode === 'grid');
   grid.classList.toggle('sites-only-large', sitesOnly && viewMode === 'large');
   grid.classList.toggle('list-view', rowsView);
-  grid.classList.toggle('compact-view', viewMode === 'list');
+  grid.classList.toggle('text-view', viewMode === 'list');
   grid.classList.toggle('large-view', viewMode === 'large');
   const shown = currentCards.slice(append ? visibleCount - PAGE_SIZE : 0, visibleCount);
-  const html = shown.map(card => rowsView
-    ? renderDbCardRow(card)
-    : renderDbCardItem(card)
+  const html = shown.map(card => viewMode === 'list'
+    ? renderDbCardTextRow(card)
+    : (viewMode === 'details' ? renderDbCardRow(card) : renderDbCardItem(card))
   ).join('');
   if (append) { grid.insertAdjacentHTML('beforeend', html); }
   else { grid.innerHTML = html || '<div class="status">No cards found.</div>'; }
@@ -1839,6 +1847,31 @@ function renderDbCardItem(card) {
     <img src="${getImageUrl(card)}" alt="${card.name}" loading="lazy" onerror="this.style.opacity='0.2'" draggable="false">
     ${inDeck > 0 ? `<div class="in-deck-badge">×${inDeck}</div>` : ''}
     <div class="card-item-name">${card.name}</div>
+  </div>`;
+}
+
+// Threshold pip icons (repeated element symbols), for the clean Text view
+const TH_ELS = ['air','earth','fire','water'];
+const TH_IMG = { air:'wind.png', earth:'earth.png', fire:'fire.png', water:'water.png' };
+function thIcons(thresholds) {
+  if (!thresholds) return '';
+  let h = '';
+  TH_ELS.forEach(el => {
+    const n = thresholds[el] || 0;
+    if (n > 0) { const f = TH_IMG[el]; h += `<span class="th-group">${Array.from({length:n}, () => `<img src="${f}" alt="${el}" class="th-row-icon">`).join('')}</span>`; }
+  });
+  return h;
+}
+// Clean Text row: mana cost · in-deck count · name · threshold symbols · Add
+function renderDbCardTextRow(card) {
+  const inDeck = getDeckCountForCard(card.id);
+  const cost = (card.cost != null && card.cost !== '') ? card.cost : '';
+  return `<div class="text-row" data-card-id="${escId(card.id)}" onclick="openModal('${escId(card.id)}')">
+    <span class="tr-cost${cost===''?' empty':''}">${cost}</span>
+    <span class="tr-qty">${inDeck > 0 ? inDeck + '×' : ''}</span>
+    <span class="tr-name">${card.name}</span>
+    <span class="tr-th">${thIcons(card.thresholds)}</span>
+    <button class="db-row-add" onclick="event.stopPropagation();quickAddToDeck('${escId(card.id)}')">+ Add</button>
   </div>`;
 }
 

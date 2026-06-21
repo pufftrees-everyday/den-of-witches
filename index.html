@@ -625,8 +625,17 @@
   .card-grid.list-view { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 10px; }
   .card-grid.list-view.sites-only { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .card-grid.large-view { grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)); }
-  /* Text view = compact rows (hide the detail columns); Detailed view shows them */
-  .card-grid.compact-view .cr-set, .card-grid.compact-view .cr-rarity, .card-grid.compact-view .cr-type { display: none; }
+  /* Clean Text view rows: cost · name · threshold symbols (distinct from Detailed) */
+  .th-group { display: inline-flex; gap: 2px; align-items: center; }
+  .th-row-icon { width: 15px; height: 15px; object-fit: contain; display: inline-block; vertical-align: middle; }
+  .text-row { display: flex; align-items: center; gap: 10px; padding: 4px 10px; border-radius: 4px; cursor: pointer; line-height: 1.3; transition: background 0.12s; }
+  .text-row:hover { background: rgba(155,135,212,0.08); }
+  .tr-cost { font-family: 'Cinzel', serif; font-size: 0.72rem; color: var(--rune); width: 21px; height: 21px; border: 1px solid var(--border-strong); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .tr-cost.empty { opacity: 0; }
+  .tr-qty { font-family: 'Cinzel', serif; font-weight: 700; color: var(--gold); min-width: 22px; font-size: 0.9rem; flex-shrink: 0; }
+  .tr-name { flex: 1; color: var(--shimmer); font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .tr-th { display: inline-flex; gap: 4px; align-items: center; flex-shrink: 0; }
+  .tr-price { color: var(--sage); font-size: 0.85rem; flex-shrink: 0; min-width: 52px; text-align: right; font-variant-numeric: tabular-nums; }
   .card-row {
     display: grid; grid-template-columns: auto 1fr auto auto auto;
     align-items: center; gap: 10px;
@@ -1230,7 +1239,7 @@ function renderCards(cards, append = false) {
   const sitesOnly = cards.length > 0 && cards.every(c => c.type === 'Site');
   const rowsView = viewMode === 'list' || viewMode === 'details';
   grid.classList.toggle('list-view', rowsView);
-  grid.classList.toggle('compact-view', viewMode === 'list');
+  grid.classList.toggle('text-view', viewMode === 'list');
   grid.classList.toggle('large-view', viewMode === 'large');
   if (!append) {
     currentCards = cards;
@@ -1242,7 +1251,8 @@ function renderCards(cards, append = false) {
     grid.classList.toggle('sites-only', sitesOnly && viewMode === 'grid');
   }
   const shown = currentCards.slice(append ? visibleCount - PAGE_SIZE : 0, visibleCount);
-  const html = shown.map(card => rowsView ? renderCardRow(card) : renderCardThumb(card)).join('');
+  const html = shown.map(card => viewMode === 'list' ? renderCardTextRow(card)
+    : (viewMode === 'details' ? renderCardRow(card) : renderCardThumb(card))).join('');
   if (append) { grid.insertAdjacentHTML('beforeend', html); }
   else { grid.innerHTML = html; }
   document.getElementById('result-count').textContent = `Showing ${Math.min(visibleCount, currentCards.length)} of ${currentCards.length} cards`;
@@ -1253,6 +1263,28 @@ function renderCardThumb(card) {
       <img src="${getImageUrl(card)}" alt="${card.name}" loading="lazy" onerror="this.style.opacity='0'">
       <div class="card-thumb-name">${card.name}</div>
       <div class="card-thumb-meta">${[card.type, card.rarity, card.set].filter(Boolean).join(' · ')}</div>
+    </div>`;
+}
+
+// Threshold pip icons (repeated element symbols), shared by the clean Text view
+const TH_ELS = ['air','earth','fire','water'];
+const TH_IMG = { air:'wind.png', earth:'earth.png', fire:'fire.png', water:'water.png' };
+function thIcons(thresholds) {
+  if (!thresholds) return '';
+  let h = '';
+  TH_ELS.forEach(el => {
+    const n = thresholds[el] || 0;
+    if (n > 0) { const f = TH_IMG[el]; h += `<span class="th-group">${Array.from({length:n}, () => `<img src="${f}" alt="${el}" class="th-row-icon">`).join('')}</span>`; }
+  });
+  return h;
+}
+// Clean Text row: mana cost · name · threshold symbols
+function renderCardTextRow(card) {
+  const cost = (card.cost != null && card.cost !== '') ? card.cost : '';
+  return `<div class="text-row" data-card-id="${escId(card.id)}" onclick="openModal('${escId(card.id)}')">
+      <span class="tr-cost${cost===''?' empty':''}">${cost}</span>
+      <span class="tr-name">${card.name}</span>
+      <span class="tr-th">${thIcons(card.thresholds)}</span>
     </div>`;
 }
 
