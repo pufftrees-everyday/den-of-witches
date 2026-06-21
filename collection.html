@@ -597,6 +597,8 @@
   .binder-finish-toggle { display: inline-flex; border: 1px solid var(--border-strong); border-radius: 6px; overflow: hidden; }
   .binder-finish-toggle button { background: var(--abyss); border: none; color: var(--rune); font-family: 'Cinzel', serif; font-size: 0.58rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 7px 10px; cursor: pointer; }
   .binder-finish-toggle button.active { background: var(--rune); color: #fff; }
+  .binder-sort-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 6px 0 2px; }
+  .binder-sort-row .bt-label { font-family: 'Cinzel', serif; font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rune); }
   .binder-cards { margin-top: 8px; display: flex; flex-direction: column; gap: 2px; }
   .binder-card-row { display: grid; grid-template-columns: 1fr auto auto auto; align-items: center; gap: 10px; padding: 7px 8px; border-radius: 6px; }
   .binder-card-row:nth-child(odd) { background: rgba(155,135,212,0.05); }
@@ -1077,7 +1079,7 @@ function binderCardCount(binder) {
 
 // ── BINDER UI ──
 function bEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-const binderUI = { collapsed: {}, addFinish: {}, addRarity: {} }; // transient per-binder UI state
+const binderUI = { collapsed: {}, addFinish: {}, addRarity: {}, sort: {} }; // transient per-binder UI state
 const MASTER_COUNTS = { Unique: 1, Elite: 2, Exceptional: 3, Ordinary: 4 };
 
 function currentBinderParent() {
@@ -1115,6 +1117,28 @@ function renderBinders() {
   `;
 }
 
+// Card names in a binder, ordered by the binder's chosen sort mode.
+const BINDER_RARITY_RANK = { Ordinary: 1, Exceptional: 2, Elite: 3, Unique: 4 };
+function sortedBinderNames(b, mode) {
+  const cards = b.cards || {};
+  const names = Object.keys(cards).filter(n => (cards[n].std||0)+(cards[n].foil||0) > 0);
+  const cardOf = n => allCards.find(c => c.id === n);
+  const costOf = n => { const c = cardOf(n); return (c && c.cost != null && c.cost !== '') ? +c.cost : Infinity; };
+  const rarityOf = n => BINDER_RARITY_RANK[cardOf(n)?.rarity] || 0;
+  const valOf = n => (prices[n]?.market||0)*(cards[n].std||0) + (foilPrices[n]?.market||0)*(cards[n].foil||0);
+  const qtyOf = n => (cards[n].std||0) + (cards[n].foil||0);
+  const byName = (a, c) => a.localeCompare(c);
+  switch (mode) {
+    case 'cost':   return names.sort((a, c) => (costOf(a) - costOf(c)) || byName(a, c));
+    case 'rarity': return names.sort((a, c) => (rarityOf(c) - rarityOf(a)) || byName(a, c));
+    case 'value':  return names.sort((a, c) => (valOf(c) - valOf(a)) || byName(a, c));
+    case 'qty':    return names.sort((a, c) => (qtyOf(c) - qtyOf(a)) || byName(a, c));
+    case 'name':
+    default:       return names.sort(byName);
+  }
+}
+function setBinderSort(id, mode) { binderUI.sort[id] = mode; renderBinders(); }
+
 function renderBinderCard(b) {
   const collapsed = binderUI.collapsed[b.id];
   const addFinish = binderUI.addFinish[b.id] || 'std';
@@ -1123,7 +1147,8 @@ function renderBinderCard(b) {
   const count = binderCardCount(b);
   const val = binderValue(b);
   const setOpts = ALL_SETS.map(s => `<option value="${bEsc(s)}">${bEsc(s)}</option>`).join('');
-  const names = Object.keys(b.cards || {}).filter(n => (b.cards[n].std||0)+(b.cards[n].foil||0) > 0).sort();
+  const sortMode = binderUI.sort[b.id] || 'name';
+  const names = sortedBinderNames(b, sortMode);
   const rows = names.map(n => {
     const q = b.cards[n];
     const card = allCards.find(c => c.id === n);
@@ -1171,6 +1196,16 @@ function renderBinderCard(b) {
         </div>
         <button class="binder-btn" onclick="binderAddManual('${b.id}')">Add</button>
       </div>
+      ${names.length ? `<div class="binder-sort-row">
+        <span class="bt-label">Sort</span>
+        <select class="binder-set-select" title="Sort cards in this binder" onchange="setBinderSort('${b.id}', this.value)">
+          <option value="name" ${sortMode==='name'?'selected':''}>Name (A–Z)</option>
+          <option value="cost" ${sortMode==='cost'?'selected':''}>Mana Cost (low→high)</option>
+          <option value="rarity" ${sortMode==='rarity'?'selected':''}>Rarity (rarest first)</option>
+          <option value="value" ${sortMode==='value'?'selected':''}>Value (high→low)</option>
+          <option value="qty" ${sortMode==='qty'?'selected':''}>Quantity (most first)</option>
+        </select>
+      </div>` : ''}
       <div class="binder-cards">${rows || `<div class="binder-empty">Empty binder — use “Bulk add from set” above, or add cards by name.</div>`}</div>
     </div>
   </div>`;
