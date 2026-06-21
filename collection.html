@@ -961,6 +961,8 @@ function renderBinders() {
   if (!parent) { panel.style.display = 'none'; panel.innerHTML = ''; return; }
   buildCardDatalist();
   const list = bindersFor(parent);
+  // Binders are collapsed by default; only expand ones the user has opened this session
+  list.forEach(b => { if (!(b.id in binderUI.collapsed)) binderUI.collapsed[b.id] = true; });
   const label = parent === 'trade' ? 'Trade Binders' : 'Vault Binders';
   panel.style.display = '';
   panel.innerHTML = `
@@ -1027,7 +1029,9 @@ function createBinder(parent) {
   const name = (prompt('Name this binder:', parent === 'trade' ? 'New Trade Binder' : 'New Binder') || '').trim();
   if (!name) return;
   const binders = getBinders();
-  binders.push({ id: 'b' + Date.now().toString(36) + Math.floor(Math.random()*1e4).toString(36), parent, name, cards: {} });
+  const newId = 'b' + Date.now().toString(36) + Math.floor(Math.random()*1e4).toString(36);
+  binders.push({ id: newId, parent, name, cards: {} });
+  binderUI.collapsed[newId] = false; // a brand-new binder opens so you can fill it
   saveBinders(); renderBinders(); updateStats();
 }
 function renameBinder(id) {
