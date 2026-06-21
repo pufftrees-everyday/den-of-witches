@@ -48,6 +48,10 @@ push happen directly, no manual upload.
   RLS: read on public decks (anyone), insert own on public decks (logged-in), delete own
   OR as deck owner. Shown on deck.html under the deck; owner's posts badged "Author".
 - **VIEW public_decks_with_likes**: public decks + like counts
+- **price_history**: captured_at (timestamptz), card_name, finish ('standard'|'foil'), market
+  (numeric). One row per card/finish/capture; appended twice daily by the price Action
+  (`record-price-history.js`) for historical price/value charts. Public read; writes only via
+  service role. See the price-history setup gotcha.
 
 **deck_data jsonb shape:** `{ n:name, a:[[cardName,qty]...avatar], t:[...atlas/sites],
 s:[...spellbook], c:[...collection/sideboard], d:"Scroll" }`
@@ -213,6 +217,30 @@ NO blur/glow. Element symbols + moon are loaded as real PNGs from the site.
   create policy "avatars owner delete" on storage.objects for delete to authenticated
     using (bucket_id = 'avatars' and (storage.foldername(name))[1] = auth.uid()::text);
   ```
+
+- **Price history capture** needs a `price_history` table + a Supabase **service-role** key stored
+  as the GitHub Actions secret `SUPABASE_SERVICE_ROLE`. The Action's "Record price history" step
+  (`record-price-history.js`) no-ops quietly until both exist, so price updates keep working. Run
+  once in the SQL editor:
+  ```sql
+  create table if not exists public.price_history (
+    captured_at timestamptz not null,
+    card_name   text        not null,
+    finish      text        not null check (finish in ('standard','foil')),
+    market      numeric      not null,
+    primary key (card_name, finish, captured_at)
+  );
+  create index if not exists price_history_time_idx on public.price_history (captured_at);
+  alter table public.price_history enable row level security;
+  drop policy if exists "price history public read" on public.price_history;
+  create policy "price history public read" on public.price_history for select using (true);
+  grant select on public.price_history to anon, authenticated;
+  ```
+  Then add the secret: GitHub repo → Settings → Secrets and variables → Actions → New repository
+  secret → name `SUPABASE_SERVICE_ROLE`, value = the project's **service_role** key (Supabase →
+  Project Settings → API). Capture begins on the next scheduled run (or trigger it manually from
+  the Actions tab). ~2,200 points/run × 2 runs/day; backfill from git history of prices.json is
+  possible later if desired.
 
 ## Open / future ideas
 - Swap permanent Discord invite when available.

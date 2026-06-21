@@ -43,3 +43,12 @@ jobs:
             git commit -m "Auto-update card prices ($(date -u '+%Y-%m-%d %H:%M UTC'))"
             git push
           fi
+
+      # Append a snapshot to the Supabase price_history table for charts.
+      # No-ops quietly until SUPABASE_SERVICE_ROLE is set, so it never blocks
+      # the price update above. Runs last on purpose.
+      - name: Record price history to Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE: ${{ secrets.SUPABASE_SERVICE_ROLE }}
+        run: node record-price-history.js
