@@ -409,6 +409,12 @@
     /* keep sites spanning 2 on mobile too (they read better large), but never overflow */
     .deck-card-cell.is-site { grid-column: span 2; }
   }
+  @media (max-width: 560px) {
+    /* Tidy the toolbar: tighter gaps, controls wrap evenly, download on its own full row */
+    .deck-toolbar { flex-direction: column; align-items: stretch; gap: 14px; }
+    .toolbar-left { gap: 14px 18px; row-gap: 14px; }
+    .deck-toolbar > .btn { width: 100%; }
+  }
   @media (max-width: 280px) {
     .deck-card-cell.is-site { grid-column: span 1; }
   }

@@ -304,7 +304,7 @@
   /* Clean Text view rows: cost · count · name · threshold symbols · price */
   .th-group { display: inline-flex; gap: 2px; align-items: center; }
   .th-row-icon { width: 15px; height: 15px; object-fit: contain; display: inline-block; vertical-align: middle; }
-  .text-row { display: flex; align-items: center; gap: 10px; padding: 5px 10px; border-radius: 4px; line-height: 1.3; }
+  .text-row { display: flex; align-items: center; gap: 10px; padding: 5px 10px; border-radius: 4px; line-height: 1.3; cursor: pointer; }
   .text-row:nth-child(odd) { background: rgba(155,135,212,0.04); }
   .tr-cost { font-family: 'Cinzel', serif; font-size: 0.72rem; color: var(--rune); width: 21px; height: 21px; border: 1px solid var(--border-strong); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .tr-cost.empty { opacity: 0; }
@@ -361,7 +361,7 @@
     border-left: 3px solid var(--border-strong);
     padding: 5px 10px; border-radius: 3px;
     transition: background 0.12s, border-color 0.12s;
-    min-width: 0;
+    min-width: 0; cursor: pointer;
   }
   .card-row:hover { background: #1a1728; }
   .card-row.flag-have { border-left-color: var(--sage); }
@@ -530,8 +530,14 @@
     .filter-stones { flex-wrap: wrap; }
     .filter-stone { flex: 1 1 45%; min-width: 0; border-right: 3px solid #2a2640; border-bottom: 3px solid #2a2640; }
     .filter-stone + .filter-stone::before { display: none; }
-    .collection-bar { flex-direction: column; align-items: flex-start; }
+    .collection-bar { flex-direction: column; align-items: stretch; }
     .collection-actions { margin-left: 0; }
+    /* Section switcher: full-width 2×2 grid so 4 tabs never overflow */
+    .collection-bar .section-switcher { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+    .collection-bar .section-switcher .view-btn { border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 9px 8px; }
+    .collection-bar .section-switcher .view-btn:nth-child(2n) { border-right: none; }
+    .collection-bar .section-switcher .view-btn:nth-last-child(-n+2) { border-bottom: none; }
+    .collection-actions .btn { width: 100%; }
     .card-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
     .card-grid.sites-only { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
     .card-grid.large-view { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
@@ -605,6 +611,71 @@
   @media (max-width: 560px) {
     .binder-card-row { grid-template-columns: 1fr auto; gap: 6px; }
     .bcr-val { grid-column: 1 / -1; text-align: left; }
+  }
+
+  /* ── CARD DETAIL MODAL ── */
+  .cm-overlay { display: none; position: fixed; inset: 0; background: rgba(11,10,15,0.85); z-index: 1200; align-items: center; justify-content: center; backdrop-filter: blur(4px); padding: 20px; }
+  .cm-overlay.open { display: flex; }
+  .cm-modal { background: var(--dusk); border: 1px solid var(--border-strong); border-radius: 10px; box-shadow: 0 0 60px rgba(155,135,212,0.2); max-width: 920px; width: 100%; max-height: 92vh; display: grid; grid-template-columns: 360px 1fr; position: relative; overflow: hidden; }
+  .cm-img { background: var(--twilight); display: flex; align-items: center; justify-content: center; padding: 24px; }
+  .cm-img img { width: 100%; max-width: 300px; aspect-ratio: 3/4; object-fit: contain; display: block; border-radius: 8px; }
+  .cm-modal.site-modal { grid-template-columns: 440px 1fr; }
+  .cm-img.site-img img { max-width: 360px; transform: rotate(90deg); }
+  .cm-body { padding: 26px 28px; display: flex; flex-direction: column; gap: 13px; overflow-y: auto; }
+  .cm-name { font-family: 'Cinzel', serif; font-size: 1.55rem; font-weight: 600; color: var(--gold); line-height: 1.15; padding-right: 28px; }
+  .cm-type { font-size: 1rem; color: var(--arcane); font-style: italic; }
+  .cm-text { font-size: 1rem; color: var(--parchment); line-height: 1.6; border-top: 1px solid var(--border); padding-top: 12px; }
+  .cm-stats { display: flex; flex-wrap: wrap; gap: 7px; }
+  .cm-stat { font-size: 0.85rem; background: rgba(155,135,212,0.08); border: 1px solid var(--border); border-radius: 4px; padding: 3px 10px; color: var(--shimmer); }
+  .cm-stat b { color: var(--arcane); }
+  .cm-close { position: absolute; top: 10px; right: 14px; background: rgba(11,10,15,0.5); border: none; width: 32px; height: 32px; border-radius: 50%; color: var(--rune); font-size: 1.3rem; cursor: pointer; z-index: 2; line-height: 1; display: flex; align-items: center; justify-content: center; }
+  .cm-close:hover { color: var(--parchment); background: rgba(11,10,15,0.8); }
+
+  /* Collection controls inside the modal */
+  .cm-coll { border-top: 1px solid var(--border); padding-top: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .cm-coll-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .cm-coll-title { font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); }
+  .cm-finish { display: flex; border: 1px solid var(--border-strong); border-radius: 4px; overflow: hidden; }
+  .cm-finish button { font-family: 'Cinzel', serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; background: #13111e; border: none; color: var(--rune); padding: 5px 12px; cursor: pointer; transition: all 0.15s; }
+  .cm-finish button.active { background: var(--rune); color: #fff; }
+  .cm-finish button.foil.active { background: linear-gradient(135deg, var(--gold), #b8924e); color: #1a1410; }
+  .cm-price { font-size: 0.9rem; color: var(--shimmer); }
+  .cm-price b { color: var(--gold); }
+  .cm-row { display: flex; align-items: center; gap: 10px; }
+  .cm-flag { flex: 1; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 14px; font-family: 'Cinzel', serif; font-size: 0.74rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; border-radius: 6px; border: 1px solid; cursor: pointer; transition: all 0.15s; background: #13111e; }
+  .cm-flag.have { border-color: rgba(90,138,106,0.5); color: var(--sage); }
+  .cm-flag.have.on { background: var(--sage); color: #fff; }
+  .cm-flag.trade { border-color: rgba(155,135,212,0.5); color: var(--arcane); }
+  .cm-flag.trade.on { background: var(--arcane); color: #fff; }
+  .cm-flag.want { border-color: rgba(196,97,74,0.5); color: var(--ember); }
+  .cm-flag.want.on { background: var(--ember); color: #fff; }
+  .cm-step { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .cm-stepbtn { width: 32px; height: 32px; border: 1px solid var(--border-strong); background: var(--dusk); color: var(--shimmer); border-radius: 6px; cursor: pointer; font-size: 1.2rem; line-height: 1; display: inline-flex; align-items: center; justify-content: center; padding: 0; }
+  .cm-stepbtn:hover { border-color: var(--arcane); color: var(--gold); }
+  .cm-stepnum { font-family: 'Cinzel', serif; font-weight: 700; color: var(--gold); min-width: 22px; text-align: center; }
+
+  /* Price history chart (card modal) */
+  .cm-pricechart { margin-top: 2px; border-top: 1px solid var(--border); padding-top: 12px; }
+  .pc-title { font-family: 'Cinzel', serif; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+  .pc-title .pc-sub { color: var(--rune); font-weight: 400; font-size: 0.7rem; text-transform: none; letter-spacing: 0; margin-left: 6px; }
+  .pc-status { color: var(--rune); font-style: italic; font-size: 0.85rem; padding: 4px 0; }
+  .pc-svg { width: 100%; height: auto; display: block; background: rgba(11,10,15,0.4); border: 1px solid var(--border); border-radius: 8px; }
+  .pc-axis { fill: var(--rune); font-family: 'Crimson Pro', serif; font-size: 9px; }
+  .pc-grid { stroke: var(--border); stroke-width: 1; }
+  .pc-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 8px; font-size: 0.82rem; color: var(--parchment); }
+  .pc-leg { display: inline-flex; align-items: center; gap: 6px; }
+  .pc-leg b { color: var(--gold); }
+  .pc-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .pc-note { color: var(--rune); font-style: italic; }
+
+  @media (max-width: 680px) {
+    .cm-overlay { padding: 0; align-items: stretch; }
+    .cm-modal, .cm-modal.site-modal { grid-template-columns: 1fr; max-height: 100vh; height: 100vh; border-radius: 0; overflow-y: auto; }
+    .cm-img { padding: 18px 18px 8px; }
+    .cm-img img { max-width: 190px; }
+    .cm-img.site-img img { max-width: 230px; }
+    .cm-body { padding: 16px 18px 28px; }
+    .cm-name { font-size: 1.35rem; }
   }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -881,6 +952,24 @@
 
 <!-- HOVER PREVIEW (desktop, list view only) -->
 <div class="hover-preview" id="hover-preview"><img id="hover-preview-img" src="" alt=""></div>
+
+<!-- CARD DETAIL MODAL -->
+<div class="cm-overlay" id="cm-overlay" onclick="closeCardModal(event)">
+  <div class="cm-modal" id="cm-modal">
+    <button class="cm-close" onclick="closeCardModal()" aria-label="Close">✕</button>
+    <div class="cm-img" id="cm-img"><img id="cm-img-el" src="" alt="" onerror="this.style.opacity='0.2'"></div>
+    <div class="cm-body">
+      <div>
+        <div class="cm-name" id="cm-name"></div>
+        <div class="cm-type" id="cm-type"></div>
+      </div>
+      <div class="cm-text" id="cm-text"></div>
+      <div class="cm-stats" id="cm-stats"></div>
+      <div class="cm-coll" id="cm-coll"></div>
+      <div class="cm-pricechart" id="cm-pricechart" style="display:none;"></div>
+    </div>
+  </div>
+</div>
 
 <script>
 // ── STATE ──
@@ -1371,7 +1460,7 @@ async function loadCards() {
       return {
         id: card.name, name: card.name,
         type: g.type || '', rarity: g.rarity || '',
-        cost: g.cost, attack: g.attack,
+        cost: g.cost, attack: g.attack, defence: g.defence, life: g.life,
         thresholds: g.thresholds || {},
         rules_text: g.rulesText || '',
         element: Array.isArray(card.elements) ? card.elements.join(', ') : (card.elements || ''),
@@ -1451,6 +1540,187 @@ function hpHide() { if (_hpEl) _hpEl.classList.remove('show'); _hpVisible = fals
   root.addEventListener('mousemove', e => { if (!_hpVisible) return; const r = e.target.closest('[data-id]'); if (!r) { hpHide(); return; } hpMove(e.clientX, e.clientY); });
   root.addEventListener('mouseout', e => { const to = e.relatedTarget; if (!to || !to.closest || !to.closest('[data-id]')) hpHide(); });
 })();
+
+// ── CARD DETAIL MODAL (details + collection controls + price history) ──
+let _modalCardId = null;
+
+// Open the modal for a clicked card. Wired via delegation so it works in every view.
+(function wireCardClick() {
+  const root = document.getElementById('card-grid');
+  if (!root) return;
+  root.addEventListener('click', e => {
+    if (e.target.closest('button') || e.target.closest('a') || e.target.closest('input')) return;
+    const el = e.target.closest('[data-id]');
+    if (!el) return;
+    openCardModal(el.getAttribute('data-id'));
+  });
+})();
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('cm-overlay').classList.contains('open')) closeCardModal();
+});
+
+function openCardModal(id) {
+  const card = allCards.find(c => c.id === id || c.name === id);
+  if (!card) return;
+  _modalCardId = card.id;
+  const modal = document.getElementById('cm-modal');
+  const imgWrap = document.getElementById('cm-img');
+  const img = document.getElementById('cm-img-el');
+  const isSite = card.type === 'Site';
+  modal.classList.toggle('site-modal', isSite);
+  imgWrap.classList.toggle('site-img', isSite);
+  img.style.opacity = '1';
+  img.src = (finishMode === 'foil' && card.foilSlug) ? `${IMAGE_BASE}${card.foilSlug}.png` : getImageUrl(card);
+  img.alt = card.name;
+  document.getElementById('cm-name').textContent = card.name;
+  document.getElementById('cm-type').textContent = [card.type, card.set].filter(Boolean).join(' · ');
+  const textEl = document.getElementById('cm-text');
+  textEl.textContent = card.rules_text || '';
+  textEl.style.display = card.rules_text ? '' : 'none';
+  const stats = [];
+  if (card.cost != null && card.cost !== '') stats.push({ l: 'Cost', v: card.cost });
+  if (card.attack != null && card.attack !== '') stats.push({ l: 'Power', v: card.attack });
+  if (card.defence != null && card.defence !== '') stats.push({ l: 'Defence', v: card.defence });
+  if (card.life != null && card.life !== '') stats.push({ l: 'Life', v: card.life });
+  if (card.rarity) stats.push({ l: 'Rarity', v: card.rarity });
+  if (card.element) stats.push({ l: 'Element', v: card.element });
+  if (card.subTypes) stats.push({ l: 'Subtype', v: card.subTypes });
+  if (card.thresholds) {
+    const t = Object.entries(card.thresholds).filter(([, v]) => v > 0).map(([k, v]) => `${v} ${k}`).join(', ');
+    if (t) stats.push({ l: 'Threshold', v: t });
+  }
+  document.getElementById('cm-stats').innerHTML = stats.map(s => `<div class="cm-stat"><b>${s.l}:</b> ${s.v}</div>`).join('');
+  renderModalControls();
+  document.getElementById('cm-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  loadPriceChart(card.name);
+  if (typeof hpHide === 'function') hpHide();
+}
+
+function closeCardModal(e) {
+  if (e && e.target !== document.getElementById('cm-overlay')) return;
+  document.getElementById('cm-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  _modalCardId = null;
+}
+
+// Vault / Trades / Wants controls inside the modal (finish-aware, mirrors the grid)
+function renderModalControls() {
+  const wrap = document.getElementById('cm-coll');
+  if (!wrap || !_modalCardId) return;
+  const card = allCards.find(c => c.id === _modalCardId);
+  if (!card) return;
+  const e = getCollection()[_modalCardId] || {};
+  const foil = finishMode === 'foil';
+  const have = (foil ? e.haveFoil : e.have) || 0;
+  const trade = (foil ? e.tradeFoil : e.trade) || 0;
+  const want = (foil ? e.wantFoil : e.want) || 0;
+  const price = (foil ? foilPrices[card.name] : prices[card.name])?.market;
+  const escId = _modalCardId.replace(/'/g, "\\'");
+  const flagRow = (flag, label, icon, qty) => `
+    <div class="cm-row">
+      <button class="cm-flag ${flag}${qty > 0 ? ' on' : ''}" onclick="modalFlag('${escId}','${flag}')">
+        <span>${icon} ${label}</span><span>${qty > 0 ? '×' + qty : ''}</span>
+      </button>
+      <div class="cm-step" style="visibility:${qty > 0 ? 'visible' : 'hidden'}">
+        <button class="cm-stepbtn" onclick="modalQty('${escId}','${flag}',-1)" aria-label="Remove one">−</button>
+        <span class="cm-stepnum">${qty}</span>
+        <button class="cm-stepbtn" onclick="modalQty('${escId}','${flag}',1)" aria-label="Add one">+</button>
+      </div>
+    </div>`;
+  wrap.innerHTML = `
+    <div class="cm-coll-head">
+      <span class="cm-coll-title">Add to your collection</span>
+      <div class="cm-finish">
+        <button class="${foil ? '' : 'active'}" onclick="modalSetFinish('standard')">Standard</button>
+        <button class="foil ${foil ? 'active' : ''}" onclick="modalSetFinish('foil')">Foil</button>
+      </div>
+    </div>
+    ${price != null ? `<div class="cm-price">${foil ? 'Foil' : 'Market'} price: <b>$${price.toFixed(2)}</b></div>` : ''}
+    ${flagRow('have', 'Vault', '✓', have)}
+    ${flagRow('trade', 'Trades', '⇄', trade)}
+    ${flagRow('want', 'Wants', '♡', want)}`;
+}
+
+function modalFlag(id, flag) { toggleFlag(id, flag); renderModalControls(); }
+function modalQty(id, flag, delta) { changeQty(id, flag, delta); renderModalControls(); }
+function modalSetFinish(mode) {
+  setFinish(mode);
+  const card = allCards.find(c => c.id === _modalCardId);
+  if (card) {
+    const img = document.getElementById('cm-img-el');
+    img.style.opacity = '1';
+    img.src = (mode === 'foil' && card.foilSlug) ? `${IMAGE_BASE}${card.foilSlug}.png` : getImageUrl(card);
+  }
+  renderModalControls();
+}
+
+// ── PRICE HISTORY CHART (per card, from the price_history table) ──
+const PC_SUPABASE_URL = 'https://nuizkjkcephopnbcmtlz.supabase.co';
+const PC_SUPABASE_ANON = 'sb_publishable_9er9B3YGFuvNO8Y8W6yr2g_sR5tXvKH';
+let _priceChartToken = 0;
+async function loadPriceChart(cardName) {
+  const el = document.getElementById('cm-pricechart');
+  if (!el) return;
+  const token = ++_priceChartToken;
+  el.style.display = '';
+  el.innerHTML = '<div class="pc-title">Price History</div><div class="pc-status">Loading…</div>';
+  let rows = [];
+  try {
+    const url = `${PC_SUPABASE_URL}/rest/v1/price_history?card_name=eq.${encodeURIComponent(cardName)}&select=captured_at,finish,market&order=captured_at.asc`;
+    const res = await fetch(url, { headers: { apikey: PC_SUPABASE_ANON, Authorization: 'Bearer ' + PC_SUPABASE_ANON } });
+    if (res.ok) rows = await res.json();
+  } catch (e) { /* offline / table missing → empty state */ }
+  if (token !== _priceChartToken) return;
+  if (!rows.length) {
+    el.innerHTML = '<div class="pc-title">Price History</div><div class="pc-status">No price history yet — check back as daily prices are recorded.</div>';
+    return;
+  }
+  el.innerHTML = '<div class="pc-title">Price History <span class="pc-sub">market, USD</span></div>' + renderPriceChartSVG(rows);
+}
+
+function renderPriceChartSVG(rows) {
+  const W = 360, H = 150, padL = 44, padR = 16, padT = 12, padB = 24;
+  const series = { standard: [], foil: [] };
+  rows.forEach(r => { if (series[r.finish] && r.market != null) series[r.finish].push({ t: Date.parse(r.captured_at), v: +r.market }); });
+  const all = [...series.standard, ...series.foil].map(p => p.v).filter(v => !isNaN(v));
+  const times = [...series.standard, ...series.foil].map(p => p.t).filter(t => !isNaN(t));
+  if (!all.length) return '<div class="pc-status">No price history yet.</div>';
+  let minV = Math.min(...all), maxV = Math.max(...all);
+  if (minV === maxV) { minV = Math.max(0, minV * 0.9); maxV = maxV * 1.1 || 1; }
+  let minT = Math.min(...times), maxT = Math.max(...times);
+  const xOf = t => maxT === minT ? (padL + (W - padL - padR) / 2) : padL + (t - minT) / (maxT - minT) * (W - padL - padR);
+  const yOf = v => padT + (1 - (v - minV) / (maxV - minV)) * (H - padT - padB);
+  const colors = { standard: 'var(--gold)', foil: 'var(--arcane)' };
+  let paths = '', dots = '';
+  for (const f of ['standard', 'foil']) {
+    const pts = series[f].sort((a, b) => a.t - b.t);
+    if (!pts.length) continue;
+    if (pts.length === 1) {
+      dots += `<circle cx="${xOf(pts[0].t).toFixed(1)}" cy="${yOf(pts[0].v).toFixed(1)}" r="3.5" fill="${colors[f]}"></circle>`;
+    } else {
+      const d = pts.map((p, i) => `${i ? 'L' : 'M'}${xOf(p.t).toFixed(1)},${yOf(p.v).toFixed(1)}`).join(' ');
+      paths += `<path d="${d}" fill="none" stroke="${colors[f]}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"></path>`;
+      const last = pts[pts.length - 1];
+      dots += `<circle cx="${xOf(last.t).toFixed(1)}" cy="${yOf(last.v).toFixed(1)}" r="3" fill="${colors[f]}"></circle>`;
+    }
+  }
+  const money = v => '$' + v.toFixed(2);
+  const fmtDate = t => { const d = new Date(t); return (d.getMonth() + 1) + '/' + d.getDate(); };
+  const grid = `<line x1="${padL}" y1="${yOf(maxV).toFixed(1)}" x2="${W - padR}" y2="${yOf(maxV).toFixed(1)}" class="pc-grid"></line>`
+             + `<line x1="${padL}" y1="${yOf(minV).toFixed(1)}" x2="${W - padR}" y2="${yOf(minV).toFixed(1)}" class="pc-grid"></line>`;
+  const yLab = `<text x="${padL - 6}" y="${(yOf(maxV) + 3).toFixed(1)}" class="pc-axis" text-anchor="end">${money(maxV)}</text>`
+             + `<text x="${padL - 6}" y="${(yOf(minV) + 3).toFixed(1)}" class="pc-axis" text-anchor="end">${money(minV)}</text>`;
+  const xLab = `<text x="${padL}" y="${H - 7}" class="pc-axis" text-anchor="start">${fmtDate(minT)}</text>`
+             + `<text x="${W - padR}" y="${H - 7}" class="pc-axis" text-anchor="end">${fmtDate(maxT)}</text>`;
+  const latest = f => { const p = series[f]; return p.length ? money(p[p.length - 1].v) : ''; };
+  const legend = `<div class="pc-legend">`
+    + `<span class="pc-leg"><span class="pc-dot" style="background:var(--gold)"></span>Standard <b>${latest('standard')}</b></span>`
+    + (series.foil.length ? `<span class="pc-leg"><span class="pc-dot" style="background:var(--arcane)"></span>Foil <b>${latest('foil')}</b></span>` : '')
+    + (times.length === 1 ? `<span class="pc-leg pc-note">one data point so far</span>` : '')
+    + `</div>`;
+  return `<svg viewBox="0 0 ${W} ${H}" class="pc-svg" role="img" aria-label="Price history line chart">${grid}${paths}${dots}${yLab}${xLab}</svg>${legend}`;
+}
 
 // Map a set name to a compact lettered, color-coded badge
 function setBadge(setName) {
