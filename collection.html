@@ -795,7 +795,7 @@
   }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="cr-auth.js?v=12"></script>
+<script src="cr-auth.js?v=13"></script>
 <script src="price-chart.js?v=1"></script>
 </head>
 <body>
@@ -1243,8 +1243,9 @@ function ownedDecksTotalValue() { return getOwnedDecks().reduce((s, d) => s + bi
 // ── BINDER UI ──
 function bEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 const binderUI = { collapsed: {}, addFinish: {}, addRarity: {}, sort: {} }; // transient per-binder UI state
-// Whole-section collapse state (Vault Binders / Trade Binders / Owned Decks)
-const sectionCollapsed = { vaultBinders: false, tradeBinders: false, ownedDecks: false };
+// Whole-section collapse state (Vault Binders / Trade Binders / Owned Decks).
+// Collapsed by default — expand to reveal the contents.
+const sectionCollapsed = { vaultBinders: true, tradeBinders: true, ownedDecks: true };
 function toggleBindersSection(parent) {
   const k = parent === 'trade' ? 'tradeBinders' : 'vaultBinders';
   sectionCollapsed[k] = !sectionCollapsed[k];
@@ -2688,7 +2689,9 @@ let workshopDecks = null;
 let workshopDecksLoading = false;
 function ensureWorkshopDecks() {
   if (workshopDecks !== null || workshopDecksLoading) return;
-  if (!(window.CR && CR.user && CR.fetchCloudDecks)) { workshopDecks = []; return; }
+  // Not signed in / auth not ready yet → leave it null so a later render (e.g.
+  // after login + hydrate) retries the fetch instead of caching an empty list.
+  if (!(window.CR && CR.user && CR.fetchCloudDecks)) return;
   workshopDecksLoading = true;
   CR.fetchCloudDecks().then(d => {
     workshopDecks = d || [];
@@ -3046,6 +3049,8 @@ function dismissGuestBanner() {
 async function handleAuthChange(kind) {
   CR.renderAuthBar('auth-bar');
   updateGuestBanner();
+  // Auth changed → re-fetch the Workshop decks for the quick-add next render.
+  workshopDecks = null; workshopDecksLoading = false;
   if (kind === 'login') {
     await maybeMigrateCollection();
     await hydrateCollection();
@@ -3053,6 +3058,7 @@ async function handleAuthChange(kind) {
     // logged out → revert to local
     collectionCache = getLocalCollection();
     updateStats(); renderBinders(); filterCards();
+    if (currentView === 'all' || currentView === 'decks') renderOwnedDecks();
   }
 }
 

@@ -242,12 +242,14 @@
   };
 
   // ── CLOUD: DECKS ──
+  // Returns the user's decks, matching what My Workshop (decks.html) shows —
+  // i.e. all of the user's own decks, NOT just ones flagged is_saved.
   CR.fetchCloudDecks = async function () {
     if (!supa || !CR.user) return [];
     try {
       const { data, error } = await supa.from('decks')
         .select('id, short_code, name, deck_data, is_public, updated_at')
-        .eq('owner_id', CR.user.id).eq('is_saved', true)
+        .eq('owner_id', CR.user.id)
         .order('updated_at', { ascending: false });
       if (error) throw error;
       return data || [];

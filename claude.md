@@ -182,7 +182,7 @@ then variant where `finish==='Standard' && product==='Booster'`. Example real sl
 - **cr-auth.js** — shared auth module exposing `window.CR`. Loaded by **index.html**,
   **collection.html**, **rulebook.html**, and **about.html**. deckbuilder/deck/archive/decks/profile
   each inline their own Supabase client + auth (duplicated logic); avatar/tracker/videos use no auth.
-  Bump `?v=N` (currently `?v=11`) in those four files when edited.
+  Bump `?v=N` (currently `?v=13`) in those four files when edited.
 - **price-chart.js** — shared price-history chart renderer exposing `window.CRPriceChart`
   (`load(cardName, elOrId)` + `renderSVG(rows)`). Dependency-free inline-SVG line chart (standard +
   foil) read from the public `price_history` table via the Supabase REST API; shows a "Source:
