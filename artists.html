@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-70B9BVL5LC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-70B9BVL5LC');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Artists — Cursed Realm</title>
+<meta name="description" content="Every artist who illustrated Sorcery: Contested Realm cards, with their full galleries on Cursed Realm.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cursedrealm.org/artists.html">
+<meta property="og:title" content="Artists — Cursed Realm">
+<meta property="og:description" content="Browse every Sorcery: Contested Realm artist and their cards.">
+<meta property="og:image" content="https://cursedrealm.org/social-banner.png?v=2">
+<meta name="theme-color" content="#0b0a0f">
+<link rel="icon" type="image/png" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #0b0a0f; --abyss: #111018; --dusk: #1a1826; --twilight: #252338;
+    --mist: #3a3658; --rune: #6b5fa0; --arcane: #9b87d4; --shimmer: #c9bfee;
+    --parchment: #e8e0cc; --gold: #c8a96e; --ember: #c4614a; --sage: #5a8a6a;
+    --border: rgba(155, 135, 212, 0.18); --border-strong: rgba(155, 135, 212, 0.35);
+    --glow-strong: 0 0 30px rgba(155,135,212,0.3);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { overflow-x: clip; max-width: 100%; }
+  body { background: var(--void); color: var(--parchment); font-family: 'Crimson Pro', serif; min-height: 100vh; }
+  a { color: inherit; }
+
+  header {
+    background: linear-gradient(180deg, #0d0b14 0%, var(--void) 100%);
+    border-bottom: 1px solid var(--border); padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    height: 60px; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(8px);
+  }
+  .header-main { display: flex; align-items: center; gap: 16px; min-width: 0; }
+  .header-nav { display: flex; gap: 14px; align-items: center; }
+  .header-link { font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rune); text-decoration: none; transition: color 0.2s; white-space: nowrap; }
+  .header-link:hover { color: var(--arcane); }
+  .logo-link { display: flex; align-items: center; gap: 9px; text-decoration: none; }
+  .logo-link img { width: 30px; height: 30px; border-radius: 6px; }
+  .logo-text { font-family: 'Cinzel Decorative', serif; font-size: 1.1rem; font-weight: 700; color: var(--gold); white-space: nowrap; }
+  @media (max-width: 760px) { .header-nav .nav-extra { display: none; } }
+
+  .page { max-width: 1180px; margin: 0 auto; padding: 28px 24px 64px; }
+  .status { text-align: center; color: var(--rune); padding: 60px 0; font-style: italic; }
+
+  .head { margin-bottom: 20px; }
+  .eyebrow { font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--rune); margin-bottom: 8px; }
+  .title { font-family: 'Cinzel Decorative', serif; font-size: clamp(2rem, 5vw, 2.8rem); font-weight: 700; color: var(--gold); line-height: 1.1; }
+  .sub { color: var(--shimmer); font-size: 1.02rem; margin-top: 8px; max-width: 60ch; line-height: 1.6; }
+  .sub b { color: var(--arcane); }
+
+  .search-wrap { position: relative; margin: 22px 0 20px; max-width: 420px; }
+  .search-wrap input {
+    width: 100%; background: #0b0a0f; border: 1px solid var(--border-strong); color: var(--parchment);
+    font-family: 'Crimson Pro', serif; font-size: 1.05rem; padding: 11px 14px; border-radius: 8px; outline: none;
+    transition: border-color 0.15s;
+  }
+  .search-wrap input:focus { border-color: var(--arcane); }
+  .search-wrap input::placeholder { color: var(--mist); font-style: italic; }
+
+  .artist-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+  @media (max-width: 520px) { .artist-grid { grid-template-columns: 1fr; } }
+
+  .artist-tile {
+    display: flex; align-items: center; gap: 14px; text-decoration: none;
+    background: var(--abyss); border: 1px solid var(--border); border-radius: 12px;
+    padding: 12px; transition: border-color 0.18s, transform 0.18s, box-shadow 0.18s;
+  }
+  .artist-tile:hover { border-color: var(--border-strong); transform: translateY(-2px); box-shadow: var(--glow-strong); }
+  .artist-thumb { width: 60px; height: 80px; flex-shrink: 0; border-radius: 7px; overflow: hidden; background: var(--twilight); border: 1px solid var(--border); position: relative; }
+  .artist-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .artist-thumb.is-site img { position: absolute; top: 50%; left: 50%; width: 133%; height: auto; transform: translate(-50%,-50%) rotate(90deg); object-fit: contain; }
+  .artist-info { min-width: 0; }
+  .artist-tile .name { font-family: 'Cinzel', serif; font-size: 1.05rem; font-weight: 600; color: var(--parchment); line-height: 1.2; }
+  .artist-tile:hover .name { color: var(--shimmer); }
+  .artist-tile .count { font-size: 0.85rem; color: var(--rune); margin-top: 4px; }
+  .artist-tile .count b { color: var(--gold); }
+
+  .no-results { color: var(--rune); font-style: italic; padding: 30px 4px; }
+  .disclaimer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 0.78rem; color: var(--rune); line-height: 1.6; font-style: italic; }
+</style>
+</head>
+<body>
+<header>
+  <div class="header-main">
+    <a href="index.html" class="logo-link">
+      <img src="icon-192.png" alt="Cursed Realm" onerror="this.style.display='none'">
+      <span class="logo-text">Cursed Realm</span>
+    </a>
+  </div>
+  <nav class="header-nav">
+    <a href="index.html" class="header-link">Explore</a>
+    <a href="archive.html" class="header-link nav-extra">The Archive</a>
+    <a href="deckbuilder.html" class="header-link">New Deck</a>
+  </nav>
+</header>
+
+<div class="page">
+  <div class="head">
+    <div class="eyebrow">The Realm's Illustrators</div>
+    <h1 class="title">Artists</h1>
+    <p class="sub">Every artist who brought <em>Sorcery: Contested Realm</em> to life. Tap a name to see <b>all of their cards</b>.</p>
+  </div>
+
+  <div class="search-wrap">
+    <input type="text" id="artist-search" placeholder="Search artists…" autocomplete="off" oninput="filterArtists()">
+  </div>
+
+  <div class="status" id="status">Gathering the illustrators…</div>
+  <div class="artist-grid" id="artist-grid" style="display:none;"></div>
+  <div class="no-results" id="no-results" style="display:none;">No artists match your search.</div>
+
+  <div class="disclaimer">
+    Artist credits and card art are the property of Erik's Curiosa Limited. Cursed Realm is an unofficial fan-made reference and is not affiliated with or endorsed by Erik's Curiosa.
+  </div>
+</div>
+
+<script>
+  const IMAGE_BASE = 'https://pub-5999238092ad418ca60e7a9ad641cf57.r2.dev/';
+  function escHtml(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  function chooseSet(sets) {
+    return (sets||[]).find(s => /beta/i.test(s.name||''))
+      || (sets||[]).find(s => /alpha/i.test(s.name||''))
+      || (sets||[])[0];
+  }
+  function slugFor(card) {
+    const set = chooseSet(card.sets);
+    if (set && set.variants && set.variants.length) {
+      const v = set.variants.find(v => v.finish==='Standard' && v.product==='Booster') || set.variants[0];
+      if (v) return v.slug;
+    }
+    return (card.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
+  }
+  function artistsOf(card) {
+    const s = new Set();
+    (card.sets||[]).forEach(x => (x.variants||[]).forEach(v => { if (v.artist && v.artist.trim()) s.add(v.artist.trim()); }));
+    return [...s];
+  }
+
+  let artists = []; // [{ name, count, slug, isSite }]
+
+  async function run() {
+    const statusEl = document.getElementById('status');
+    let raw;
+    try {
+      const res = await fetch('cards.json');
+      raw = await res.json();
+      if (!Array.isArray(raw)) raw = raw.data || raw.cards || [];
+    } catch (e) { statusEl.textContent = 'Could not load card data.'; return; }
+
+    // Aggregate: artist -> count + a representative card (prefer a non-Site for nicer art).
+    const map = new Map();
+    raw.forEach(card => {
+      const slug = slugFor(card);
+      const isSite = (card.guardian && card.guardian.type) === 'Site';
+      artistsOf(card).forEach(a => {
+        let e = map.get(a);
+        if (!e) { e = { name: a, count: 0, slug, isSite }; map.set(a, e); }
+        e.count++;
+        if (e.isSite && !isSite) { e.slug = slug; e.isSite = false; } // upgrade to a portrait sample
+      });
+    });
+
+    artists = [...map.values()].sort((a, b) => a.name.localeCompare(b.name));
+    if (!artists.length) { statusEl.textContent = 'No artist data found.'; return; }
+
+    renderArtists(artists);
+    statusEl.style.display = 'none';
+    document.getElementById('artist-grid').style.display = '';
+  }
+
+  function renderArtists(list) {
+    document.getElementById('artist-grid').innerHTML = list.map(a => `
+      <a class="artist-tile" href="artist.html?a=${encodeURIComponent(a.name)}">
+        <div class="artist-thumb${a.isSite ? ' is-site' : ''}">
+          <img src="${IMAGE_BASE}${a.slug}.png" alt="" loading="lazy" onerror="this.style.opacity='0.15'">
+        </div>
+        <div class="artist-info">
+          <div class="name">${escHtml(a.name)}</div>
+          <div class="count"><b>${a.count}</b> card${a.count === 1 ? '' : 's'}</div>
+        </div>
+      </a>`).join('');
+  }
+
+  function filterArtists() {
+    const q = (document.getElementById('artist-search').value || '').trim().toLowerCase();
+    const list = q ? artists.filter(a => a.name.toLowerCase().includes(q)) : artists;
+    renderArtists(list);
+    const grid = document.getElementById('artist-grid');
+    const none = document.getElementById('no-results');
+    const empty = list.length === 0;
+    grid.style.display = empty ? 'none' : '';
+    none.style.display = empty ? '' : 'none';
+  }
+
+  run();
+</script>
+</body>
+</html>

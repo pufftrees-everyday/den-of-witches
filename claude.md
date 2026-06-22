@@ -126,6 +126,9 @@ then variant where `finish==='Standard' && product==='Booster'`. Example real sl
   price-chart.js, artist link). Artist data comes from `card.sets[].variants[].artist` in cards.json
   (collected as a distinct list per card, since reprints can differ). Linked from the artist line in
   every card popup (index modal, collection Vault modal, avatar.html).
+- **artists.html** — artist index. Lists all ~52 artists (one sample card art beside each name +
+  card count), with a live name search; each tile links to artist.html. Linked from the **"Artists"**
+  item in the More menu + mobile nav on every page that has them.
 - **profile.html** — user profile (?u=username). Avatar, bio, social links, public decks, total
   likes. On your **own** profile (reached via "Edit Profile" in the account dropdown) you can edit
   everything: set an avatar (pick a card's art / upload an image to Storage / paste a URL via a
