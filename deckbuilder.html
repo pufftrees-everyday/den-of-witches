@@ -1287,7 +1287,10 @@
       <div class="deck-name-row">
         <div class="deck-name-field">
           <label class="deck-name-label" for="deck-name-input">✎ Deck Name</label>
-          <input type="text" id="deck-name-input" placeholder="Tap to name your deck…" oninput="refreshDeckNameState()">
+          <input type="text" id="deck-name-input" name="deckTitle" placeholder="Tap to name your deck…"
+                 autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false"
+                 data-lpignore="true" data-1p-ignore data-form-type="other"
+                 oninput="refreshDeckNameState()" onchange="refreshDeckNameState()">
         </div>
         <div class="deck-actions">
           <button class="btn btn-ghost" onclick="saveDeck()">Save</button>
