@@ -1330,7 +1330,9 @@
     // Share via the Worker host so social platforms (Discord, etc.) get a per-deck
     // preview. The Worker shows the preview to crawlers and redirects people to the
     // real deck page. Everything else on the site keeps using cursedrealm.org.
-    const url = `https://cursed-realm-og.pufftreees.workers.dev/d/${currentDeck.short_code}`;
+    // NOTE: this host must match your workers.dev subdomain + worker name.
+    const WORKER = 'https://og.cursedrealm.workers.dev';
+    const url = `${WORKER}/${currentDeck.short_code}`;
     navigator.clipboard.writeText(url).then(() => toast('Link copied!'), () => window.prompt('Copy link:', url));
   }
 
