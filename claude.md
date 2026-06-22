@@ -291,7 +291,13 @@ NO blur/glow. Element symbols + moon are loaded as real PNGs from the site.
 - ✅ **Card price-over-time chart — DONE.** index.html card modal **and** avatar.html show a
   dependency-free inline-SVG line chart (standard + foil) from `price_history`
   (`loadPriceChart`/`renderPriceChartSVG`, fetched via the public REST API); graceful empty state
-  until rows accumulate. Still **to build:** collection/binder value over time.
+  until rows accumulate. Now consolidated into the shared **price-chart.js** (`CRPriceChart`).
+- ✅ **Collection/binder value over time — DONE.** collection.html Vault tab has a collapsible
+  "📈 Value Over Time" panel: a total line (Vault + Trades + binders, both finishes) plus an overlay
+  of each binder as its own line. It values your **current** holdings at each historical `price_history`
+  point (we don't snapshot holdings, so this is the feasible series), fetched lazily on expand via the
+  REST API in chunked `card_name=in.()` queries (`vhOpen`/`vhRender`/`vhSeriesFrom`). ↻ Refresh
+  re-fetches; graceful empty state until rows accumulate.
 - Swap permanent Discord invite when available.
 - Port "Invoke" feature to deckbuilder/vault.
 - Trade matching between collections.

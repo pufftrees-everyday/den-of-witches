@@ -291,6 +291,21 @@
   .ss-num { font-family: 'Cinzel', serif; font-size: 1.5rem; font-weight: 700; color: var(--gold); line-height: 1.1; }
   .ss-num .ss-sub { font-size: 0.75rem; color: var(--rune); font-weight: 400; }
   .ss-lbl { font-size: 0.72rem; color: var(--rune); letter-spacing: 0.05em; text-transform: uppercase; margin-top: 5px; }
+
+  /* Collection value over time */
+  .vh-panel { margin-top: 18px; background: linear-gradient(180deg, rgba(37,35,56,0.5), rgba(17,16,24,0.5)); border: 1px solid var(--border-strong); border-radius: 8px; overflow: hidden; }
+  .vh-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; cursor: pointer; user-select: none; }
+  .vh-title { font-family: 'Cinzel', serif; font-size: 0.92rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--gold); }
+  .vh-caret { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; flex-shrink: 0; border: 1px solid var(--border-strong); border-radius: 5px; background: rgba(155,135,212,0.1); color: var(--arcane); font-size: 0.7rem; transition: transform 0.18s; }
+  .vh-panel.collapsed .vh-caret { transform: rotate(-90deg); }
+  .vh-panel.collapsed .vh-body { display: none; }
+  .vh-body { padding: 4px 16px 16px; }
+  .vh-current { font-family: 'Cinzel', serif; color: var(--rune); font-size: 0.9rem; margin: 4px 0 12px; display: flex; align-items: baseline; gap: 8px; }
+  .vh-current b { color: var(--gold); font-size: 1.5rem; }
+  .vh-sub-title { font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--arcane); margin: 20px 0 8px; }
+  .vh-body .pc-svg { max-width: 560px; }
+  .vh-refresh { float: right; background: none; border: 1px solid var(--border-strong); color: var(--rune); font-family: 'Cinzel', serif; font-size: 0.6rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 9px; border-radius: 5px; cursor: pointer; }
+  .vh-refresh:hover { border-color: var(--arcane); color: var(--arcane); }
   .ss-sets { margin-top: 14px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .ss-sets-label { font-family: 'Cinzel', serif; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rune); }
   .ss-pill { display: inline-flex; align-items: center; gap: 5px; background: rgba(11,10,15,0.5); border: 1px solid var(--border); border-radius: 4px; padding: 4px 9px; font-size: 0.8rem; color: var(--shimmer); }
@@ -966,6 +981,15 @@
 
   <!-- Section statistics (Vault / Trades / Wants) -->
   <div id="section-stats" class="section-stats" style="display:none;"></div>
+
+  <!-- Collection value over time (Vault tab) -->
+  <div id="value-history-panel" class="vh-panel collapsed" style="display:none;">
+    <div class="vh-head" onclick="toggleValueHistory()">
+      <span class="vh-title">📈 Value Over Time</span>
+      <span class="vh-caret">▾</span>
+    </div>
+    <div class="vh-body" id="vh-body"></div>
+  </div>
 
   <!-- Binders (Vault / Trades tabs) -->
   <div id="binders-panel" class="binders-panel" style="display:none;"></div>
@@ -1985,6 +2009,12 @@ function setView(view) {
   document.body.classList.toggle('in-vault-section', inVaultSection);
   renderSectionStats(view);
   renderBinders();
+  // Value-over-time lives on the Vault tab (it covers the whole collection).
+  const vhPanel = document.getElementById('value-history-panel');
+  if (vhPanel) {
+    if (view === 'all') { vhPanel.style.display = ''; if (vhState.open) vhRender(); }
+    else vhPanel.style.display = 'none';
+  }
   filterCards();
 }
 
@@ -2035,6 +2065,155 @@ function renderSectionStats(view) {
     </div>
     ${setsHtml ? `<div class="ss-sets"><span class="ss-sets-label">Top Sets</span>${setsHtml}</div>` : ''}
   `;
+}
+
+// ── COLLECTION VALUE OVER TIME ──
+// Values your CURRENT holdings at each historical price point from the
+// price_history table (we don't snapshot holdings, so this is the only
+// feasible series). One total line; an overlay of each binder if any exist.
+const VH_SUPA_URL = 'https://nuizkjkcephopnbcmtlz.supabase.co';
+const VH_SUPA_ANON = 'sb_publishable_9er9B3YGFuvNO8Y8W6yr2g_sR5tXvKH';
+const VH_COLORS = ['var(--arcane)','var(--sage)','var(--ember)','#5a96b0','var(--gold)','#b49ce0','#e0907c','#7fb88a'];
+let vhRows = null;     // cached price_history rows (don't change within a session)
+let vhLoading = false;
+const vhState = { open: false };
+
+// Every card name the user owns (Vault + Trades + binders).
+function ownedCardNames() {
+  const col = getCollection();
+  const names = new Set();
+  for (const [k, e] of Object.entries(col)) {
+    if (k === BINDERS_KEY) continue;
+    if ((e.have||0)+(e.trade||0)+(e.haveFoil||0)+(e.tradeFoil||0) > 0) names.add(k);
+  }
+  getBinders().forEach(b => Object.entries(b.cards||{}).forEach(([n,q]) => { if ((q.std||0)+(q.foil||0) > 0) names.add(n); }));
+  return [...names];
+}
+// Total quantities per card (Vault + Trades + binders), split by finish.
+function totalQtyMaps() {
+  const col = getCollection();
+  const std = {}, foil = {};
+  for (const [k, e] of Object.entries(col)) {
+    if (k === BINDERS_KEY) continue;
+    const s = (e.have||0)+(e.trade||0), f = (e.haveFoil||0)+(e.tradeFoil||0);
+    if (s) std[k] = (std[k]||0) + s;
+    if (f) foil[k] = (foil[k]||0) + f;
+  }
+  getBinders().forEach(b => Object.entries(b.cards||{}).forEach(([n,q]) => {
+    if (q.std) std[n] = (std[n]||0) + q.std;
+    if (q.foil) foil[n] = (foil[n]||0) + q.foil;
+  }));
+  return { std, foil };
+}
+async function vhFetch(names) {
+  const rows = [];
+  for (let i = 0; i < names.length; i += 80) {
+    const part = names.slice(i, i + 80);
+    const list = '(' + part.map(n => '"' + n.replace(/"/g, '\\"') + '"').join(',') + ')';
+    const url = `${VH_SUPA_URL}/rest/v1/price_history?card_name=in.${encodeURIComponent(list)}&select=captured_at,card_name,finish,market&order=captured_at.asc`;
+    const res = await fetch(url, { headers: { apikey: VH_SUPA_ANON, Authorization: 'Bearer ' + VH_SUPA_ANON } });
+    if (res.ok) rows.push(...await res.json());
+  }
+  return rows;
+}
+// Build a [{t,v}] series: at each capture timestamp, sum market × qty owned.
+function vhSeriesFrom(rows, stdMap, foilMap) {
+  const bucket = new Map();
+  for (const r of rows) {
+    const q = r.finish === 'foil' ? (foilMap[r.card_name] || 0) : (stdMap[r.card_name] || 0);
+    if (!q || r.market == null) continue;
+    const t = Date.parse(r.captured_at);
+    bucket.set(t, (bucket.get(t) || 0) + r.market * q);
+  }
+  return [...bucket.entries()].map(([t, v]) => ({ t, v })).sort((a, b) => a.t - b.t);
+}
+function vhRenderChart(series) {
+  const W = 520, H = 180, padL = 52, padR = 14, padT = 12, padB = 26;
+  const all = series.flatMap(s => s.points);
+  if (!all.length) return '<div class="pc-status">No price history yet — check back as daily prices are recorded.</div>';
+  const vs = all.map(p => p.v), ts = all.map(p => p.t);
+  let minV = Math.min(...vs), maxV = Math.max(...vs);
+  if (minV === maxV) { minV = Math.max(0, minV * 0.9); maxV = maxV * 1.1 || 1; }
+  const minT = Math.min(...ts), maxT = Math.max(...ts);
+  const xOf = t => maxT === minT ? (padL + (W - padL - padR) / 2) : padL + (t - minT) / (maxT - minT) * (W - padL - padR);
+  const yOf = v => padT + (1 - (v - minV) / (maxV - minV)) * (H - padT - padB);
+  let paths = '', dots = '';
+  series.forEach(s => {
+    const pts = s.points.slice().sort((a, b) => a.t - b.t);
+    if (!pts.length) return;
+    if (pts.length === 1) {
+      dots += `<circle cx="${xOf(pts[0].t).toFixed(1)}" cy="${yOf(pts[0].v).toFixed(1)}" r="3.5" fill="${s.color}"></circle>`;
+    } else {
+      const d = pts.map((p, i) => `${i ? 'L' : 'M'}${xOf(p.t).toFixed(1)},${yOf(p.v).toFixed(1)}`).join(' ');
+      paths += `<path d="${d}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"></path>`;
+      const last = pts[pts.length - 1];
+      dots += `<circle cx="${xOf(last.t).toFixed(1)}" cy="${yOf(last.v).toFixed(1)}" r="3" fill="${s.color}"></circle>`;
+    }
+  });
+  const money = v => '$' + (v >= 100 ? Math.round(v) : v.toFixed(2));
+  const fmt = t => { const d = new Date(t); return (d.getMonth() + 1) + '/' + d.getDate(); };
+  const grid = `<line x1="${padL}" y1="${yOf(maxV).toFixed(1)}" x2="${W - padR}" y2="${yOf(maxV).toFixed(1)}" class="pc-grid"></line>`
+             + `<line x1="${padL}" y1="${yOf(minV).toFixed(1)}" x2="${W - padR}" y2="${yOf(minV).toFixed(1)}" class="pc-grid"></line>`;
+  const yLab = `<text x="${padL - 6}" y="${(yOf(maxV) + 3).toFixed(1)}" class="pc-axis" text-anchor="end">${money(maxV)}</text>`
+             + `<text x="${padL - 6}" y="${(yOf(minV) + 3).toFixed(1)}" class="pc-axis" text-anchor="end">${money(minV)}</text>`;
+  const xLab = `<text x="${padL}" y="${H - 7}" class="pc-axis" text-anchor="start">${fmt(minT)}</text>`
+             + `<text x="${W - padR}" y="${H - 7}" class="pc-axis" text-anchor="end">${fmt(maxT)}</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}" class="pc-svg" role="img" aria-label="Value over time">${grid}${paths}${dots}${yLab}${xLab}</svg>`;
+}
+function vhLegend(series) {
+  const money = v => '$' + v.toFixed(2);
+  return '<div class="pc-legend">' + series.map(s =>
+    `<span class="pc-leg"><span class="pc-dot" style="background:${s.color}"></span>${bEsc(s.label)} <b>${s.points.length ? money(s.points[s.points.length - 1].v) : '—'}</b></span>`
+  ).join('') + '</div>';
+}
+function vhRender() {
+  const body = document.getElementById('vh-body');
+  if (!body || vhRows === null) return;
+  if (!vhRows.length) {
+    body.innerHTML = '<button class="vh-refresh" onclick="vhRefresh()">↻ Refresh</button><div class="pc-status">No price history recorded yet — this fills in as daily prices accumulate.</div>';
+    return;
+  }
+  const { std, foil } = totalQtyMaps();
+  const totalSeries = vhSeriesFrom(vhRows, std, foil);
+  const cur = totalSeries.length ? totalSeries[totalSeries.length - 1].v : 0;
+  let html = '<button class="vh-refresh" onclick="vhRefresh()">↻ Refresh</button>';
+  html += `<div class="vh-current"><span>Current total</span> <b>$${cur.toFixed(2)}</b></div>`;
+  html += vhRenderChart([{ label: 'Total', color: 'var(--gold)', points: totalSeries }]);
+  const binders = getBinders();
+  if (binders.length) {
+    const bseries = binders.map((b, i) => {
+      const bs = {}, bf = {};
+      Object.entries(b.cards || {}).forEach(([n, q]) => { if (q.std) bs[n] = q.std; if (q.foil) bf[n] = q.foil; });
+      return { label: b.name, color: VH_COLORS[i % VH_COLORS.length], points: vhSeriesFrom(vhRows, bs, bf) };
+    }).filter(s => s.points.length);
+    if (bseries.length) {
+      html += '<div class="vh-sub-title">Binders</div>' + vhRenderChart(bseries) + vhLegend(bseries);
+    }
+  }
+  html += '<div class="pc-source">Your <b>current</b> holdings valued at recorded <b>TCGplayer Market</b> prices (via JustTCG). History begins when daily capture started.</div>';
+  body.innerHTML = html;
+}
+async function vhOpen() {
+  vhState.open = true;
+  document.getElementById('value-history-panel').classList.remove('collapsed');
+  const body = document.getElementById('vh-body');
+  if (vhRows === null) {
+    if (vhLoading) return;
+    const names = ownedCardNames();
+    if (!names.length) { body.innerHTML = '<div class="pc-status">Add cards to your Vault to track its value over time.</div>'; return; }
+    vhLoading = true;
+    body.innerHTML = '<div class="pc-status">Loading value history…</div>';
+    try { vhRows = await vhFetch(names); }
+    catch (e) { body.innerHTML = '<button class="vh-refresh" onclick="vhRefresh()">↻ Retry</button><div class="pc-status">Could not load price history.</div>'; vhLoading = false; return; }
+    vhLoading = false;
+  }
+  vhRender();
+}
+function vhRefresh() { vhRows = null; vhOpen(); }
+function toggleValueHistory() {
+  const panel = document.getElementById('value-history-panel');
+  if (panel.classList.contains('collapsed')) vhOpen();
+  else { panel.classList.add('collapsed'); vhState.open = false; }
 }
 
 // ── FILTERS ──
