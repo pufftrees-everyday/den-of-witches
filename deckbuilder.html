@@ -1423,19 +1423,24 @@
     <h2 id="auth-title">Sign In</h2>
     <p id="auth-desc">Log in to publish and manage your decks.</p>
     <div id="auth-msg" style="display:none;font-size:0.85rem;padding:10px;border-radius:4px;margin-bottom:12px;"></div>
-    <div id="auth-field-name" style="display:none;margin-bottom:12px;">
-      <label style="display:block;font-family:'Cinzel',serif;font-size:0.62rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--rune);margin-bottom:6px;">Display Name</label>
-      <input type="text" id="auth-name" placeholder="How you'll appear in the Archive" style="width:100%;background:#0b0a0f;border:1px solid var(--border-strong);color:var(--parchment);font-family:'Crimson Pro',serif;font-size:1rem;padding:9px 12px;border-radius:4px;outline:none;">
-    </div>
-    <div style="margin-bottom:12px;">
-      <label style="display:block;font-family:'Cinzel',serif;font-size:0.62rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--rune);margin-bottom:6px;">Email</label>
-      <input type="email" id="auth-email" placeholder="you@example.com" style="width:100%;background:#0b0a0f;border:1px solid var(--border-strong);color:var(--parchment);font-family:'Crimson Pro',serif;font-size:1rem;padding:9px 12px;border-radius:4px;outline:none;">
-    </div>
-    <div style="margin-bottom:14px;">
-      <label style="display:block;font-family:'Cinzel',serif;font-size:0.62rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--rune);margin-bottom:6px;">Password</label>
-      <input type="password" id="auth-password" placeholder="••••••••" style="width:100%;background:#0b0a0f;border:1px solid var(--border-strong);color:var(--parchment);font-family:'Crimson Pro',serif;font-size:1rem;padding:9px 12px;border-radius:4px;outline:none;">
-    </div>
-    <button class="btn btn-primary" id="auth-submit" style="width:100%;padding:11px;" onclick="submitAuth()">Sign In</button>
+    <!-- Real <form> so the browser scopes login autofill to THIS modal only —
+         without it, the page-wide email+password fields make Chrome treat the
+         whole page as a login form and offer credentials on the deck-name box. -->
+    <form id="auth-form" onsubmit="event.preventDefault(); submitAuth(); return false;">
+      <div id="auth-field-name" style="display:none;margin-bottom:12px;">
+        <label for="auth-name" style="display:block;font-family:'Cinzel',serif;font-size:0.62rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--rune);margin-bottom:6px;">Display Name</label>
+        <input type="text" id="auth-name" placeholder="How you'll appear in the Archive" autocomplete="nickname" style="width:100%;background:#0b0a0f;border:1px solid var(--border-strong);color:var(--parchment);font-family:'Crimson Pro',serif;font-size:1rem;padding:9px 12px;border-radius:4px;outline:none;">
+      </div>
+      <div style="margin-bottom:12px;">
+        <label for="auth-email" style="display:block;font-family:'Cinzel',serif;font-size:0.62rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--rune);margin-bottom:6px;">Email</label>
+        <input type="email" id="auth-email" placeholder="you@example.com" autocomplete="email" style="width:100%;background:#0b0a0f;border:1px solid var(--border-strong);color:var(--parchment);font-family:'Crimson Pro',serif;font-size:1rem;padding:9px 12px;border-radius:4px;outline:none;">
+      </div>
+      <div style="margin-bottom:14px;">
+        <label for="auth-password" style="display:block;font-family:'Cinzel',serif;font-size:0.62rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--rune);margin-bottom:6px;">Password</label>
+        <input type="password" id="auth-password" placeholder="••••••••" autocomplete="current-password" style="width:100%;background:#0b0a0f;border:1px solid var(--border-strong);color:var(--parchment);font-family:'Crimson Pro',serif;font-size:1rem;padding:9px 12px;border-radius:4px;outline:none;">
+      </div>
+      <button class="btn btn-primary" id="auth-submit" type="submit" style="width:100%;padding:11px;">Sign In</button>
+    </form>
     <div id="auth-toggle-text" style="text-align:center;margin-top:14px;font-size:0.88rem;color:var(--rune);">
       New here? <a onclick="setAuthMode('signup')" style="color:var(--arcane);cursor:pointer;text-decoration:underline;">Create an account</a>
     </div>
