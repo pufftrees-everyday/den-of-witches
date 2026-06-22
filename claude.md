@@ -121,8 +121,12 @@ then variant where `finish==='Standard' && product==='Booster'`. Example real sl
   `deckCardSort` in both grouped and flat sections. Collapsed TYPE sub-groups use `display:none
   !important` so they stay hidden in every deck view (list/details/large), not just Card view.
 - **deck.html** — read-only deck view (?d=CODE). Stats panel, the standard 4 views, like button, share.
-  **Threshold** toggle and a **Price** toggle (next to it) — Price shows per-card line prices across
+  **Threshold** toggle, a **Sort** toggle (A–Z / Mana, shares `grimoire_deck_sort` with deckbuilder),
+  and a **Price** toggle — Price shows per-card line prices across
   the views + a "Deck Value" total (avatar+atlas+spellbook; loads prices.json, hidden if unavailable).
+  Spellbook/Collection honor the shared **TYPE** grouping toggle, and those TYPE sub-groups are
+  collapsible (caret per group; `collapsedTypeGroups`/`toggleTypeGroup`). Mirrors the deckbuilder
+  deck-panel features so shared decks look the same.
   View counter (👁) next to the like button; increments once per browser session per deck
   via the `increment_deck_views` RPC — see gotcha below. Comments section under the deck
   (deck_comments table): logged-in users post + reply (one level); owner posts badged "Author".

@@ -149,8 +149,14 @@
   .type-toggle.active { background: var(--gold); border-color: var(--gold); color: #1a1410; }
   .type-group { margin-bottom: 18px; }
   .type-group:last-child { margin-bottom: 0; }
-  .type-group-head { font-family: 'Cinzel', serif; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--arcane); margin: 2px 0 9px; padding-bottom: 5px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  .type-group-head { font-family: 'Cinzel', serif; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--arcane); margin: 2px 0 9px; padding-bottom: 5px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
+  .type-group-head:hover { color: var(--shimmer); }
   .type-group-head .tg-count { color: var(--rune); font-family: 'Crimson Pro', serif; font-weight: 400; font-size: 0.85rem; }
+  .tg-caret { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; flex-shrink: 0; border: 1px solid var(--border-strong); border-radius: 4px; background: rgba(155,135,212,0.1); color: var(--arcane); font-size: 0.6rem; transition: transform 0.18s; }
+  .type-group.collapsed .tg-caret { transform: rotate(-90deg); }
+  .type-group.collapsed .type-group-body { display: none !important; }
+  /* Sort toggle in the toolbar (reuses .viewmode-toggle; text instead of icons) */
+  .viewmode-btn.sort-btn { font-family: 'Cinzel', serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
 
   /* ── SCROLL (deck description) ── */
   .scroll-tab-btn {
@@ -481,6 +487,13 @@
             <span class="th-toggle-track"><span class="th-toggle-knob"></span></span>
           </button>
         </div>
+        <div class="viewmode-wrap">
+          <span class="viewmode-label">Sort</span>
+          <div class="viewmode-toggle">
+            <button class="viewmode-btn sort-btn" data-sort="az" onclick="setDeckSort('az')" title="Sort A–Z">A–Z</button>
+            <button class="viewmode-btn sort-btn" data-sort="cost" onclick="setDeckSort('cost')" title="Sort by mana cost">Mana</button>
+          </div>
+        </div>
         <div class="viewmode-wrap" id="price-control" style="display:none;">
           <span class="viewmode-label">Price</span>
           <button class="price-toggle" id="price-toggle" onclick="togglePrices()" title="Show card prices and total deck value">
@@ -560,6 +573,7 @@
   let currentUser = null;
   let deckView = localStorage.getItem('grimoire_deckview_mode') || 'grid';
   let spellTypeGroup = localStorage.getItem('grimoire_spell_typegroup') === '1';
+  let deckSortMode = localStorage.getItem('grimoire_deck_sort') || 'cost'; // 'az' | 'cost' (shared with deckbuilder)
 
   // ── Load card data ──
   let prices = {};        // card name → { market } (standard, from prices.json)
@@ -739,12 +753,31 @@
   function cardType(name) { const c = cardMap[(name||'').toLowerCase()]; return c ? c.type : ''; }
 
   function sortEntries(entries) {
-    // sort by cost then name
     return [...entries].sort((a,b) => {
+      if (deckSortMode === 'az') {
+        const n = a[0].localeCompare(b[0]);
+        if (n) return n;
+      }
       const ca = cardCost(a[0]), cb = cardCost(b[0]);
       const na = ca===''?99:ca, nb = cb===''?99:cb;
       return na - nb || a[0].localeCompare(b[0]);
     });
+  }
+  function setDeckSort(mode) {
+    deckSortMode = (mode === 'az') ? 'az' : 'cost';
+    localStorage.setItem('grimoire_deck_sort', deckSortMode);
+    syncDeckSortButtons();
+    renderSections();
+  }
+  function syncDeckSortButtons() {
+    document.querySelectorAll('.sort-btn').forEach(b => b.classList.toggle('active', b.dataset.sort === deckSortMode));
+  }
+  // Collapsible TYPE sub-groups (Minions / Magics / …), keyed by section+label.
+  const collapsedTypeGroups = {};
+  function toggleTypeGroup(key) {
+    collapsedTypeGroups[key] = !collapsedTypeGroups[key];
+    const el = document.getElementById('tg-' + key);
+    if (el) el.classList.toggle('collapsed', collapsedTypeGroups[key]);
   }
 
   function cardThresholds(name) {
@@ -879,9 +912,16 @@
     const count = entries.reduce((s,[,q])=>s+(q||0),0);
     let inner = '';
     if (opts.typeToggle && spellTypeGroup && entries.length) {
-      inner = groupEntriesByType(entries).map(g =>
-        `<div class="type-group"><div class="type-group-head">${g.label} <span class="tg-count">${g.count}</span></div>${renderEntriesInner(g.entries)}</div>`
-      ).join('');
+      inner = groupEntriesByType(entries).map(g => {
+        const key = (title + '-' + g.label).replace(/[^a-z0-9]+/gi, '-');
+        const col = collapsedTypeGroups[key] ? ' collapsed' : '';
+        return `<div class="type-group${col}" id="tg-${key}">
+          <div class="type-group-head" onclick="toggleTypeGroup('${key}')" title="Show or hide this type">
+            <span class="tg-caret" aria-hidden="true">▾</span>${g.label} <span class="tg-count">${g.count}</span>
+          </div>
+          <div class="type-group-body">${renderEntriesInner(g.entries)}</div>
+        </div>`;
+      }).join('');
     } else {
       inner = renderEntriesInner(entries);
     }
@@ -1100,6 +1140,7 @@
   }
 
   function renderSections() {
+    syncDeckSortButtons();
     const dd = currentDeck.deck_data || {};
     renderDeckStats(dd);
     let html = '';
