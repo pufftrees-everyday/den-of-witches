@@ -651,8 +651,25 @@
   .binder-code { font-size: 0.78rem; color: var(--rune); font-style: italic; }
   .owned-decks-hint { color: var(--rune); font-size: 0.9rem; line-height: 1.6; padding: 4px 2px 14px; }
   .owned-decks-hint a { color: var(--arcane); }
+  #owned-decks-panel { margin-top: 4px; }
 
-  /* Hide the card-browsing UI while the Full Decks section is active */
+  /* Collapsible section headers (Vault Binders / Owned Decks) */
+  .bsec-toggle { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
+  .bsec-toggle:hover { color: var(--shimmer); }
+  .bsec-caret { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; flex-shrink: 0; border: 1px solid var(--border-strong); border-radius: 5px; background: rgba(155,135,212,0.1); color: var(--arcane); font-size: 0.66rem; transition: transform 0.18s; }
+  .bsec-toggle.collapsed .bsec-caret { transform: rotate(-90deg); }
+
+  /* Owned Decks quick-add row */
+  .od-quickadd { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px 0 14px; }
+  .od-quickadd #od-deck-select { flex: 1 1 240px; min-width: 0; }
+
+  /* Vault tab: card filters aren't needed there */
+  body.in-vault-tab #filter-toggle-bar,
+  body.in-vault-tab #filter-stones-panel,
+  body.in-vault-tab #advanced-toggle,
+  body.in-vault-tab #advanced-panel { display: none !important; }
+
+  /* Hide the card-browsing UI while the Owned Decks tab is active */
   body.in-decks-section .search-bar,
   body.in-decks-section .advanced-toggle,
   body.in-decks-section .advanced-panel,
@@ -852,7 +869,7 @@
       <button class="view-btn" id="sec-collection" onclick="setView('all')">Vault</button>
       <button class="view-btn" id="sec-trade" onclick="setView('trade')">Trades</button>
       <button class="view-btn" id="sec-wants" onclick="setView('want')">Wants</button>
-      <button class="view-btn" id="sec-decks" onclick="setView('decks')">Full Decks</button>
+      <button class="view-btn" id="sec-decks" onclick="setView('decks')">Owned Decks</button>
     </div>
     <div class="collection-actions">
       <button class="btn btn-ghost" id="import-btn" onclick="openCollectionImport()">⬆ Import</button>
@@ -1036,7 +1053,7 @@
   <!-- Binders (Vault / Trades tabs) -->
   <div id="binders-panel" class="binders-panel" style="display:none;"></div>
 
-  <!-- Full Decks I own (Full Decks tab) -->
+  <!-- Owned Decks (shown under the Vault tab and on the Owned Decks tab) -->
   <div id="owned-decks-panel" class="binders-panel" style="display:none;"></div>
 
   <!-- Card toolbar: sits right above the card grid -->
@@ -1167,7 +1184,7 @@ let cloudSaveTimer = null;
 // Binders live inside the collection object under this reserved key so they
 // ride along with the existing localStorage + cloud sync untouched.
 const BINDERS_KEY = '__binders__';
-// Full decks the user physically owns live here, parallel to binders.
+// Decks the user physically owns live here, parallel to binders.
 const OWNED_DECKS_KEY = '__owned_decks__';
 
 function normalizeCollection(col) {
@@ -1226,6 +1243,17 @@ function ownedDecksTotalValue() { return getOwnedDecks().reduce((s, d) => s + bi
 // ── BINDER UI ──
 function bEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 const binderUI = { collapsed: {}, addFinish: {}, addRarity: {}, sort: {} }; // transient per-binder UI state
+// Whole-section collapse state (Vault Binders / Trade Binders / Owned Decks)
+const sectionCollapsed = { vaultBinders: false, tradeBinders: false, ownedDecks: false };
+function toggleBindersSection(parent) {
+  const k = parent === 'trade' ? 'tradeBinders' : 'vaultBinders';
+  sectionCollapsed[k] = !sectionCollapsed[k];
+  renderBinders();
+}
+function toggleOwnedDecksSection() {
+  sectionCollapsed.ownedDecks = !sectionCollapsed.ownedDecks;
+  renderOwnedDecks();
+}
 const MASTER_COUNTS = { Unique: 1, Elite: 2, Exceptional: 3, Ordinary: 4 };
 
 function currentBinderParent() {
@@ -1253,13 +1281,19 @@ function renderBinders() {
   // Binders are collapsed by default; only expand ones the user has opened this session
   list.forEach(b => { if (!(b.id in binderUI.collapsed)) binderUI.collapsed[b.id] = true; });
   const label = parent === 'trade' ? 'Trade Binders' : 'Vault Binders';
+  const secKey = parent === 'trade' ? 'tradeBinders' : 'vaultBinders';
+  const collapsed = !!sectionCollapsed[secKey];
   panel.style.display = '';
   panel.innerHTML = `
     <div class="binders-head">
-      <div class="binders-head-title">${label}${list.length ? `<span class="bh-sub">${list.length} binder${list.length===1?'':'s'}</span>` : ''}</div>
+      <div class="binders-head-title bsec-toggle${collapsed ? ' collapsed' : ''}" onclick="toggleBindersSection('${parent}')" title="Collapse / expand this section">
+        <span class="bsec-caret">▾</span>${label}${list.length ? `<span class="bh-sub">${list.length} binder${list.length===1?'':'s'}</span>` : ''}
+      </div>
       <button class="binder-btn primary" onclick="createBinder('${parent}')">+ Create Binder</button>
     </div>
-    ${list.length ? list.map(renderBinderCard).join('') : `<div class="binder-empty">No binders yet. Create one to group cards — e.g. a full Beta set — and track its value alongside your collection.</div>`}
+    <div class="binders-section-body"${collapsed ? ' style="display:none"' : ''}>
+      ${list.length ? list.map(renderBinderCard).join('') : `<div class="binder-empty">No binders yet. Create one to group cards — e.g. a full Beta set — and track its value alongside your collection.</div>`}
+    </div>
   `;
 }
 
@@ -1622,7 +1656,7 @@ function updateStats() {
   // Binders add to the total (vault binders → Vault value, trade binders → Trades value)
   let binderVaultVal = 0, binderTradeVal = 0;
   getBinders().forEach(b => { if (b.parent === 'trade') binderTradeVal += binderValue(b); else binderVaultVal += binderValue(b); });
-  // Full decks you own roll into the Vault value, like vault binders.
+  // Owned decks roll into the Vault value, like vault binders.
   const ownedDecksVal = ownedDecksTotalValue();
   const vaultVal = stdHaveVal + foilHaveVal + binderVaultVal + ownedDecksVal;
   const tradesVal = stdTradeVal + foilTradeVal + binderTradeVal;
@@ -1711,11 +1745,14 @@ async function loadCards() {
     } catch(e) { /* prices.json not found, that's fine */ }
 
     updateStats();
-    filterCards();
+    // Land on the Vault tab by default (once cards are ready so binder datalists build).
+    if (!_initialViewSet) { _initialViewSet = true; setView('all'); }
+    else filterCards();
   } catch(e) {
     document.getElementById('card-grid').innerHTML = `<div class="status">Could not load cards.json.<br><small>${e.message}</small></div>`;
   }
 }
+let _initialViewSet = false;
 
 function getImageUrl(card) {
   if (card.slug) return `${IMAGE_BASE}${card.slug}.png`;
@@ -2109,12 +2146,18 @@ function setView(view) {
   // Card Search hides the stats panel; the three vault sections show it
   const inVaultSection = (view !== 'search' && view !== 'decks');
   document.body.classList.toggle('in-vault-section', inVaultSection);
-  // Full Decks section swaps the card browser for the owned-decks panel
+  // Vault tab hides the card filters; Owned Decks tab swaps the card browser out
   const inDecks = (view === 'decks');
   document.body.classList.toggle('in-decks-section', inDecks);
+  document.body.classList.toggle('in-vault-tab', view === 'all');
+  // Owned decks show under the Vault tab (below binders) and on their own tab
   const odPanel = document.getElementById('owned-decks-panel');
-  if (odPanel) odPanel.style.display = inDecks ? '' : 'none';
-  if (inDecks) { renderOwnedDecks(); return; }
+  const showOwned = (view === 'all' || view === 'decks');
+  if (odPanel) odPanel.style.display = showOwned ? '' : 'none';
+  if (showOwned) renderOwnedDecks();
+  if (inDecks) return; // dedicated tab: nothing else to render
+  // The Vault tab hides the filters, so make sure none silently apply there.
+  if (view === 'all' && anyCardFilterActive()) clearCardFilters();
   renderSectionStats(view);
   renderBinders();
   // Value-over-time lives on the Vault tab (it covers the whole collection).
@@ -2371,12 +2414,20 @@ function clearRanges() {
   filterCards();
 }
 
-function clearAllFilters() {
+// Reset all card filters + search (no re-render). Caller decides when to re-render.
+function clearCardFilters() {
   Object.keys(activeFilters).forEach(g => activeFilters[g].clear());
   Object.keys(advFilters).forEach(g => advFilters[g].clear());
   document.querySelectorAll('.stone-option.active, .adv-chip.active').forEach(c => c.classList.remove('active'));
-  document.getElementById('search-input').value = '';
-  clearRanges(); updateSummary(); updateAdvDot(); updateFilterDot(); filterCards();
+  const si = document.getElementById('search-input'); if (si) si.value = '';
+  clearRanges(); updateSummary(); updateAdvDot(); updateFilterDot();
+}
+function clearAllFilters() { clearCardFilters(); filterCards(); }
+function anyCardFilterActive() {
+  const si = document.getElementById('search-input');
+  return (si && si.value.trim()) ||
+    Object.values(activeFilters).some(s => s.size) ||
+    Object.values(advFilters).some(s => s.size);
 }
 
 function toggleAdvanced() {
@@ -2625,22 +2676,93 @@ function doExport(format) {
   toast(`Exported ${totalQty} cards (${entries.length} unique)`);
 }
 
-// ── FULL DECKS I OWN — render ──
+// ── OWNED DECKS — render ──
+// Cache of the user's saved Workshop decks, for the in-page quick-add dropdown.
+let workshopDecks = null;
+let workshopDecksLoading = false;
+function ensureWorkshopDecks() {
+  if (workshopDecks !== null || workshopDecksLoading) return;
+  if (!(window.CR && CR.user && CR.fetchCloudDecks)) { workshopDecks = []; return; }
+  workshopDecksLoading = true;
+  CR.fetchCloudDecks().then(d => {
+    workshopDecks = d || [];
+    workshopDecksLoading = false;
+    if (currentView === 'all' || currentView === 'decks') renderOwnedDecks();
+  }).catch(() => { workshopDecks = []; workshopDecksLoading = false; });
+}
+
 function renderOwnedDecks() {
   const panel = document.getElementById('owned-decks-panel');
   if (!panel) return;
+  ensureWorkshopDecks();
   const list = getOwnedDecks();
   list.forEach(d => { if (!(d.id in binderUI.collapsed)) binderUI.collapsed[d.id] = true; });
   const total = ownedDecksTotalValue();
+  const collapsed = !!sectionCollapsed.ownedDecks;
+
+  // Quick-add dropdown of the user's Workshop decks (no page leave)
+  const owned = new Set(list.map(d => d.code).filter(Boolean));
+  let quickAdd;
+  if (!(window.CR && CR.user)) {
+    quickAdd = `<div class="owned-decks-hint">Sign in to add decks from your Workshop.</div>`;
+  } else if (workshopDecks === null) {
+    quickAdd = `<div class="od-quickadd"><span class="bt-label">Add from Workshop</span><select class="binder-set-select" disabled><option>Loading your decks…</option></select></div>`;
+  } else if (!workshopDecks.length) {
+    quickAdd = `<div class="owned-decks-hint">No saved decks in your <a href="decks.html">Workshop</a> yet — build one, then add it here.</div>`;
+  } else {
+    const opts = workshopDecks.map(d => {
+      const dd = d.deck_data || {};
+      const qty = ['a','t','s'].reduce((s,k)=>s+(dd[k]||[]).reduce((a,e)=>a+((e&&+e[1])||0),0),0);
+      const flag = owned.has(d.short_code) ? ' ✓ owned' : '';
+      return `<option value="${bEsc(d.short_code)}">${bEsc(d.name || 'Untitled Deck')} (${qty} cards)${flag}</option>`;
+    }).join('');
+    quickAdd = `<div class="od-quickadd">
+      <span class="bt-label">Add from Workshop</span>
+      <select id="od-deck-select" class="binder-set-select">${opts}</select>
+      <button class="binder-btn primary" onclick="quickAddOwnedDeck()">+ Add to Collection</button>
+    </div>`;
+  }
+
   const head = `
     <div class="binders-head">
-      <div class="binders-head-title">Full Decks I Own${list.length ? `<span class="bh-sub">${list.length} deck${list.length===1?'':'s'}${total>0?` · $${total.toFixed(2)}`:''}</span>` : ''}</div>
-      <a class="binder-btn" href="decks.html" style="text-decoration:none;" title="Add decks to your collection from your Workshop">+ Add from Workshop ↗</a>
+      <div class="binders-head-title bsec-toggle${collapsed ? ' collapsed' : ''}" onclick="toggleOwnedDecksSection()" title="Collapse / expand this section">
+        <span class="bsec-caret">▾</span>Owned Decks${list.length ? `<span class="bh-sub">${list.length} deck${list.length===1?'':'s'}${total>0?` · $${total.toFixed(2)}`:''}</span>` : ''}
+      </div>
     </div>`;
-  const hint = `<div class="owned-decks-hint">Physical decks you own. Add them from <a href="decks.html">My Workshop</a> (the “Add to Collection” button on each deck) — every deck's cards count toward your Vault and Total Collection Value. These are snapshots; re-add a deck to refresh it after you edit it.</div>`;
-  panel.innerHTML = head + (list.length
-    ? list.map(renderOwnedDeckCard).join('')
-    : `<div class="binder-empty">No full decks yet. Open <a href="decks.html" style="color:var(--arcane)">My Workshop</a> and use “Add to Collection” on any deck.</div>`) + hint;
+  const body = `<div class="binders-section-body"${collapsed ? ' style="display:none"' : ''}>
+      ${quickAdd}
+      ${list.length
+        ? list.map(renderOwnedDeckCard).join('')
+        : `<div class="binder-empty">No owned decks yet. Use the dropdown above, or “Add to Collection” on a deck in <a href="decks.html" style="color:var(--arcane)">My Workshop</a>.</div>`}
+    </div>`;
+  panel.innerHTML = head + body;
+}
+
+function quickAddOwnedDeck() {
+  const sel = document.getElementById('od-deck-select');
+  if (!sel || !sel.value) return;
+  const deck = (workshopDecks || []).find(d => d.short_code === sel.value);
+  if (deck) addOwnedDeckFromData(deck);
+}
+// Snapshot a Workshop deck's cards into the collection (in-page).
+function addOwnedDeckFromData(deck) {
+  const dd = deck.deck_data || {};
+  const cards = {};
+  ['a','t','s'].forEach(k => (dd[k] || []).forEach(e => {
+    const nm = e && e[0]; const q = (e && +e[1]) || 0;
+    if (nm && q > 0) { cards[nm] = cards[nm] || { std: 0, foil: 0 }; cards[nm].std += q; }
+  }));
+  if (!Object.keys(cards).length) { toast('That deck has no cards'); return; }
+  const lst = getOwnedDecks();
+  const existing = lst.find(x => x.code === deck.short_code);
+  const entry = {
+    id: existing ? existing.id : ('od' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36)),
+    name: deck.name || 'Untitled Deck', code: deck.short_code, cards, added: new Date().toISOString()
+  };
+  if (existing) Object.assign(existing, entry); else lst.push(entry);
+  binderUI.collapsed[entry.id] = false;
+  saveOwnedDecks(); renderOwnedDecks(); updateStats();
+  toast(existing ? `Updated “${entry.name}”` : `Added “${entry.name}” to Owned Decks`);
 }
 function renderOwnedDeckCard(d) {
   const collapsed = binderUI.collapsed[d.id];
@@ -2943,6 +3065,7 @@ async function hydrateCollection() {
     collectionCache = getLocalCollection();
   }
   updateStats(); renderBinders(); filterCards();
+  if (currentView === 'all' || currentView === 'decks') renderOwnedDecks();
 }
 
 // On first login, offer to push local collection to the cloud (local wins)

@@ -823,7 +823,7 @@ function renderDeckCard(d, authors) {
       <div class="deck-card-actions">
         <button class="btn btn-primary" onclick="window.location.href='deckbuilder.html?d=${d.short_code}'">Edit</button>
         <button class="btn btn-ghost" onclick="window.location.href='deck.html?d=${d.short_code}'">View</button>
-        <button class="deck-card-link" onclick="event.stopPropagation();addDeckToCollection('${d.short_code}')" title="Add this deck to My Vault (Full Decks I Own)">📥</button>
+        <button class="deck-card-link" onclick="event.stopPropagation();addDeckToCollection('${d.short_code}')" title="Add this deck to My Vault (Owned Decks)">📥</button>
         <button class="deck-card-link" onclick="event.stopPropagation();copyDeckLink('${d.short_code}')" title="Copy share link">🔗</button>
       </div>
       ${barHtml}
@@ -839,7 +839,7 @@ function copyDeckLink(shortCode) {
   );
 }
 
-// Snapshot a deck's cards into the user's collection as a "Full Deck I Own".
+// Snapshot a deck's cards into the user's collection as an "Owned Deck".
 // Cards are stored under the reserved __owned_decks__ key (parallel to binders),
 // counting toward Vault + Total Collection Value on collection.html.
 async function addDeckToCollection(code) {
@@ -876,7 +876,7 @@ async function addDeckToCollection(code) {
     if (error) throw error;
   } catch (e) { console.warn(e); toast('Could not save to your collection'); return; }
   try { localStorage.setItem('grimoire_collection', JSON.stringify(col)); } catch (e) {}
-  toast(existing ? `Updated “${deck.name}” in My Vault` : `Added “${deck.name}” to My Vault → Full Decks`);
+  toast(existing ? `Updated “${deck.name}” in My Vault` : `Added “${deck.name}” to My Vault → Owned Decks`);
 }
 
 // Styled delete confirmation

@@ -111,13 +111,18 @@ then variant where `finish==='Standard' && product==='Booster'`. Example real sl
   CSV / detailed-grouped), curiosa.io decklists (`1Archimago`), and generic `2x Name` / `Name x2`
   lists; `(Foil)` suffix or a CSV Finish column = foil; section headers/metadata are skipped; names
   matched case/punctuation-insensitively against cards.json.
-  **Full Decks I own** — a 5th section tab ("Full Decks", `currentView==='decks'`) listing physical
-  decks you own. Each is a snapshot of a deck's cards (`a`+`t`+`s`) stored under a reserved
-  `__owned_decks__` key (array of `{id,name,code,cards:{name:{std,foil}},added}`), parallel to binders;
-  their value rolls into Vault + Total Collection Value (`ownedDecksTotalValue`). Added from the
-  Workshop (see decks.html); the collection page renders/removes them (`renderOwnedDecks`,
-  `removeOwnedDeck`) and reuses binder card styling. The tab hides the card browser via a
-  `body.in-decks-section` class.
+  **Owned Decks** — physical decks you own. Shown both under the Vault tab (below the Vault Binders
+  section) and on a dedicated **Owned Decks** tab (`currentView==='decks'`, `sec-decks`). Each is a
+  snapshot of a deck's cards (`a`+`t`+`s`) stored under a reserved `__owned_decks__` key (array of
+  `{id,name,code,cards:{name:{std,foil}},added}`), parallel to binders; value rolls into Vault + Total
+  Collection Value (`ownedDecksTotalValue`) and the value-over-time series. The section has an in-page
+  **quick-add dropdown** of your Workshop decks (`ensureWorkshopDecks` via `CR.fetchCloudDecks`,
+  `quickAddOwnedDeck`/`addOwnedDeckFromData`) plus per-deck add from the Workshop itself (decks.html).
+  Rendered/removed by `renderOwnedDecks`/`removeOwnedDeck`, reusing binder card styling. The whole
+  section is collapsible (`sectionCollapsed.ownedDecks`/`toggleOwnedDecksSection`), as is the Vault/
+  Trade **Binders** section (`toggleBindersSection`). The Owned Decks *tab* hides the card browser via
+  `body.in-decks-section`; the **Vault tab** is the default landing view and hides the card filters via
+  `body.in-vault-tab`.
 - **archive.html** — "The Archive" public deck gallery. Loads from the **public_decks_with_likes**
   view (has `like_count`, `views`); author usernames are fetched separately from **profiles** by
   `owner_id` (the view has no `author` column). Sort: Newest / Most Viewed / Most Liked. Each card
@@ -125,7 +130,7 @@ then variant where `finish==='Standard' && product==='Booster'`. Example real sl
   deck_comments), and a 📜 icon when the deck's Scroll (deck_data.d) is non-empty.
 - **decks.html** — "My Workshop" (user's own decks). Each deck card has an "Add to Collection" (📥)
   button (`addDeckToCollection`) that snapshots the deck's cards into the user's collection under
-  `__owned_decks__` (Full Decks I own) — fetches the `collections` row directly via its own `supa`
+  `__owned_decks__` (Owned Decks) — fetches the `collections` row directly via its own `supa`
   client, upserts, and mirrors to localStorage; re-adding the same deck (matched by `code`) refreshes it.
 - **deckbuilder.html** — deck building interface. Two "Change View" toggles (left explorer + right
   deck panel), both with the standard 4 views; the explorer **Text** view has in-deck −/+ steppers
