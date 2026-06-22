@@ -59,7 +59,8 @@
   .sub { color: var(--shimmer); font-size: 1.02rem; margin-top: 8px; max-width: 60ch; line-height: 1.6; }
   .sub b { color: var(--arcane); }
 
-  .search-wrap { position: relative; margin: 22px 0 20px; max-width: 420px; }
+  .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 18px; margin: 22px 0 20px; }
+  .search-wrap { position: relative; flex: 1 1 280px; max-width: 420px; }
   .search-wrap input {
     width: 100%; background: #0b0a0f; border: 1px solid var(--border-strong); color: var(--parchment);
     font-family: 'Crimson Pro', serif; font-size: 1.05rem; padding: 11px 14px; border-radius: 8px; outline: none;
@@ -67,6 +68,18 @@
   }
   .search-wrap input:focus { border-color: var(--arcane); }
   .search-wrap input::placeholder { color: var(--mist); font-style: italic; }
+
+  .sort-bar { display: flex; align-items: center; gap: 8px; }
+  .sort-bar .lbl { font-family: 'Cinzel', serif; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rune); }
+  .sort-toggle { display: inline-flex; border: 1px solid var(--border-strong); border-radius: 8px; overflow: hidden; }
+  .sort-toggle button {
+    background: transparent; border: none; cursor: pointer; color: var(--rune);
+    font-family: 'Cinzel', serif; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 9px 13px; transition: background 0.15s, color 0.15s;
+  }
+  .sort-toggle button + button { border-left: 1px solid var(--border-strong); }
+  .sort-toggle button:hover { color: var(--arcane); }
+  .sort-toggle button.active { background: rgba(155,135,212,0.16); color: var(--shimmer); }
 
   .artist-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
   @media (max-width: 520px) { .artist-grid { grid-template-columns: 1fr; } }
@@ -112,8 +125,17 @@
     <p class="sub">Every artist who brought <em>Sorcery: Contested Realm</em> to life. Tap a name to see <b>all of their cards</b>.</p>
   </div>
 
-  <div class="search-wrap">
-    <input type="text" id="artist-search" placeholder="Search artists…" autocomplete="off" oninput="filterArtists()">
+  <div class="controls">
+    <div class="search-wrap">
+      <input type="text" id="artist-search" placeholder="Search artists…" autocomplete="off" oninput="filterArtists()">
+    </div>
+    <div class="sort-bar">
+      <span class="lbl">Sort</span>
+      <div class="sort-toggle">
+        <button type="button" id="sort-name" class="active" onclick="setSort('name')">A–Z</button>
+        <button type="button" id="sort-count" onclick="setSort('count')">Most Cards</button>
+      </div>
+    </div>
   </div>
 
   <div class="status" id="status">Gathering the illustrators…</div>
@@ -149,6 +171,25 @@
   }
 
   let artists = []; // [{ name, count, slug, isSite }]
+  let sortMode = 'name'; // 'name' | 'count'
+
+  function sortArtists(list) {
+    const arr = list.slice();
+    if (sortMode === 'count') {
+      arr.sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+    } else {
+      arr.sort((a, b) => a.name.localeCompare(b.name));
+    }
+    return arr;
+  }
+
+  function setSort(mode) {
+    if (mode === sortMode) return;
+    sortMode = mode;
+    document.getElementById('sort-name').classList.toggle('active', mode === 'name');
+    document.getElementById('sort-count').classList.toggle('active', mode === 'count');
+    filterArtists();
+  }
 
   async function run() {
     const statusEl = document.getElementById('status');
@@ -172,10 +213,10 @@
       });
     });
 
-    artists = [...map.values()].sort((a, b) => a.name.localeCompare(b.name));
+    artists = [...map.values()];
     if (!artists.length) { statusEl.textContent = 'No artist data found.'; return; }
 
-    renderArtists(artists);
+    renderArtists(sortArtists(artists));
     statusEl.style.display = 'none';
     document.getElementById('artist-grid').style.display = '';
   }
@@ -195,7 +236,8 @@
 
   function filterArtists() {
     const q = (document.getElementById('artist-search').value || '').trim().toLowerCase();
-    const list = q ? artists.filter(a => a.name.toLowerCase().includes(q)) : artists;
+    const filtered = q ? artists.filter(a => a.name.toLowerCase().includes(q)) : artists;
+    const list = sortArtists(filtered);
     renderArtists(list);
     const grid = document.getElementById('artist-grid');
     const none = document.getElementById('no-results');
