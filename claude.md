@@ -116,7 +116,10 @@ then variant where `finish==='Standard' && product==='Booster'`. Example real sl
   (see Change View note). Spellbook **and** Collection have a **TYPE** toggle (top of the section)
   that groups cards by type into Minion/Magic/Artifact/Aura (+ an "Other" bucket); off = flat list.
   One shared preference across both sections and deck.html via localStorage `grimoire_spell_typegroup`
-  (default off).
+  (default off). The deck panel header also has a **Sort** toggle (A–Z / Mana) beside the Threshold
+  toggle — `deckSortMode` via localStorage `grimoire_deck_sort` (default 'cost'), applied by
+  `deckCardSort` in both grouped and flat sections. Collapsed TYPE sub-groups use `display:none
+  !important` so they stay hidden in every deck view (list/details/large), not just Card view.
 - **deck.html** — read-only deck view (?d=CODE). Stats panel, the standard 4 views, like button, share.
   **Threshold** toggle and a **Price** toggle (next to it) — Price shows per-card line prices across
   the views + a "Deck Value" total (avatar+atlas+spellbook; loads prices.json, hidden if unavailable).

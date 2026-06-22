@@ -623,7 +623,9 @@
   .sub-section-count { font-family: 'Crimson Pro', serif; font-style: normal; letter-spacing: 0; font-size: 0.85rem; color: var(--arcane); font-weight: 400; }
 
   .sub-section-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; grid-column: 1 / -1; margin-bottom: 6px; }
-  .sub-section-cards.hidden { display: none; }
+  /* !important so a collapsed group stays hidden even in list/large view,
+     whose display rules are defined later with equal specificity. */
+  .sub-section-cards.hidden { display: none !important; }
 
   /* VISUAL CARD GRID IN DECK */
   .deck-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
@@ -661,7 +663,15 @@
 
   /* Deck panel view toggle (grid/text) */
   .deck-viewmode { display: inline-flex; border: 2px solid #2a2640; border-radius: 4px; overflow: hidden; width: fit-content; }
-  .deck-viewmode-wrap { display: flex; align-items: center; gap: 7px; margin-top: 8px; }
+  .deck-viewmode-wrap { display: flex; align-items: center; gap: 7px 14px; margin-top: 8px; flex-wrap: wrap; }
+  /* Deck-side sort toggle (A–Z / Mana), sits beside the Threshold toggle */
+  .deck-sort { display: inline-flex; align-items: center; gap: 7px; }
+  .deck-sort-label { font-family: 'Cinzel', serif; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rune); white-space: nowrap; }
+  .deck-sort-btns { display: inline-flex; border: 2px solid #2a2640; border-radius: 4px; overflow: hidden; }
+  .deck-sort-btn { background: #13111e; border: none; border-right: 1px solid #2a2640; color: var(--rune); font-family: 'Cinzel', serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 6px 11px; cursor: pointer; transition: all 0.15s; }
+  .deck-sort-btn:last-child { border-right: none; }
+  .deck-sort-btn:not(.active):hover { background: #1a1728; color: var(--arcane); }
+  .deck-sort-btn.active { background: var(--rune); color: #fff; }
   .dvm-btn { font-size: 0.9rem; line-height: 1; background: #13111e; border: none; color: var(--rune); padding: 4px 10px; cursor: pointer; transition: all 0.15s; }
   .dvm-btn.active { background: var(--rune); color: #fff; }
   /* Deck panel: Text view hides rarity (keeps threshold symbols); Detailed shows rarity too */
@@ -1281,6 +1291,13 @@
           <span class="th-toggle-track"><span class="th-toggle-knob"></span></span>
           Threshold
         </button>
+        <div class="deck-sort">
+          <span class="deck-sort-label">Sort</span>
+          <div class="deck-sort-btns">
+            <button class="deck-sort-btn" data-sort="az" onclick="setDeckSort('az')">A–Z</button>
+            <button class="deck-sort-btn" data-sort="cost" onclick="setDeckSort('cost')">Mana</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1318,6 +1335,13 @@
           <span class="th-toggle-track"><span class="th-toggle-knob"></span></span>
           Threshold
         </button>
+        <div class="deck-sort">
+          <span class="deck-sort-label">Sort</span>
+          <div class="deck-sort-btns">
+            <button class="deck-sort-btn" data-sort="az" onclick="setDeckSort('az')">A–Z</button>
+            <button class="deck-sort-btn" data-sort="cost" onclick="setDeckSort('cost')">Mana</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1528,6 +1552,7 @@ let readOnly = false;         // true when viewing a deck you don't own
 let viewDeckAuthor = null;    // author name when viewing someone's deck
 let deckViewMode = localStorage.getItem('grimoire_deck_view') || 'grid'; // grid | list (deck panel display)
 let spellTypeGroup = localStorage.getItem('grimoire_spell_typegroup') === '1'; // group spellbook by card type
+let deckSortMode = localStorage.getItem('grimoire_deck_sort') || 'cost'; // deck-side sort: 'az' | 'cost'
 
 const IMAGE_BASE = 'https://pub-5999238092ad418ca60e7a9ad641cf57.r2.dev/';
 
@@ -2260,6 +2285,7 @@ function getDeckCounts() {
 
 // ── RENDER DECK ──
 function renderDeck() {
+  syncDeckSortButtons();
   const { avatarCount, atlasCount, spellbookCount, total } = getDeckCounts();
 
   // Stats bar
@@ -2307,8 +2333,8 @@ function groupByType(entries) {
     const t = card.type || 'Other';
     (groups[t] = groups[t] || []).push({key, card, qty});
   });
-  // Order each group low→high mana cost (then by name) instead of add-order.
-  Object.keys(groups).forEach(t => groups[t].sort(deckCardCostSort));
+  // Order each group by the active deck sort (mana cost or A–Z) instead of add-order.
+  Object.keys(groups).forEach(t => groups[t].sort(deckCardSort));
   return groups;
 }
 
@@ -2320,12 +2346,31 @@ function deckCardCostSort(a, b) {
   if (ca !== cb) return ca - cb;
   return (a.card.name || '').localeCompare(b.card.name || '');
 }
+// Active deck-side sort comparator (respects deckSortMode: 'az' | 'cost').
+function deckCardSort(a, b) {
+  if (deckSortMode === 'az') {
+    const n = (a.card.name || '').localeCompare(b.card.name || '');
+    if (n !== 0) return n;
+    return deckCardCostSort(a, b);
+  }
+  return deckCardCostSort(a, b);
+}
 
 // Sort raw [key,{card,qty}] entries the same way (used for flat sections like Atlas).
 function sortDeckEntries(entries) {
-  return [...entries].sort((A, B) => deckCardCostSort(
+  return [...entries].sort((A, B) => deckCardSort(
     { card: A[1].card }, { card: B[1].card }
   ));
+}
+
+function setDeckSort(mode) {
+  deckSortMode = (mode === 'az') ? 'az' : 'cost';
+  localStorage.setItem('grimoire_deck_sort', deckSortMode);
+  syncDeckSortButtons();
+  renderDeck();
+}
+function syncDeckSortButtons() {
+  document.querySelectorAll('.deck-sort-btn').forEach(b => b.classList.toggle('active', b.dataset.sort === deckSortMode));
 }
 
 // ── DECK STATS ──
