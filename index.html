@@ -598,7 +598,9 @@
   /* LIST (TEXT) VIEW */
   .card-grid.list-view { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 10px; }
   .card-grid.list-view.sites-only { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .card-grid.large-view { grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)); }
+  /* Cap at 380px — the native width of low-res sets (Alpha/Beta/Promo/Dragonlord),
+     so card art is never upscaled past its source resolution. */
+  .card-grid.large-view { grid-template-columns: repeat(auto-fill, minmax(300px, 380px)); justify-content: center; }
   /* Clean Text view rows: cost · name · threshold symbols (distinct from Detailed) */
   .th-group { display: inline-flex; gap: 2px; align-items: center; }
   .th-row-icon { width: 15px; height: 15px; object-fit: contain; display: inline-block; vertical-align: middle; }

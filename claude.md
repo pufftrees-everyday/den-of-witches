@@ -239,6 +239,16 @@ NO blur/glow. Element symbols + moon are loaded as real PNGs from the site.
 ---
 
 ## Known constraints / gotchas
+- **Card image resolution (sharpness policy):** R2 card PNGs come in two native sizes —
+  **380×531** for Alpha/Beta/Promo/**Dragonlord** and **744×1039** for Gothic/Arthurian (the
+  official API gives only the slug, no higher-res URL). To avoid blurry upscaling, **never render a
+  card wider than ~380 CSS px**: the "Large" card-grid views are capped at `minmax(…, 380px)` +
+  `justify-content:center` (index/collection/deckbuilder/deck), and single/hero images use
+  `width:auto; max-width:…` so low-res cards show at native and hi-res downscale. Default grids,
+  the deck-view hero (220px col), avatar.html art (360px col) and the deck tester (small renders)
+  are already ≤380. The only true fix for *larger* sharp display of the low-res sets is re-uploading
+  higher-res scans under the same slugs. (Retina note: 380px art is still DPR-upscaled on 2× screens —
+  unavoidable without better sources.)
 - Discord caches link previews; new/unshared deck codes show fresh, old ones cache.
 - PWA (tracker) caches via service worker — bump `tracker-sw.js` CACHE version on icon/asset changes.
 - Browsers cache favicons hard — hard-refresh (Ctrl+Shift+R) to see icon changes.

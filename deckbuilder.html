@@ -326,8 +326,9 @@
   .card-list::-webkit-scrollbar-thumb { background: var(--mist); border-radius: 2px; }
 
   .card-list-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
-  .card-list-grid.large-view { grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 14px; }
-  .card-list-grid.large-view.sites-only { grid-template-columns: repeat(auto-fill, minmax(440px, 1fr)); }
+  /* Cap at 380px (low-res native width) so card art is never upscaled. */
+  .card-list-grid.large-view { grid-template-columns: repeat(auto-fill, minmax(300px, 380px)); justify-content: center; gap: 14px; }
+  .card-list-grid.large-view.sites-only { grid-template-columns: repeat(auto-fill, minmax(340px, 420px)); }
   /* Clean Text view rows: cost · in-deck count · name · threshold symbols */
   .th-group { display: inline-flex; gap: 2px; align-items: center; }
   .th-row-icon { width: 15px; height: 15px; object-fit: contain; display: inline-block; vertical-align: middle; }
@@ -630,8 +631,8 @@
   /* VISUAL CARD GRID IN DECK */
   .deck-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
   /* DECK SIDE — LARGE CARD VIEW (~2x size, ~quarter the count per row) */
-  .deck-card-grid-large { grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 14px; }
-  .sub-section-cards.large-mode { grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 14px; }
+  .deck-card-grid-large { grid-template-columns: repeat(auto-fill, minmax(300px, 380px)); justify-content: center; gap: 14px; }
+  .sub-section-cards.large-mode { grid-template-columns: repeat(auto-fill, minmax(300px, 380px)); justify-content: center; gap: 14px; }
 
   /* DECK SIDE — LIST VIEW */
   .deck-card-list { display: flex; flex-direction: column; gap: 3px; }
