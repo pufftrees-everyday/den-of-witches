@@ -173,6 +173,53 @@
   .el-label { display: inline-flex; align-items: center; gap: 5px; font-family: 'Crimson Pro', serif; font-size: 0.82rem; color: var(--shimmer); }
   .el-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
 
+  /* ── SORT + CHANGE VIEW (matches the site-wide sort-bar) ── */
+  .sort-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+  .sort-label { font-family: 'Cinzel', serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--rune); }
+  .sort-btn { font-family: 'Cinzel', serif; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; background: #13111e; border: 1px solid #2a2640; color: var(--rune); padding: 5px 12px; cursor: pointer; transition: all 0.15s; border-radius: 2px; display: flex; align-items: center; gap: 5px; }
+  .sort-btn:hover { border-color: var(--arcane); color: var(--arcane); }
+  .sort-btn.active { background: var(--rune); border-color: var(--arcane); color: #fff; }
+  .viewmode-wrap { display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0; }
+  .viewmode-label { font-family: 'Cinzel', serif; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--rune); white-space: nowrap; }
+  .viewmode-toggle { display: inline-flex; border: 2px solid #2a2640; border-radius: 4px; overflow: hidden; flex-shrink: 0; }
+  .viewmode-btn { font-size: 1rem; line-height: 1; background: #13111e; border: none; color: var(--rune); padding: 5px 11px; cursor: pointer; transition: all 0.15s; }
+  .viewmode-btn.active { background: var(--rune); color: #fff; }
+  .viewmode-btn:not(.active):hover { background: #1a1728; color: var(--arcane); }
+  .btn-sm { padding: 5px 11px !important; font-size: 0.62rem !important; }
+
+  /* Detailed (list) view */
+  .deck-list { display: flex; flex-direction: column; gap: 9px; }
+  .deck-row { display: flex; align-items: center; gap: 14px; background: var(--dusk); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; transition: border-color 0.15s, transform 0.15s; }
+  .deck-row:hover { border-color: var(--border-strong); transform: translateX(2px); }
+  .deck-row-thumb { width: 54px; height: 54px; border-radius: 6px; overflow: hidden; background: #0b0a0f; flex-shrink: 0; }
+  .deck-row-thumb img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; display: block; }
+  .deck-row-main { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 3px; }
+  .deck-row-name { font-family: 'Cinzel', serif; font-weight: 700; font-size: 1rem; color: var(--parchment); text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .deck-row-name:hover { color: var(--gold); }
+  .deck-row-sub { font-size: 0.82rem; color: var(--rune); display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .deck-row-elbar { display: flex; width: 84px; height: 9px; border-radius: 5px; overflow: hidden; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.3); }
+  .deck-row-elbar div { height: 100%; }
+  .deck-row-stats { display: flex; gap: 12px; flex-shrink: 0; }
+  .deck-row-actions { display: flex; gap: 7px; flex-shrink: 0; }
+
+  /* Text view — compact, multi-column */
+  .deck-textlist { columns: 2; column-gap: 26px; }
+  .deck-textrow { break-inside: avoid; display: flex; align-items: center; gap: 9px; padding: 7px 4px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.12s; }
+  .deck-textrow:hover { background: rgba(155,135,212,0.06); }
+  .deck-textrow-name { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--shimmer); font-weight: 600; font-size: 0.98rem; }
+  .deck-textrow:hover .deck-textrow-name { color: var(--gold); }
+  .deck-textrow-by { color: var(--rune); font-size: 0.82rem; font-style: italic; white-space: nowrap; max-width: 34%; overflow: hidden; text-overflow: ellipsis; }
+  .deck-textrow-stats { display: flex; gap: 9px; color: var(--rune); font-size: 0.8rem; flex-shrink: 0; }
+  .deck-textrow-stats .dc-heart { color: var(--ember); }
+  @media (min-width: 1000px) { .deck-textlist { columns: 3; } }
+  @media (max-width: 600px) { .deck-textlist { columns: 1; } }
+  @media (max-width: 640px) {
+    .deck-row { flex-wrap: wrap; }
+    .deck-row-elbar { display: none; }
+    .deck-row-actions { width: 100%; }
+    .deck-row-actions .btn { flex: 1; }
+  }
+
   .status { text-align: center; color:var(--rune); font-style: italic; padding: 60px 20px; font-size: 1rem; }
   .empty-cta { text-align: center; padding: 50px 20px; }
   .empty-cta p { color:var(--rune); font-style: italic; margin-bottom: 16px; }
@@ -300,16 +347,27 @@
       <span class="arch-filter-label">Creator</span>
       <input type="text" id="filter-creator" class="arch-input" placeholder="Any creator…" oninput="applyArchiveFilters()" autocomplete="off">
     </div>
-    <div class="arch-filter-group">
-      <span class="arch-filter-label">Sort</span>
-      <select id="archive-sort" class="arch-input" onchange="setArchiveSort(this.value)">
-        <option value="newest">Newest</option>
-        <option value="views">Most Viewed</option>
-        <option value="likes">Most Liked</option>
-      </select>
-    </div>
     <button class="arch-clear-btn" onclick="clearArchiveFilters()">Clear</button>
     <span class="arch-result-count" id="archive-result-count"></span>
+  </div>
+
+  <!-- SORT + CHANGE VIEW -->
+  <div class="sort-bar">
+    <span class="sort-label">Sort</span>
+    <div id="archive-sortbar" style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="sort-btn active" data-sort="random" onclick="setArchiveSort('random')">⤮ Random</button>
+      <button class="sort-btn" data-sort="newest" onclick="setArchiveSort('newest')">Newest</button>
+      <button class="sort-btn" data-sort="views" onclick="setArchiveSort('views')">Most Viewed</button>
+      <button class="sort-btn" data-sort="likes" onclick="setArchiveSort('likes')">Most Liked</button>
+    </div>
+    <div class="viewmode-wrap" id="archive-viewtoggle" style="margin-left:auto;">
+      <span class="viewmode-label">Change View</span>
+      <div class="viewmode-toggle">
+        <button class="viewmode-btn" data-view="text" onclick="setArchiveView('text')" title="Text view" aria-label="Text view">☰</button>
+        <button class="viewmode-btn" data-view="details" onclick="setArchiveView('details')" title="Detailed view" aria-label="Detailed view">▤</button>
+        <button class="viewmode-btn active" data-view="card" onclick="setArchiveView('card')" title="Card view" aria-label="Card view">⊞</button>
+      </div>
+    </div>
   </div>
 
   <!-- AVATAR BROWSER MODAL -->
@@ -534,15 +592,31 @@ let galleryDecks = [];   // cached public decks
 let galleryAuthors = {}; // id → username
 let galleryAuthorAvatars = {}; // id → avatar url
 let galleryCommentCounts = {}; // deck_id → comment count
-let archiveSort = 'newest'; // newest | views | likes
+let archiveSort = 'random'; // random | newest | views | likes  (fresh load = random)
+let archiveView = 'card';   // card | details | text
 
-function setArchiveSort(v) { archiveSort = v; applyArchiveFilters(); }
+// Give each deck a stable random key so a shuffle survives filter keystrokes.
+function assignRandomOrder() { galleryDecks.forEach(d => { d._rand = Math.random(); }); }
+
+function setArchiveSort(v) {
+  archiveSort = v;
+  if (v === 'random') assignRandomOrder(); // re-roll on each Random click
+  document.querySelectorAll('#archive-sortbar .sort-btn').forEach(b => b.classList.toggle('active', b.dataset.sort === v));
+  applyArchiveFilters();
+}
+
+function setArchiveView(mode) {
+  archiveView = mode;
+  document.querySelectorAll('#archive-viewtoggle .viewmode-btn').forEach(b => b.classList.toggle('active', b.dataset.view === mode));
+  applyArchiveFilters();
+}
 
 // Sort a filtered deck list by the active sort mode (newest is the tiebreaker)
 function sortArchiveDecks(decks) {
   const byNewest = (a, b) => new Date(b.created_at) - new Date(a.created_at);
   const arr = decks.slice();
-  if (archiveSort === 'views') arr.sort((a, b) => (b.views || 0) - (a.views || 0) || byNewest(a, b));
+  if (archiveSort === 'random') arr.sort((a, b) => (a._rand || 0) - (b._rand || 0));
+  else if (archiveSort === 'views') arr.sort((a, b) => (b.views || 0) - (a.views || 0) || byNewest(a, b));
   else if (archiveSort === 'likes') arr.sort((a, b) => (b.like_count || 0) - (a.like_count || 0) || byNewest(a, b));
   else arr.sort(byNewest);
   return arr;
@@ -664,6 +738,7 @@ async function loadGallery() {
     } catch (e) { /* table may not exist yet */ }
 
     galleryDecks = decks;
+    assignRandomOrder();
     await loadCardElements();
     populateArchiveFilters();
     applyArchiveFilters();
@@ -679,7 +754,62 @@ function renderGallery(decks) {
     container.innerHTML = `<div class="status">No decks match your search.</div>`;
     return;
   }
-  container.innerHTML = `<div class="deck-gallery">${decks.map(d => renderDeckCard(d, galleryAuthors)).join('')}</div>`;
+  if (archiveView === 'details') {
+    container.innerHTML = `<div class="deck-list">${decks.map(renderDeckRow).join('')}</div>`;
+  } else if (archiveView === 'text') {
+    container.innerHTML = `<div class="deck-textlist">${decks.map(renderDeckTextRow).join('')}</div>`;
+  } else {
+    container.innerHTML = `<div class="deck-gallery">${decks.map(d => renderDeckCard(d, galleryAuthors)).join('')}</div>`;
+  }
+}
+
+// Detailed (list) row — thumbnail, name/author, element mini-bar, stats, actions
+function renderDeckRow(d) {
+  const author = d.owner_id ? (galleryAuthors[d.owner_id] || 'Unknown') : 'Anonymous';
+  const av = avatarName(d.deck_data || {});
+  const avImg = avatarImageUrl(d.deck_data || {});
+  const isOwner = currentUser && currentUser.id === d.owner_id;
+  const hasScroll = !!(((d.deck_data && d.deck_data.d) || '').trim());
+  const breakdown = deckElementBreakdown(d.deck_data || {});
+  const elbar = breakdown.length
+    ? `<div class="deck-row-elbar" title="Element balance">${breakdown.map(b => `<div style="width:${b.pct.toFixed(1)}%;background:${ELEMENT_COLORS[b.el]};"></div>`).join('')}</div>`
+    : '';
+  const authorAvatar = d.owner_id && galleryAuthorAvatars[d.owner_id]
+    ? `<img class="dc-author-avatar" src="${escapeHtml(galleryAuthorAvatars[d.owner_id])}" alt="" loading="lazy" onerror="this.style.display='none'">` : '';
+  return `<div class="deck-row">
+    <div class="deck-row-thumb">${avImg ? `<img src="${avImg}" alt="" loading="lazy" onerror="this.parentElement.style.opacity='0.2'">` : ''}</div>
+    <div class="deck-row-main">
+      <a class="deck-row-name" href="deck.html?d=${d.short_code}">${escapeHtml(d.name || 'Untitled Deck')}</a>
+      <div class="deck-row-sub">
+        <span>by <a href="profile.html?u=${encodeURIComponent(author)}" class="dc-author-link" onclick="event.stopPropagation()">${authorAvatar}<b>${escapeHtml(author)}</b></a></span>
+        ${av ? `<a href="avatar.html?a=${encodeURIComponent(av)}" class="dc-avatar-link" onclick="event.stopPropagation()">${escapeHtml(av)}</a>` : ''}
+      </div>
+    </div>
+    ${elbar}
+    <div class="deck-row-stats">
+      <span class="dc-stat" title="Views"><span class="dc-eye">👁</span> <b>${d.views || 0}</b></span>
+      <span class="dc-stat" title="Likes"><span class="dc-heart">♥</span> <b>${d.like_count || 0}</b></span>
+      <span class="dc-stat" title="Comments"><span class="dc-comment">💬</span> <b>${galleryCommentCounts[d.id] || 0}</b></span>
+      ${hasScroll ? `<span class="dc-stat dc-scroll" title="This deck has a Scroll (notes from the author)">📜</span>` : ''}
+    </div>
+    <div class="deck-row-actions">
+      <button class="btn btn-primary btn-sm" onclick="openDeck('${d.short_code}')">View</button>
+      ${isOwner
+        ? `<button class="btn btn-ghost btn-sm" onclick="unpublishDeck('${d.id}')">Unpublish</button>`
+        : `<button class="btn btn-ghost btn-sm" onclick="bringToWorkshop('${d.short_code}', ${JSON.stringify(d.name||'').replace(/"/g,'&quot;')})">Bring</button>`}
+    </div>
+  </div>`;
+}
+
+// Text row — compact one-liner: name · author · stats (whole row opens the deck)
+function renderDeckTextRow(d) {
+  const author = d.owner_id ? (galleryAuthors[d.owner_id] || 'Unknown') : 'Anonymous';
+  const hasScroll = !!(((d.deck_data && d.deck_data.d) || '').trim());
+  return `<div class="deck-textrow" onclick="openDeck('${d.short_code}')" title="${escapeHtml(d.name || 'Untitled Deck')}">
+    <span class="deck-textrow-name">${escapeHtml(d.name || 'Untitled Deck')}</span>
+    <span class="deck-textrow-by">${escapeHtml(author)}</span>
+    <span class="deck-textrow-stats"><span title="Views">👁 ${d.views || 0}</span><span class="dc-heart" title="Likes">♥ ${d.like_count || 0}</span>${hasScroll ? '<span title="Has a Scroll">📜</span>' : ''}</span>
+  </div>`;
 }
 
 let archiveAvatars = []; // unique avatar names present in published decks (with deck count)
