@@ -157,14 +157,19 @@ then variant where `finish==='Standard' && product==='Booster'`. Example real sl
   via the `increment_deck_views` RPC — see gotcha below. Comments section under the deck
   (deck_comments table): logged-in users post + reply (one level); owner posts badged "Author".
   A **🎲 Test Deck** action links to testdeck.html?d=CODE.
-- **testdeck.html** — playtest tabletop (?d=CODE), `noindex`. **WIP / first pass.** Loads the deck
-  (own inline Supabase client; session restored from localStorage so owners can test private decks)
-  + cards.json slug map. Shows the **playmat.jpg** background with the Avatar face-up and three
-  face-down **stacks** (Spellbook → `SpellbookBack.png`, Atlas → `AtlasBack.png` (landscape),
-  Collection → `SpellbookBack.png`) with count badges. **✋ Opening Hand** draws 3 random Spellbook +
-  3 random Atlas cards into a "Starting Hand" bottom sheet with a ↻ **Mulligan** button. Assets live in
-  the repo root: **Playmat.jpg, AtlasBack.png, SpellbookBack.png** (exact casing matters — GitHub Pages
-  is case-sensitive); each also has a CSS gradient fallback. Future: real drag/draw, life/mana, full rules.
+- **testdeck.html** — playtest tabletop (?d=CODE), `noindex`. **WIP.** Loads the deck (own inline
+  Supabase client; session restored from localStorage so owners can test private decks) + cards.json
+  slug map. The **Playmat.jpg** mat is JS-sized (`fitPlaymat`) to show in full; cards are absolutely
+  positioned by % via the `POS` config — Avatar on **spot 18** (bottom-centre of the 4×5 grid), the
+  Spellbook/Atlas/Collection **stacks** in the right margin under the SORCERY logo (`SpellbookBack.png`
+  / `AtlasBack.png` landscape / `SpellbookBack.png`) with remaining-count badges. **Draw** 1 from a pile
+  via its `+ Spellbook` / `+ Atlas` button or by clicking the stack → card goes to the **Hand** (the
+  always-wide single-row bottom bar; horizontal-scrolls, never stacks). **Drag a hand card up out of the
+  bar to discard** it (pointer events). **Mulligan** = select ≤3 hand cards then Replace (returns them
+  to the pile + redraws same type); **Draw Fresh Hand** reshuffles and redraws 3+3. State: `full` (full
+  lists), `remain` (drawable piles), `hand`. Assets in repo root: **Playmat.jpg, AtlasBack.png,
+  SpellbookBack.png** (exact casing — Pages is case-sensitive). `POS` x/y/w %s are eyeball estimates,
+  easy to nudge. Future: per-card zoom, life/mana counters, board play, full rules.
 - **avatar.html** — avatar detail (?a=Name). Uses real rulesText only (no copyrighted flavor).
   Shows an "Illustrated by" line linking to artist.html.
 - **artist.html** — artist gallery (?a=ArtistName). Lists every card illustrated by that artist in a

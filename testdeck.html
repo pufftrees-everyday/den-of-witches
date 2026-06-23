@@ -16,149 +16,118 @@
     --mist: #3a3658; --rune: #6b5fa0; --arcane: #9b87d4; --shimmer: #c9bfee;
     --parchment: #e8e0cc; --gold: #c8a96e; --ember: #c4614a; --sage: #5a8a6a;
     --border: rgba(155, 135, 212, 0.18); --border-strong: rgba(155, 135, 212, 0.35);
-    --glow-strong: 0 0 30px rgba(155,135,212,0.3);
-    --cw: 116px;             /* portrait card width */
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { height: 100%; }
-  body { color: var(--parchment); font-family: 'Crimson Pro', serif; min-height: 100vh; overflow-x: hidden; }
+  html, body { height: 100%; overflow: hidden; }
+  body { color: var(--parchment); font-family: 'Crimson Pro', serif; background: var(--void); }
   a { color: inherit; }
 
-  /* Tabletop = the playmat. Falls back to a dark gradient if playmat.jpg is missing. */
-  .tabletop {
-    min-height: 100vh; min-height: 100dvh;
-    background-image: url('Playmat.jpg'), radial-gradient(circle at 50% 30%, #20203a 0%, #0b0a0f 70%);
-    background-size: cover, cover; background-position: center, center; background-repeat: no-repeat;
-    display: flex; flex-direction: column;
-  }
-  .tabletop::before { content: ''; position: fixed; inset: 0; background: rgba(11,10,15,0.42); pointer-events: none; z-index: 0; }
+  .app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
 
-  .topbar {
-    position: relative; z-index: 5; display: flex; align-items: center; gap: 14px;
-    padding: 12px 18px; background: linear-gradient(180deg, rgba(11,10,15,0.78), rgba(11,10,15,0.1));
-    backdrop-filter: blur(4px); flex-wrap: wrap;
-  }
-  .tb-back { font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--rune); text-decoration: none; white-space: nowrap; }
+  /* Top bar + controls */
+  .topbar { display: flex; align-items: center; gap: 10px 14px; padding: 9px 16px; background: linear-gradient(180deg, #0d0b14, var(--abyss)); border-bottom: 1px solid var(--border); flex-wrap: wrap; flex-shrink: 0; z-index: 10; }
+  .tb-back { font-family: 'Cinzel', serif; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--rune); text-decoration: none; white-space: nowrap; }
   .tb-back:hover { color: var(--arcane); }
-  .tb-title { font-family: 'Cinzel Decorative', serif; font-size: 1.15rem; font-weight: 700; color: var(--gold); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-shadow: 0 2px 10px rgba(0,0,0,0.7); }
-  .tb-actions { display: flex; gap: 8px; flex-shrink: 0; }
-  .btn { padding: 9px 16px; font-family: 'Cinzel', serif; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 5px; cursor: pointer; border: 1px solid transparent; transition: background 0.18s, border-color 0.18s, color 0.18s; white-space: nowrap; }
+  .tb-title { font-family: 'Cinzel Decorative', serif; font-size: 1.05rem; font-weight: 700; color: var(--gold); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 34vw; }
+  .tb-spacer { flex: 1; }
+  .controls { display: flex; gap: 7px; flex-wrap: wrap; }
+  .btn { padding: 8px 13px; font-family: 'Cinzel', serif; font-size: 0.64rem; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; border-radius: 5px; cursor: pointer; border: 1px solid transparent; transition: background 0.16s, border-color 0.16s, color 0.16s; white-space: nowrap; }
+  .btn:disabled { opacity: 0.4; cursor: default; }
   .btn-primary { background: var(--rune); border-color: var(--arcane); color: #fff; }
-  .btn-primary:hover { background: var(--arcane); }
-  .btn-ghost { background: rgba(11,10,15,0.5); border-color: var(--border-strong); color: var(--shimmer); }
-  .btn-ghost:hover { border-color: var(--arcane); color: var(--gold); }
+  .btn-primary:hover:not(:disabled) { background: var(--arcane); }
+  .btn-ghost { background: rgba(155,135,212,0.06); border-color: var(--border-strong); color: var(--shimmer); }
+  .btn-ghost:hover:not(:disabled) { border-color: var(--arcane); color: var(--gold); }
+  .btn-ember { background: rgba(196,97,74,0.14); border-color: var(--ember); color: var(--ember); }
+  .btn-ember:hover:not(:disabled) { background: var(--ember); color: #fff; }
+  .btn.active { background: var(--ember); border-color: var(--ember); color: #fff; }
 
-  .status { position: relative; z-index: 5; text-align: center; color: var(--shimmer); padding: 80px 20px; font-style: italic; font-size: 1.1rem; }
+  .status { text-align: center; color: var(--shimmer); padding: 80px 20px; font-style: italic; font-size: 1.1rem; }
 
-  /* Board */
-  .board { position: relative; z-index: 4; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 30px; padding: 30px 20px 60px; }
-  .zones { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: center; gap: 34px; }
+  /* Mat area — the playmat is sized by JS (fitPlaymat) so the whole mat shows. */
+  .mat-area { flex: 1; min-height: 0; position: relative; overflow: hidden; background: radial-gradient(circle at 50% 35%, #16162a, #0b0a0f 75%); }
+  .playmat { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); border-radius: 8px; overflow: hidden; box-shadow: 0 0 40px rgba(0,0,0,0.6); }
+  .playmat-img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-  .zone { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-  .zone-label { font-family: 'Cinzel', serif; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--shimmer); text-shadow: 0 1px 6px rgba(0,0,0,0.8); }
-  .zone-label b { color: var(--gold); }
+  /* A card placed on the mat (avatar / stack) — sizes are % of playmat width */
+  .pm-card { position: absolute; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .pm-frame { position: relative; width: 100%; border-radius: 6px; overflow: hidden; border: 1px solid var(--border-strong); box-shadow: 0 4px 14px rgba(0,0,0,0.6); background: var(--twilight); aspect-ratio: 3 / 4; }
+  .pm-card.landscape .pm-frame { aspect-ratio: 88 / 63; }
+  .pm-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .pm-label { font-family: 'Cinzel', serif; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--shimmer); text-shadow: 0 1px 4px #000; white-space: nowrap; }
 
-  /* Card face (avatar shown face-up) */
-  .card-face { width: var(--cw); aspect-ratio: 3 / 4; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-strong); box-shadow: 0 8px 22px rgba(0,0,0,0.55); background: var(--twilight); }
-  .card-face img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  /* Stacks (face-down piles) */
+  .pm-card.stack .pm-frame { cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; background-size: cover; background-position: center; }
+  .pm-card.stack .pm-frame:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.7), 0 0 14px rgba(200,169,110,0.35); }
+  .pm-frame.spellbook  { background-image: url('SpellbookBack.png'); }
+  .pm-frame.collection { background-image: url('SpellbookBack.png'); }
+  .pm-frame.atlas      { background-image: url('AtlasBack.png'); }
+  .pm-card.empty .pm-frame { background-image: none !important; background: rgba(11,10,15,0.35); border-style: dashed; border-color: var(--mist); cursor: default; }
+  .pm-card.empty .pm-frame:hover { transform: none; box-shadow: 0 4px 14px rgba(0,0,0,0.6); }
+  .pm-count { position: absolute; bottom: 5px; right: 5px; min-width: 24px; height: 24px; padding: 0 6px; border-radius: 12px; background: rgba(11,10,15,0.9); border: 1px solid var(--gold); color: var(--gold); font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.7); z-index: 2; }
+  .pm-card.empty .pm-count { border-color: var(--mist); color: var(--mist); }
 
-  /* Stacks — a pile of face-down cards */
-  .stack { position: relative; width: var(--cw); aspect-ratio: 3 / 4; cursor: default; transition: transform 0.18s; }
-  .stack.landscape { width: calc(var(--cw) * 1.4); aspect-ratio: 88 / 63; }
-  .stack:hover { transform: translateY(-4px); }
-  .stack::before, .stack::after { content: ''; position: absolute; inset: 0; border-radius: 8px; border: 1px solid var(--border); background: #1b1726; }
-  .stack::before { transform: translate(7px, 7px); z-index: 1; }
-  .stack::after { transform: translate(3.5px, 3.5px); z-index: 2; }
-  .stack.empty::before, .stack.empty::after { display: none; }
-  .card-back {
-    position: relative; z-index: 3; width: 100%; height: 100%; border-radius: 8px;
-    border: 1px solid var(--border-strong); box-shadow: 0 8px 22px rgba(0,0,0,0.55);
-    background-size: cover; background-position: center; background-repeat: no-repeat;
-    display: flex; align-items: center; justify-content: center;
-  }
-  /* Each back layers its art over a themed gradient fallback (gradient shows if the PNG is missing) */
-  .card-back.spellbook  { background-image: url('SpellbookBack.png'), linear-gradient(150deg, #322a55, #15111f); }
-  .card-back.collection { background-image: url('SpellbookBack.png'), linear-gradient(150deg, #3a2a52, #15111f); }
-  .card-back.atlas      { background-image: url('AtlasBack.png'),     linear-gradient(150deg, #234034, #14111c); }
-  .stack.empty .card-back { background-image: none; background: rgba(11,10,15,0.35); border-style: dashed; border-color: var(--mist); }
+  /* Hand bar — always one wide row along the bottom */
+  .hand-bar { flex-shrink: 0; height: clamp(124px, 23vh, 210px); background: linear-gradient(180deg, rgba(17,16,24,0.92), rgba(11,10,15,0.98)); border-top: 1px solid var(--border-strong); display: flex; flex-direction: column; z-index: 10; }
+  .hand-head { display: flex; align-items: center; gap: 12px; padding: 6px 14px 0; flex-shrink: 0; }
+  .hand-title { font-family: 'Cinzel', serif; font-size: 0.74rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); }
+  .hand-title b { color: var(--shimmer); }
+  .hand-hint { font-size: 0.82rem; color: var(--rune); font-style: italic; }
+  .hand-hint.warn { color: var(--gold); font-style: normal; }
+  .hand-head .tb-spacer { flex: 1; }
+  .hand-scroll { flex: 1; min-height: 0; display: flex; flex-wrap: nowrap; align-items: center; gap: 9px; overflow-x: auto; overflow-y: hidden; padding: 6px 14px 10px; scrollbar-width: thin; }
+  .hand-scroll::-webkit-scrollbar { height: 8px; }
+  .hand-scroll::-webkit-scrollbar-thumb { background: var(--mist); border-radius: 4px; }
+  .hand-empty { color: var(--rune); font-style: italic; padding-left: 4px; }
 
-  .stack-count {
-    position: absolute; bottom: -10px; right: -10px; z-index: 4;
-    min-width: 30px; height: 30px; padding: 0 7px; border-radius: 15px;
-    background: var(--void); border: 1px solid var(--gold); color: var(--gold);
-    font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.85rem;
-    display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 10px rgba(0,0,0,0.6);
-  }
-  .stack.empty .stack-count { border-color: var(--mist); color: var(--mist); }
+  .hcard { flex: 0 0 auto; height: 100%; aspect-ratio: 3 / 4; position: relative; border-radius: 7px; overflow: hidden; border: 1px solid var(--border-strong); box-shadow: 0 5px 16px rgba(0,0,0,0.55); background: var(--twilight); cursor: grab; touch-action: none; transition: box-shadow 0.15s, outline-color 0.15s; outline: 2px solid transparent; outline-offset: 2px; }
+  .hcard.site { aspect-ratio: 88 / 63; }
+  .hcard img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+  .hcard.site img { position: absolute; top: 50%; left: 50%; width: auto; height: 142%; transform: translate(-50%,-50%) rotate(90deg); }
+  .hcard.dragging { cursor: grabbing; z-index: 50; box-shadow: 0 16px 36px rgba(0,0,0,0.8); }
+  .hcard.will-discard { outline-color: var(--ember); opacity: 0.65; }
+  .hcard.selectable { cursor: pointer; }
+  .hcard.selected { outline-color: var(--gold); box-shadow: 0 0 18px rgba(200,169,110,0.6); }
 
-  /* Opening-hand panel (bottom sheet) */
-  .hand-panel {
-    position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
-    background: linear-gradient(180deg, rgba(17,16,24,0.96), rgba(11,10,15,0.99));
-    border-top: 1px solid var(--border-strong); box-shadow: 0 -12px 40px rgba(0,0,0,0.6);
-    padding: 16px 20px 22px; transform: translateY(110%); transition: transform 0.3s ease;
-    max-height: 82vh; overflow-y: auto;
-  }
-  .hand-panel.open { transform: translateY(0); }
-  .hand-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
-  .hand-title { font-family: 'Cinzel Decorative', serif; font-size: 1.4rem; color: var(--gold); }
-  .hand-title .hand-sub { font-family: 'Crimson Pro', serif; font-size: 0.85rem; color: var(--rune); font-style: italic; margin-left: 8px; }
-  .hand-head .spacer { flex: 1; }
+  .discard-hint { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); z-index: 30; background: rgba(196,97,74,0.92); color: #fff; font-family: 'Cinzel', serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 7px 16px; border-radius: 20px; opacity: 0; transition: opacity 0.15s; pointer-events: none; }
+  .discard-hint.show { opacity: 1; }
 
-  .hand-group { margin-bottom: 14px; }
-  .hand-group-label { font-family: 'Cinzel', serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rune); margin-bottom: 8px; }
-  .hand-row { display: flex; flex-wrap: wrap; gap: 14px; }
-  .hcard { width: 132px; }
-  .hcard .hcard-img { width: 100%; aspect-ratio: 3 / 4; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-strong); box-shadow: 0 6px 18px rgba(0,0,0,0.5); background: var(--twilight); position: relative; }
-  .hcard .hcard-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  /* Sites are portrait scans rotated 90° to read landscape */
-  .hcard.site { width: 184px; }
-  .hcard.site .hcard-img { aspect-ratio: 88 / 63; }
-  .hcard.site .hcard-img img { position: absolute; top: 50%; left: 50%; width: auto; height: 142%; transform: translate(-50%,-50%) rotate(90deg); object-fit: cover; }
-  .hcard-name { font-size: 0.82rem; color: var(--shimmer); margin-top: 6px; line-height: 1.25; text-align: center; }
-  .hand-empty { color: var(--rune); font-style: italic; padding: 8px 2px; }
-
-  @media (max-width: 600px) {
-    :root { --cw: 92px; }
-    .zones { gap: 22px; }
-    .hcard { width: 104px; }
-    .hcard.site { width: 146px; }
-    .tb-title { font-size: 1rem; }
+  @media (max-width: 640px) {
+    .tb-title { max-width: 40vw; font-size: 0.92rem; }
+    .btn { padding: 7px 10px; font-size: 0.58rem; }
   }
 </style>
 </head>
 <body>
-<div class="tabletop">
+<div class="app">
   <div class="topbar">
-    <a class="tb-back" id="back-link" href="archive.html">← Back to Deck</a>
+    <a class="tb-back" id="back-link" href="archive.html">← Deck</a>
     <div class="tb-title" id="deck-title">Test Deck</div>
-    <div class="tb-actions">
-      <button class="btn btn-primary" id="hand-btn" onclick="drawOpeningHand()" style="display:none;">✋ Opening Hand</button>
+    <div class="tb-spacer"></div>
+    <div class="controls" id="controls" style="display:none;">
+      <button class="btn btn-ghost" onclick="drawOne('spellbook')" id="btn-draw-s" title="Draw 1 from the Spellbook">+ Spellbook</button>
+      <button class="btn btn-ghost" onclick="drawOne('atlas')" id="btn-draw-a" title="Draw 1 from the Atlas">+ Atlas</button>
+      <button class="btn btn-primary" onclick="drawFreshHand()" id="btn-fresh">Draw Fresh Hand</button>
+      <button class="btn btn-ember" onclick="toggleMulligan()" id="btn-mull">Mulligan</button>
     </div>
   </div>
 
   <div class="status" id="status">Setting the table…</div>
 
-  <div class="board" id="board" style="display:none;">
-    <div class="zones" id="zones"></div>
+  <div class="mat-area" id="mat-area" style="display:none;">
+    <div class="playmat" id="playmat">
+      <img class="playmat-img" src="Playmat.jpg" alt="Playmat" onerror="this.style.display='none'">
+      <div class="discard-hint" id="discard-hint">✕ Release to discard</div>
+      <!-- avatar + stacks injected here -->
+    </div>
   </div>
-</div>
 
-<!-- Opening hand bottom sheet -->
-<div class="hand-panel" id="hand-panel">
-  <div class="hand-head">
-    <div class="hand-title">Starting Hand <span class="hand-sub">3 Spellbook · 3 Atlas, drawn at random</span></div>
-    <div class="spacer"></div>
-    <button class="btn btn-primary" onclick="drawOpeningHand()">↻ Mulligan</button>
-    <button class="btn btn-ghost" onclick="closeHand()">Close</button>
-  </div>
-  <div class="hand-group">
-    <div class="hand-group-label">Spellbook</div>
-    <div class="hand-row" id="hand-spellbook"></div>
-  </div>
-  <div class="hand-group">
-    <div class="hand-group-label">Atlas · Sites</div>
-    <div class="hand-row" id="hand-atlas"></div>
+  <div class="hand-bar" id="hand-bar" style="display:none;">
+    <div class="hand-head">
+      <span class="hand-title">Hand <b id="hand-count">0</b></span>
+      <span class="tb-spacer"></span>
+      <span class="hand-hint" id="hand-hint">Draw cards, or drag a card up to discard it.</span>
+    </div>
+    <div class="hand-scroll" id="hand-scroll"></div>
   </div>
 </div>
 
@@ -173,8 +142,18 @@
   function escHtml(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
   function getParam(n){ return new URLSearchParams(location.search).get(n); }
 
-  // ── Card image lookup (slug map from cards.json, Beta-preferred) ──
-  const cardSlugMap = {}; // lowercased name → slug
+  // ── Board placement (% of playmat; tweak freely) ──
+  // Sorcery board is a 4×5 grid (spots 1–20). The avatar starts on spot 18
+  // (bottom-centre). Decks sit in the right margin under the SORCERY logo.
+  const POS = {
+    avatar:     { x: 47,   y: 85, w: 8.5, land: false },
+    spellbook:  { x: 90.5, y: 47, w: 8.5, land: false },
+    atlas:      { x: 90,   y: 66, w: 12,  land: true  },
+    collection: { x: 90.5, y: 85, w: 8.5, land: false },
+  };
+
+  // ── Cards image lookup ──
+  const cardSlugMap = {};
   async function loadCards() {
     try {
       const res = await fetch('cards.json');
@@ -199,71 +178,172 @@
     return IMAGE_BASE + (name||'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'') + '.png';
   }
 
-  // ── Deck data helpers ──
-  let deck = null;
-  const sectionCount = (dd, sec) => (dd[sec]||[]).reduce((s,[,q]) => s + (q||0), 0);
-  // Expand [[name,qty]...] into a flat pool of names (one entry per copy).
-  const expandPool = (arr) => { const out = []; (arr||[]).forEach(([n,q]) => { for (let i=0;i<(q||1);i++) out.push(n); }); return out; };
-  function sample(pool, n) {
-    const a = pool.slice(), out = [];
-    for (let i = 0; i < n && a.length; i++) out.push(a.splice(Math.floor(Math.random()*a.length), 1)[0]);
-    return out;
+  // ── State ──
+  let deck = null, avatar = null;
+  const full = { spellbook: [], atlas: [], collection: [] }; // full expanded decklists
+  const remain = { spellbook: [], atlas: [] };               // remaining (drawable) piles
+  let hand = [];          // [{ name, type:'spellbook'|'atlas' }]
+  let mulligan = false;   // selecting cards to replace?
+  const selected = new Set();
+
+  const expand = (arr) => { const out = []; (arr||[]).forEach(([n,q]) => { for (let i=0;i<(q||1);i++) out.push(n); }); return out; };
+  function shuffle(a){ for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+  // Size the playmat to show the whole mat within the available area (keeps aspect).
+  const MAT_AR = 2556 / 1663;
+  function fitPlaymat() {
+    const area = document.getElementById('mat-area');
+    const pm = document.getElementById('playmat');
+    if (!area || !pm || area.style.display === 'none') return;
+    const aw = area.clientWidth - 12, ah = area.clientHeight - 12;
+    if (aw <= 0 || ah <= 0) return;
+    let w = aw, h = w / MAT_AR;
+    if (h > ah) { h = ah; w = h * MAT_AR; }
+    pm.style.width = Math.round(w) + 'px';
+    pm.style.height = Math.round(h) + 'px';
+  }
+  window.addEventListener('resize', fitPlaymat);
+
+  // ── Draw / discard / mulligan ──
+  function drawOne(type) {
+    if (mulligan) return;
+    if (!remain[type] || !remain[type].length) { flashHint(`${type === 'atlas' ? 'Atlas' : 'Spellbook'} is empty`); return; }
+    hand.push({ name: remain[type].pop(), type });
+    renderStacks(); renderHand();
+  }
+  function discard(i) {
+    if (i < 0 || i >= hand.length) return;
+    hand.splice(i, 1);
+    renderHand();
+  }
+  function drawFreshHand() {
+    remain.spellbook = shuffle(full.spellbook.slice());
+    remain.atlas = shuffle(full.atlas.slice());
+    hand = [];
+    for (let i = 0; i < 3 && remain.spellbook.length; i++) hand.push({ name: remain.spellbook.pop(), type: 'spellbook' });
+    for (let i = 0; i < 3 && remain.atlas.length; i++) hand.push({ name: remain.atlas.pop(), type: 'atlas' });
+    exitMulligan();
+    renderStacks(); renderHand();
+  }
+  function toggleMulligan() {
+    if (mulligan) { exitMulligan(); renderHand(); return; }
+    if (!hand.length) { flashHint('Draw a hand first'); return; }
+    mulligan = true; selected.clear(); renderHand();
+  }
+  function exitMulligan() { mulligan = false; selected.clear(); updateMullButton(); }
+  function toggleSelect(i) {
+    if (!mulligan) return;
+    if (selected.has(i)) selected.delete(i);
+    else { if (selected.size >= 3) { flashHint('Mulligan replaces at most 3'); return; } selected.add(i); }
+    renderHand();
+  }
+  function confirmMulligan() {
+    // Each selected card goes back into its pile; draw a fresh one of the same type.
+    [...selected].sort((a,b)=>a-b).forEach(i => {
+      const c = hand[i]; if (!c) return;
+      remain[c.type].push(c.name); shuffle(remain[c.type]);
+      hand[i] = remain[c.type].length ? { name: remain[c.type].pop(), type: c.type } : c;
+    });
+    exitMulligan(); renderStacks(); renderHand();
   }
 
-  // ── Render the board ──
-  function renderBoard() {
-    const dd = deck.deck_data || {};
-    const avatar = (dd.a && dd.a.length) ? dd.a[0][0] : null;
-    const sCount = sectionCount(dd, 's');
-    const tCount = sectionCount(dd, 't');
-    const cCount = sectionCount(dd, 'c');
-
-    const stack = (cls, label, count, landscape) => `
-      <div class="zone">
-        <div class="stack${landscape?' landscape':''}${count?'':' empty'}">
-          <div class="card-back ${cls}"></div>
-          <span class="stack-count">${count}</span>
-        </div>
-        <div class="zone-label">${label} <b>${count}</b></div>
-      </div>`;
-
-    let html = '';
-    if (avatar) {
-      html += `
-      <div class="zone">
-        <div class="card-face"><img src="${imgUrl(avatar)}" alt="${escHtml(avatar)}" onerror="this.style.opacity='0.15'"></div>
-        <div class="zone-label">Avatar</div>
-      </div>`;
-    }
-    html += stack('spellbook', 'Spellbook', sCount, false);
-    html += stack('atlas', 'Atlas', tCount, true);
-    html += stack('collection', 'Collection', cCount, false);
-
-    document.getElementById('zones').innerHTML = html;
-    document.getElementById('hand-btn').style.display = (sCount || tCount) ? '' : 'none';
-  }
-
-  // ── Opening hand ──
-  function handCardHtml(name, isSite) {
-    return `<div class="hcard${isSite?' site':''}">
-      <div class="hcard-img"><img src="${imgUrl(name)}" alt="${escHtml(name)}" loading="lazy" onerror="this.style.opacity='0.15'"></div>
-      <div class="hcard-name">${escHtml(name)}</div>
+  // ── Render: board ──
+  function pmCardHtml(kind, opts) {
+    const p = POS[kind];
+    const style = `left:${p.x}%;top:${p.y}%;width:${p.w}%;`;
+    const inner = opts.face
+      ? `<div class="pm-frame"><img src="${imgUrl(opts.face)}" alt="${escHtml(opts.face)}" onerror="this.style.opacity='0.15'"></div>`
+      : `<div class="pm-frame ${kind}"><span class="pm-count">${opts.count}</span></div>`;
+    const cls = `pm-card ${p.land?'landscape ':''}${opts.face?'':'stack '}${(!opts.face && !opts.count)?'empty ':''}`;
+    const onclick = opts.draw ? ` onclick="drawOne('${opts.draw}')"` : '';
+    return `<div class="${cls.trim()}" style="${style}"${onclick}>
+      ${inner}
+      <span class="pm-label">${escHtml(opts.label)}</span>
     </div>`;
   }
-  function drawOpeningHand() {
-    const dd = deck.deck_data || {};
-    const spell = sample(expandPool(dd.s), 3);
-    const atlas = sample(expandPool(dd.t), 3);
-    document.getElementById('hand-spellbook').innerHTML = spell.length
-      ? spell.map(n => handCardHtml(n, false)).join('')
-      : `<div class="hand-empty">No Spellbook cards in this deck.</div>`;
-    document.getElementById('hand-atlas').innerHTML = atlas.length
-      ? atlas.map(n => handCardHtml(n, true)).join('')
-      : `<div class="hand-empty">No Atlas cards in this deck.</div>`;
-    document.getElementById('hand-panel').classList.add('open');
+  function renderBoard() {
+    const mat = document.getElementById('playmat');
+    // remove old cards (keep the img + discard hint)
+    mat.querySelectorAll('.pm-card').forEach(el => el.remove());
+    let html = '';
+    if (avatar) html += pmCardHtml('avatar', { face: avatar, label: 'Avatar' });
+    html += pmCardHtml('spellbook', { count: remain.spellbook.length, label: 'Spellbook', draw: 'spellbook' });
+    html += pmCardHtml('atlas', { count: remain.atlas.length, label: 'Atlas', draw: 'atlas' });
+    html += pmCardHtml('collection', { count: full.collection.length, label: 'Collection' });
+    document.getElementById('discard-hint').insertAdjacentHTML('afterend', html);
   }
-  function closeHand() { document.getElementById('hand-panel').classList.remove('open'); }
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeHand(); });
+  // Lighter refresh: just the two drawable stack counts
+  function renderStacks() { renderBoard(); }
+
+  // ── Render: hand ──
+  function renderHand() {
+    const wrap = document.getElementById('hand-scroll');
+    document.getElementById('hand-count').textContent = hand.length;
+    if (!hand.length) {
+      wrap.innerHTML = `<div class="hand-empty">Your hand is empty — draw cards or “Draw Fresh Hand”.</div>`;
+    } else {
+      wrap.innerHTML = hand.map((c, i) =>
+        `<div class="hcard${c.type==='atlas'?' site':''}${mulligan?' selectable':''}${selected.has(i)?' selected':''}" data-i="${i}" title="${escHtml(c.name)}">
+          <img src="${imgUrl(c.name)}" alt="${escHtml(c.name)}" loading="lazy" onerror="this.style.opacity='0.15'">
+        </div>`).join('');
+      wrap.querySelectorAll('.hcard').forEach(el => {
+        const i = +el.dataset.i;
+        if (mulligan) el.addEventListener('click', () => toggleSelect(i));
+        else el.addEventListener('pointerdown', e => startDrag(e, i, el));
+      });
+    }
+    updateMullButton();
+    const hint = document.getElementById('hand-hint');
+    if (mulligan) { hint.textContent = `Select up to 3 cards to replace (${selected.size}/3), then confirm.`; hint.classList.add('warn'); }
+    else { hint.textContent = 'Draw cards, click a stack, or drag a card up to discard it.'; hint.classList.remove('warn'); }
+  }
+  function updateMullButton() {
+    const b = document.getElementById('btn-mull');
+    if (!b) return;
+    if (mulligan) { b.textContent = selected.size ? `Replace ${selected.size}` : 'Cancel'; b.classList.add('active'); b.onclick = selected.size ? confirmMulligan : toggleMulligan; }
+    else { b.textContent = 'Mulligan'; b.classList.remove('active'); b.onclick = toggleMulligan; }
+  }
+
+  // ── Drag a hand card up to discard ──
+  let drag = null;
+  function startDrag(e, i, el) {
+    if (mulligan) return;
+    e.preventDefault();
+    drag = { i, el, x0: e.clientX, y0: e.clientY, moved: false, kill: false };
+    el.classList.add('dragging');
+    el.setPointerCapture && el.setPointerCapture(e.pointerId);
+    window.addEventListener('pointermove', onDragMove);
+    window.addEventListener('pointerup', onDragEnd);
+  }
+  function onDragMove(e) {
+    if (!drag) return;
+    const dx = e.clientX - drag.x0, dy = e.clientY - drag.y0;
+    if (Math.abs(dx) + Math.abs(dy) > 5) drag.moved = true;
+    drag.el.style.transform = `translate(${dx}px, ${dy}px) rotate(${Math.max(-8, Math.min(8, dx*0.05))}deg)`;
+    const barTop = document.getElementById('hand-bar').getBoundingClientRect().top;
+    drag.kill = e.clientY < barTop - 6;
+    drag.el.classList.toggle('will-discard', drag.kill);
+    document.getElementById('discard-hint').classList.toggle('show', drag.kill);
+  }
+  function onDragEnd() {
+    window.removeEventListener('pointermove', onDragMove);
+    window.removeEventListener('pointerup', onDragEnd);
+    document.getElementById('discard-hint').classList.remove('show');
+    if (!drag) return;
+    const d = drag; drag = null;
+    d.el.classList.remove('dragging', 'will-discard');
+    d.el.style.transform = '';
+    if (d.moved && d.kill) discard(d.i);
+  }
+
+  let hintTimer = null;
+  function flashHint(msg) {
+    const hint = document.getElementById('hand-hint');
+    hint.textContent = msg; hint.classList.add('warn');
+    clearTimeout(hintTimer);
+    hintTimer = setTimeout(() => renderHand(), 1600);
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && mulligan) { exitMulligan(); renderHand(); } });
 
   // ── Load ──
   async function run() {
@@ -277,11 +357,20 @@
       const { data, error } = await supa.from('decks').select('short_code, name, deck_data').eq('short_code', code).single();
       if (error || !data) { statusEl.textContent = 'Deck not found.'; return; }
       deck = data;
+      const dd = deck.deck_data || {};
+      avatar = (dd.a && dd.a.length) ? dd.a[0][0] : null;
+      full.spellbook = expand(dd.s); full.atlas = expand(dd.t); full.collection = expand(dd.c);
+      remain.spellbook = shuffle(full.spellbook.slice());
+      remain.atlas = shuffle(full.atlas.slice());
       document.getElementById('deck-title').textContent = deck.name || 'Test Deck';
       document.title = `Test: ${deck.name || 'Deck'} — Cursed Realm`;
-      renderBoard();
       statusEl.style.display = 'none';
-      document.getElementById('board').style.display = '';
+      document.getElementById('mat-area').style.display = '';
+      document.getElementById('hand-bar').style.display = '';
+      document.getElementById('controls').style.display = '';
+      fitPlaymat();
+      renderBoard(); renderHand();
+      setTimeout(fitPlaymat, 80); setTimeout(fitPlaymat, 350); // re-fit after layout/fonts settle
     } catch (e) {
       console.warn(e);
       statusEl.textContent = 'Could not load the deck.';
