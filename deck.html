@@ -1208,6 +1208,7 @@
     acts.push(`<button class="like-btn" id="like-btn" onclick="toggleLike()"><span class="heart">♡</span> <span id="like-count" class="like-count-badge">0</span></button>`);
     // Views counter — read-only, shown to everyone
     acts.push(`<span class="views-badge" title="Deck views"><span class="views-eye">👁</span> <span id="view-count" class="views-count-badge">${currentDeck.views || 0}</span></span>`);
+    acts.push(`<button class="btn btn-ghost" onclick="window.location.href='testdeck.html?d=${currentDeck.short_code}'" title="Playtest this deck on a virtual tabletop">🎲 Test Deck</button>`);
     acts.push(`<button class="btn btn-ghost" onclick="copyDeckLink()">🔗 Copy Link</button>`);
     acts.push(`<button class="btn btn-ghost" onclick="history.length>1?history.back():window.location.href='archive.html'">← Back</button>`);
     document.getElementById('hero-actions').innerHTML = acts.join('');

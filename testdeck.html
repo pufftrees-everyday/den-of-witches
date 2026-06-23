@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Deck — Cursed Realm</title>
+<meta name="description" content="Playtest a Sorcery: Contested Realm deck — draw an opening hand on a virtual tabletop.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0b0a0f">
+<link rel="icon" type="image/png" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@700;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #0b0a0f; --abyss: #111018; --dusk: #1a1826; --twilight: #252338;
+    --mist: #3a3658; --rune: #6b5fa0; --arcane: #9b87d4; --shimmer: #c9bfee;
+    --parchment: #e8e0cc; --gold: #c8a96e; --ember: #c4614a; --sage: #5a8a6a;
+    --border: rgba(155, 135, 212, 0.18); --border-strong: rgba(155, 135, 212, 0.35);
+    --glow-strong: 0 0 30px rgba(155,135,212,0.3);
+    --cw: 116px;             /* portrait card width */
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body { color: var(--parchment); font-family: 'Crimson Pro', serif; min-height: 100vh; overflow-x: hidden; }
+  a { color: inherit; }
+
+  /* Tabletop = the playmat. Falls back to a dark gradient if playmat.jpg is missing. */
+  .tabletop {
+    min-height: 100vh; min-height: 100dvh;
+    background-image: url('playmat.jpg'), radial-gradient(circle at 50% 30%, #20203a 0%, #0b0a0f 70%);
+    background-size: cover, cover; background-position: center, center; background-repeat: no-repeat;
+    display: flex; flex-direction: column;
+  }
+  .tabletop::before { content: ''; position: fixed; inset: 0; background: rgba(11,10,15,0.42); pointer-events: none; z-index: 0; }
+
+  .topbar {
+    position: relative; z-index: 5; display: flex; align-items: center; gap: 14px;
+    padding: 12px 18px; background: linear-gradient(180deg, rgba(11,10,15,0.78), rgba(11,10,15,0.1));
+    backdrop-filter: blur(4px); flex-wrap: wrap;
+  }
+  .tb-back { font-family: 'Cinzel', serif; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--rune); text-decoration: none; white-space: nowrap; }
+  .tb-back:hover { color: var(--arcane); }
+  .tb-title { font-family: 'Cinzel Decorative', serif; font-size: 1.15rem; font-weight: 700; color: var(--gold); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-shadow: 0 2px 10px rgba(0,0,0,0.7); }
+  .tb-actions { display: flex; gap: 8px; flex-shrink: 0; }
+  .btn { padding: 9px 16px; font-family: 'Cinzel', serif; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 5px; cursor: pointer; border: 1px solid transparent; transition: background 0.18s, border-color 0.18s, color 0.18s; white-space: nowrap; }
+  .btn-primary { background: var(--rune); border-color: var(--arcane); color: #fff; }
+  .btn-primary:hover { background: var(--arcane); }
+  .btn-ghost { background: rgba(11,10,15,0.5); border-color: var(--border-strong); color: var(--shimmer); }
+  .btn-ghost:hover { border-color: var(--arcane); color: var(--gold); }
+
+  .status { position: relative; z-index: 5; text-align: center; color: var(--shimmer); padding: 80px 20px; font-style: italic; font-size: 1.1rem; }
+
+  /* Board */
+  .board { position: relative; z-index: 4; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 30px; padding: 30px 20px 60px; }
+  .zones { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: center; gap: 34px; }
+
+  .zone { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .zone-label { font-family: 'Cinzel', serif; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--shimmer); text-shadow: 0 1px 6px rgba(0,0,0,0.8); }
+  .zone-label b { color: var(--gold); }
+
+  /* Card face (avatar shown face-up) */
+  .card-face { width: var(--cw); aspect-ratio: 3 / 4; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-strong); box-shadow: 0 8px 22px rgba(0,0,0,0.55); background: var(--twilight); }
+  .card-face img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* Stacks — a pile of face-down cards */
+  .stack { position: relative; width: var(--cw); aspect-ratio: 3 / 4; cursor: default; transition: transform 0.18s; }
+  .stack.landscape { width: calc(var(--cw) * 1.4); aspect-ratio: 88 / 63; }
+  .stack:hover { transform: translateY(-4px); }
+  .stack::before, .stack::after { content: ''; position: absolute; inset: 0; border-radius: 8px; border: 1px solid var(--border); background: #1b1726; }
+  .stack::before { transform: translate(7px, 7px); z-index: 1; }
+  .stack::after { transform: translate(3.5px, 3.5px); z-index: 2; }
+  .stack.empty::before, .stack.empty::after { display: none; }
+  .card-back {
+    position: relative; z-index: 3; width: 100%; height: 100%; border-radius: 8px;
+    border: 1px solid var(--border-strong); box-shadow: 0 8px 22px rgba(0,0,0,0.55);
+    background-size: cover; background-position: center; background-repeat: no-repeat;
+    display: flex; align-items: center; justify-content: center;
+  }
+  /* Each back layers its art over a themed gradient fallback (gradient shows if the PNG is missing) */
+  .card-back.spellbook  { background-image: url('Spellbookback.png'), linear-gradient(150deg, #322a55, #15111f); }
+  .card-back.collection { background-image: url('Spellbookback.png'), linear-gradient(150deg, #3a2a52, #15111f); }
+  .card-back.atlas      { background-image: url('atlasback.png'),     linear-gradient(150deg, #234034, #14111c); }
+  .stack.empty .card-back { background-image: none; background: rgba(11,10,15,0.35); border-style: dashed; border-color: var(--mist); }
+
+  .stack-count {
+    position: absolute; bottom: -10px; right: -10px; z-index: 4;
+    min-width: 30px; height: 30px; padding: 0 7px; border-radius: 15px;
+    background: var(--void); border: 1px solid var(--gold); color: var(--gold);
+    font-family: 'Cinzel', serif; font-weight: 700; font-size: 0.85rem;
+    display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 10px rgba(0,0,0,0.6);
+  }
+  .stack.empty .stack-count { border-color: var(--mist); color: var(--mist); }
+
+  /* Opening-hand panel (bottom sheet) */
+  .hand-panel {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+    background: linear-gradient(180deg, rgba(17,16,24,0.96), rgba(11,10,15,0.99));
+    border-top: 1px solid var(--border-strong); box-shadow: 0 -12px 40px rgba(0,0,0,0.6);
+    padding: 16px 20px 22px; transform: translateY(110%); transition: transform 0.3s ease;
+    max-height: 82vh; overflow-y: auto;
+  }
+  .hand-panel.open { transform: translateY(0); }
+  .hand-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
+  .hand-title { font-family: 'Cinzel Decorative', serif; font-size: 1.4rem; color: var(--gold); }
+  .hand-title .hand-sub { font-family: 'Crimson Pro', serif; font-size: 0.85rem; color: var(--rune); font-style: italic; margin-left: 8px; }
+  .hand-head .spacer { flex: 1; }
+
+  .hand-group { margin-bottom: 14px; }
+  .hand-group-label { font-family: 'Cinzel', serif; font-size: 0.62rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rune); margin-bottom: 8px; }
+  .hand-row { display: flex; flex-wrap: wrap; gap: 14px; }
+  .hcard { width: 132px; }
+  .hcard .hcard-img { width: 100%; aspect-ratio: 3 / 4; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-strong); box-shadow: 0 6px 18px rgba(0,0,0,0.5); background: var(--twilight); position: relative; }
+  .hcard .hcard-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  /* Sites are portrait scans rotated 90° to read landscape */
+  .hcard.site { width: 184px; }
+  .hcard.site .hcard-img { aspect-ratio: 88 / 63; }
+  .hcard.site .hcard-img img { position: absolute; top: 50%; left: 50%; width: auto; height: 142%; transform: translate(-50%,-50%) rotate(90deg); object-fit: cover; }
+  .hcard-name { font-size: 0.82rem; color: var(--shimmer); margin-top: 6px; line-height: 1.25; text-align: center; }
+  .hand-empty { color: var(--rune); font-style: italic; padding: 8px 2px; }
+
+  @media (max-width: 600px) {
+    :root { --cw: 92px; }
+    .zones { gap: 22px; }
+    .hcard { width: 104px; }
+    .hcard.site { width: 146px; }
+    .tb-title { font-size: 1rem; }
+  }
+</style>
+</head>
+<body>
+<div class="tabletop">
+  <div class="topbar">
+    <a class="tb-back" id="back-link" href="archive.html">← Back to Deck</a>
+    <div class="tb-title" id="deck-title">Test Deck</div>
+    <div class="tb-actions">
+      <button class="btn btn-primary" id="hand-btn" onclick="drawOpeningHand()" style="display:none;">✋ Opening Hand</button>
+    </div>
+  </div>
+
+  <div class="status" id="status">Setting the table…</div>
+
+  <div class="board" id="board" style="display:none;">
+    <div class="zones" id="zones"></div>
+  </div>
+</div>
+
+<!-- Opening hand bottom sheet -->
+<div class="hand-panel" id="hand-panel">
+  <div class="hand-head">
+    <div class="hand-title">Starting Hand <span class="hand-sub">3 Spellbook · 3 Atlas, drawn at random</span></div>
+    <div class="spacer"></div>
+    <button class="btn btn-primary" onclick="drawOpeningHand()">↻ Mulligan</button>
+    <button class="btn btn-ghost" onclick="closeHand()">Close</button>
+  </div>
+  <div class="hand-group">
+    <div class="hand-group-label">Spellbook</div>
+    <div class="hand-row" id="hand-spellbook"></div>
+  </div>
+  <div class="hand-group">
+    <div class="hand-group-label">Atlas · Sites</div>
+    <div class="hand-row" id="hand-atlas"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://nuizkjkcephopnbcmtlz.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_9er9B3YGFuvNO8Y8W6yr2g_sR5tXvKH';
+  const IMAGE_BASE = 'https://pub-5999238092ad418ca60e7a9ad641cf57.r2.dev/';
+  let supa = null;
+  try { if (window.supabase) supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch (e) {}
+
+  function escHtml(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function getParam(n){ return new URLSearchParams(location.search).get(n); }
+
+  // ── Card image lookup (slug map from cards.json, Beta-preferred) ──
+  const cardSlugMap = {}; // lowercased name → slug
+  async function loadCards() {
+    try {
+      const res = await fetch('cards.json');
+      let cards = await res.json();
+      if (!Array.isArray(cards)) cards = cards.data || cards.cards || [];
+      cards.forEach(c => {
+        const key = (c.name || '').toLowerCase();
+        const sets = c.sets || [];
+        const chosen = sets.find(s => /beta/i.test(s.name||'')) || sets.find(s => /alpha/i.test(s.name||'')) || sets[0];
+        let slug = null;
+        if (chosen && chosen.variants && chosen.variants.length) {
+          const v = chosen.variants.find(v => v.finish === 'Standard' && v.product === 'Booster') || chosen.variants[0];
+          slug = v ? v.slug : null;
+        }
+        cardSlugMap[key] = slug;
+      });
+    } catch (e) { console.warn('cards.json failed', e); }
+  }
+  function imgUrl(name) {
+    const slug = cardSlugMap[(name||'').toLowerCase()];
+    if (slug) return IMAGE_BASE + slug + '.png';
+    return IMAGE_BASE + (name||'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'') + '.png';
+  }
+
+  // ── Deck data helpers ──
+  let deck = null;
+  const sectionCount = (dd, sec) => (dd[sec]||[]).reduce((s,[,q]) => s + (q||0), 0);
+  // Expand [[name,qty]...] into a flat pool of names (one entry per copy).
+  const expandPool = (arr) => { const out = []; (arr||[]).forEach(([n,q]) => { for (let i=0;i<(q||1);i++) out.push(n); }); return out; };
+  function sample(pool, n) {
+    const a = pool.slice(), out = [];
+    for (let i = 0; i < n && a.length; i++) out.push(a.splice(Math.floor(Math.random()*a.length), 1)[0]);
+    return out;
+  }
+
+  // ── Render the board ──
+  function renderBoard() {
+    const dd = deck.deck_data || {};
+    const avatar = (dd.a && dd.a.length) ? dd.a[0][0] : null;
+    const sCount = sectionCount(dd, 's');
+    const tCount = sectionCount(dd, 't');
+    const cCount = sectionCount(dd, 'c');
+
+    const stack = (cls, label, count, landscape) => `
+      <div class="zone">
+        <div class="stack${landscape?' landscape':''}${count?'':' empty'}">
+          <div class="card-back ${cls}"></div>
+          <span class="stack-count">${count}</span>
+        </div>
+        <div class="zone-label">${label} <b>${count}</b></div>
+      </div>`;
+
+    let html = '';
+    if (avatar) {
+      html += `
+      <div class="zone">
+        <div class="card-face"><img src="${imgUrl(avatar)}" alt="${escHtml(avatar)}" onerror="this.style.opacity='0.15'"></div>
+        <div class="zone-label">Avatar</div>
+      </div>`;
+    }
+    html += stack('spellbook', 'Spellbook', sCount, false);
+    html += stack('atlas', 'Atlas', tCount, true);
+    html += stack('collection', 'Collection', cCount, false);
+
+    document.getElementById('zones').innerHTML = html;
+    document.getElementById('hand-btn').style.display = (sCount || tCount) ? '' : 'none';
+  }
+
+  // ── Opening hand ──
+  function handCardHtml(name, isSite) {
+    return `<div class="hcard${isSite?' site':''}">
+      <div class="hcard-img"><img src="${imgUrl(name)}" alt="${escHtml(name)}" loading="lazy" onerror="this.style.opacity='0.15'"></div>
+      <div class="hcard-name">${escHtml(name)}</div>
+    </div>`;
+  }
+  function drawOpeningHand() {
+    const dd = deck.deck_data || {};
+    const spell = sample(expandPool(dd.s), 3);
+    const atlas = sample(expandPool(dd.t), 3);
+    document.getElementById('hand-spellbook').innerHTML = spell.length
+      ? spell.map(n => handCardHtml(n, false)).join('')
+      : `<div class="hand-empty">No Spellbook cards in this deck.</div>`;
+    document.getElementById('hand-atlas').innerHTML = atlas.length
+      ? atlas.map(n => handCardHtml(n, true)).join('')
+      : `<div class="hand-empty">No Atlas cards in this deck.</div>`;
+    document.getElementById('hand-panel').classList.add('open');
+  }
+  function closeHand() { document.getElementById('hand-panel').classList.remove('open'); }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeHand(); });
+
+  // ── Load ──
+  async function run() {
+    const code = getParam('d');
+    const statusEl = document.getElementById('status');
+    if (!code) { statusEl.textContent = 'No deck specified.'; return; }
+    document.getElementById('back-link').href = 'deck.html?d=' + encodeURIComponent(code);
+    if (!supa) { statusEl.textContent = 'Could not connect.'; return; }
+    await loadCards();
+    try {
+      const { data, error } = await supa.from('decks').select('short_code, name, deck_data').eq('short_code', code).single();
+      if (error || !data) { statusEl.textContent = 'Deck not found.'; return; }
+      deck = data;
+      document.getElementById('deck-title').textContent = deck.name || 'Test Deck';
+      document.title = `Test: ${deck.name || 'Deck'} — Cursed Realm`;
+      renderBoard();
+      statusEl.style.display = 'none';
+      document.getElementById('board').style.display = '';
+    } catch (e) {
+      console.warn(e);
+      statusEl.textContent = 'Could not load the deck.';
+    }
+  }
+  run();
+</script>
+</body>
+</html>

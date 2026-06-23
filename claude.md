@@ -156,6 +156,15 @@ then variant where `finish==='Standard' && product==='Booster'`. Example real sl
   View counter (👁) next to the like button; increments once per browser session per deck
   via the `increment_deck_views` RPC — see gotcha below. Comments section under the deck
   (deck_comments table): logged-in users post + reply (one level); owner posts badged "Author".
+  A **🎲 Test Deck** action links to testdeck.html?d=CODE.
+- **testdeck.html** — playtest tabletop (?d=CODE), `noindex`. **WIP / first pass.** Loads the deck
+  (own inline Supabase client; session restored from localStorage so owners can test private decks)
+  + cards.json slug map. Shows the **playmat.jpg** background with the Avatar face-up and three
+  face-down **stacks** (Spellbook → `Spellbookback.png`, Atlas → `atlasback.png` (landscape),
+  Collection → `Spellbookback.png`) with count badges. **✋ Opening Hand** draws 3 random Spellbook +
+  3 random Atlas cards into a "Starting Hand" bottom sheet with a ↻ **Mulligan** button. ⚠️ Needs three
+  assets uploaded to the repo root: **playmat.jpg, atlasback.png, Spellbookback.png** — each has a CSS
+  gradient fallback so the page still works without them. Future: real drag/draw, life/mana, full rules.
 - **avatar.html** — avatar detail (?a=Name). Uses real rulesText only (no copyrighted flavor).
   Shows an "Illustrated by" line linking to artist.html.
 - **artist.html** — artist gallery (?a=ArtistName). Lists every card illustrated by that artist in a
