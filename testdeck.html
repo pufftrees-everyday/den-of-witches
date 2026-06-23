@@ -82,6 +82,11 @@
   .hand-title { font-family: 'Cinzel', serif; font-size: 0.74rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); white-space: nowrap; }
   .hand-title b { color: var(--shimmer); }
   .hand-controls { display: flex; gap: 7px; flex-wrap: wrap; }
+  /* Draw buttons: text "+ Spellbook 28" on desktop; on mobile they become
+     card-back tiles (the back PNG + a plus + count) — see the media query. */
+  .btn-draw { display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
+  .draw-back { display: none; }
+  .draw-plus { font-weight: 700; }
   .btn-ct { font-size: 0.85em; opacity: 0.75; font-weight: 400; }
   .hand-hint { font-size: 0.82rem; color: var(--rune); font-style: italic; margin-left: auto; }
   .hand-hint.warn { color: var(--gold); font-style: normal; }
@@ -116,6 +121,12 @@
     .hand-head { padding-bottom: 4px; }
     .hand-controls { width: 100%; }
     .hand-controls .btn { flex: 1; text-align: center; }
+    /* Draw buttons show the real pile back (Spellbook/Atlas) + a plus + count. */
+    .btn-draw { gap: 6px; padding: 5px 9px; }
+    .btn-draw .draw-back { display: block; height: 30px; width: auto; border-radius: 3px;
+      border: 1px solid var(--border-strong); box-shadow: 0 1px 4px rgba(0,0,0,0.55); }
+    .btn-draw .draw-name { display: none; }
+    .btn-draw .draw-plus { font-size: 1.15rem; line-height: 1; }
     .hand-hint { width: 100%; margin-left: 0; text-align: center; font-size: 0.78rem; }
     /* Hand flows into a 3-up wrapping grid so the whole opening hand is visible. */
     .hand-scroll { flex-wrap: wrap; align-content: flex-start; justify-content: center;
@@ -147,8 +158,8 @@
     <div class="hand-head">
       <span class="hand-title">Hand <b id="hand-count">0</b></span>
       <div class="hand-controls" id="controls">
-        <button class="btn btn-ghost" onclick="drawOne('spellbook')" id="btn-draw-s" title="Draw 1 from the Spellbook">+ Spellbook <span class="btn-ct" id="ct-s"></span></button>
-        <button class="btn btn-ghost" onclick="drawOne('atlas')" id="btn-draw-a" title="Draw 1 from the Atlas">+ Atlas <span class="btn-ct" id="ct-a"></span></button>
+        <button class="btn btn-ghost btn-draw" onclick="drawOne('spellbook')" id="btn-draw-s" title="Draw 1 from the Spellbook"><img class="draw-back" src="SpellbookBack.png" alt="" aria-hidden="true" onerror="this.style.display='none'"><span class="draw-plus">+</span><span class="draw-name">Spellbook</span><span class="btn-ct" id="ct-s"></span></button>
+        <button class="btn btn-ghost btn-draw" onclick="drawOne('atlas')" id="btn-draw-a" title="Draw 1 from the Atlas"><img class="draw-back" src="AtlasBack.png" alt="" aria-hidden="true" onerror="this.style.display='none'"><span class="draw-plus">+</span><span class="draw-name">Atlas</span><span class="btn-ct" id="ct-a"></span></button>
         <button class="btn btn-primary" onclick="drawFreshHand()" id="btn-fresh">Fresh Hand</button>
         <button class="btn btn-ember" onclick="toggleMulligan()" id="btn-mull">Mulligan</button>
       </div>
