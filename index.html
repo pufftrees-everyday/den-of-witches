@@ -737,6 +737,10 @@
   .modal-artist { font-size: 1.6rem; color: var(--rune); font-style: italic; }
   .modal-artist a { color: var(--arcane); text-decoration: none; font-style: normal; }
   .modal-artist a:hover { color: var(--gold); text-decoration: underline; }
+  .modal-printings { display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+  .printing-btn { font-family:'Cinzel',serif; font-size:0.7rem; letter-spacing:0.02em; padding:4px 10px; border-radius:12px; border:1px solid var(--mist); background:rgba(120,110,150,0.12); color:var(--shimmer); cursor:pointer; }
+  .printing-btn:hover { border-color:var(--gold); }
+  .printing-btn.active { border-color:var(--gold); color:var(--gold); background:rgba(200,169,110,0.15); }
   .modal-stat { font-size: 2.4rem; background: rgba(155,135,212,0.08); border: 1px solid var(--border); border-radius: 3px; padding: 4px 12px; color: var(--shimmer); }
   .modal-stat b { color: var(--arcane); }
   .modal-add { padding: 10px 20px; font-family: 'Cinzel', serif; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; background: var(--rune); border: 1px solid var(--arcane); color: #fff; border-radius: 4px; cursor: pointer; transition: background 0.2s; }
@@ -1130,6 +1134,7 @@
       <div class="modal-text" id="modal-text"></div>
       <div class="modal-stats" id="modal-stats"></div>
       <div class="modal-artist" id="modal-artist" style="display:none;"></div>
+      <div class="modal-printings" id="modal-printings" style="display:none;"></div>
       <div class="modal-pricechart" id="modal-pricechart" style="display:none;"></div>
       <button class="modal-add" id="modal-add-btn">+ Add to Deck</button>
     </div>
@@ -1246,6 +1251,20 @@ async function loadCards() {
       const artistSet = new Set();
       sets.forEach(s => (s.variants || []).forEach(v => { if (v.artist && v.artist.trim()) artistSet.add(v.artist.trim()); }));
       const artists = [...artistSet];
+      // Distinct printings = one art per set+product. Foil/Rainbow collapse into
+      // their standard art (same picture). Beta-preferred printing comes first.
+      const _seen = new Map();
+      sets.forEach(s => (s.variants || []).forEach(v => {
+        if (!v.slug) return;
+        const base = v.slug.replace(/-(s|f|rf)$/, '');
+        const isStd = v.finish === 'Standard';
+        const ex = _seen.get(base);
+        if (!ex || (isStd && ex.finish !== 'Standard')) {
+          _seen.set(base, { set: s.name, product: v.product || '', slug: v.slug, artist: (v.artist || '').trim(), finish: v.finish });
+        }
+      }));
+      const _rank = nm => /beta/i.test(nm) ? 0 : /alpha/i.test(nm) ? 1 : 2;
+      const printings = [..._seen.values()].sort((a, b) => _rank(a.set) - _rank(b.set));
       return {
         id: card.name,
         name: card.name,
@@ -1261,6 +1280,8 @@ async function loadCards() {
         subTypes: card.subTypes || '',
         set: firstSet ? firstSet.name : '',
         slug: firstVariant ? firstVariant.slug : null,
+        sets: (card.sets || []).map(s => s.name),
+        printings,
         artists,
         artist: artists.join(', '),
       };
@@ -1787,7 +1808,7 @@ function filterCards() {
     // Invoke advanced query (applied alongside the normal UI filters)
     if (invokeQuery && !invokeMatch(c, invokeQuery)) return false;
     if (activeFilters.type.size && !activeFilters.type.has(c.type)) return false;
-    if (activeFilters.set.size && !activeFilters.set.has(c.set)) return false;
+    if (activeFilters.set.size && !(c.sets || [c.set]).some(s => activeFilters.set.has(s))) return false;
     if (activeFilters.rarity.size && !activeFilters.rarity.has(c.rarity)) return false;
     if (elementLock) {
       const els = cardElements(c);
@@ -2084,7 +2105,6 @@ function openModal(id) {
     modalEl.className = 'modal';
   }
   document.getElementById('modal-name').textContent = card.name;
-  document.getElementById('modal-type').textContent = [card.type, card.set].filter(Boolean).join(' · ');
   document.getElementById('modal-text').textContent = card.rules_text || '';
   const stats = [];
   if (card.cost!=null) stats.push({l:'Cost',v:card.cost});
@@ -2099,16 +2119,41 @@ function openModal(id) {
     if (t) stats.push({l:'Threshold',v:t});
   }
   document.getElementById('modal-stats').innerHTML = stats.map(s=>`<div class="modal-stat"><b>${s.l}:</b> ${s.v}</div>`).join('');
-  const artistEl = document.getElementById('modal-artist');
-  if (card.artists && card.artists.length) {
-    artistEl.innerHTML = 'Illustrated by ' + card.artists
-      .map(a => `<a href="artist.html?a=${encodeURIComponent(a)}">${escHtml(a)}</a>`).join(', ');
-    artistEl.style.display = '';
-  } else { artistEl.style.display = 'none'; }
+  window._modalPrintings = (card.printings && card.printings.length)
+    ? card.printings
+    : [{ set: card.set, product: '', slug: card.slug, artist: (card.artists && card.artists[0]) || '' }];
+  renderPrintingControls();
+  let _pIdx = window._modalPrintings.findIndex(p => p.slug === card.slug);
+  setPrinting(_pIdx < 0 ? 0 : _pIdx);
   document.getElementById('modal-add-btn').style.display = 'none';
   document.getElementById('modal-overlay').classList.add('open');
   CRPriceChart.load(card.name, 'modal-pricechart');
   if (typeof hpHide === 'function') hpHide();
+}
+
+function prettyPrinting(p) {
+  if (/promo/i.test(p.set) && p.product) return p.product.replace(/_/g, ' ');
+  return p.set || 'Printing';
+}
+function renderPrintingControls() {
+  const el = document.getElementById('modal-printings');
+  const list = window._modalPrintings || [];
+  if (list.length <= 1) { el.style.display = 'none'; el.innerHTML = ''; return; }
+  el.innerHTML = list.map((p, i) => `<button class="printing-btn" onclick="setPrinting(${i})">${escHtml(prettyPrinting(p))}</button>`).join('');
+  el.style.display = '';
+}
+function setPrinting(idx) {
+  const card = getCard(currentModalCard);
+  const list = window._modalPrintings || [];
+  const p = list[idx]; if (!card || !p) return;
+  document.getElementById('modal-img').src = p.slug ? `${IMAGE_BASE}${p.slug}.png` : getImageUrl(card);
+  document.getElementById('modal-type').textContent = [card.type, p.set].filter(Boolean).join(' · ');
+  const artistEl = document.getElementById('modal-artist');
+  if (p.artist) {
+    artistEl.innerHTML = 'Illustrated by <a href="artist.html?a=' + encodeURIComponent(p.artist) + '">' + escHtml(p.artist) + '</a>';
+    artistEl.style.display = '';
+  } else { artistEl.style.display = 'none'; }
+  document.querySelectorAll('#modal-printings .printing-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
 }
 
 document.getElementById('modal-add-btn').onclick = () => { if (currentModalCard) { addCard(currentModalCard); closeModal(); } };
