@@ -1302,6 +1302,21 @@ function getImageUrl(card) {
   return `${IMAGE_BASE}${(card.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'')}.png`;
 }
 
+// When a Set filter is active, prefer the printing from a selected set so the
+// thumbnail/art matches the filter (e.g. Promotional shows the promo art).
+function activePrinting(card) {
+  if (!activeFilters.set.size || !card.printings) return null;
+  return card.printings.find(p => activeFilters.set.has(p.set)) || null;
+}
+function cardThumbImage(card) {
+  const p = activePrinting(card);
+  return (p && p.slug) ? `${IMAGE_BASE}${p.slug}.png` : getImageUrl(card);
+}
+function cardDisplaySet(card) {
+  const p = activePrinting(card);
+  return p ? p.set : card.set;
+}
+
 // ── HOVER PREVIEW (desktop, list view only) ──
 let _hpEl, _hpImg, _hpVisible = false;
 function hpShow(id, x, y) {
@@ -1309,7 +1324,8 @@ function hpShow(id, x, y) {
   const card = getCard(id);
   if (!card) return;
   if (!_hpEl) { _hpEl = document.getElementById('hover-preview'); _hpImg = document.getElementById('hover-preview-img'); }
-  if (_hpImg.dataset.for !== String(id)) { _hpImg.src = getImageUrl(card); _hpImg.dataset.for = String(id); }
+  const _hpUrl = cardThumbImage(card);
+  if (_hpImg.dataset.src !== _hpUrl) { _hpImg.src = _hpUrl; _hpImg.dataset.src = _hpUrl; }
   _hpEl.classList.toggle('is-site', card.type === 'Site');
   hpMove(x, y);
   _hpEl.classList.add('show');
@@ -1364,9 +1380,9 @@ function renderCards(cards, append = false) {
 
 function renderCardThumb(card) {
   return `<div class="card-thumb" onclick="openModal('${escId(card.id)}')">
-      <img src="${getImageUrl(card)}" alt="${card.name}" loading="lazy" onerror="this.style.opacity='0'">
+      <img src="${cardThumbImage(card)}" alt="${card.name}" loading="lazy" onerror="this.style.opacity='0'">
       <div class="card-thumb-name">${card.name}</div>
-      <div class="card-thumb-meta">${[card.type, card.rarity, card.set].filter(Boolean).join(' · ')}</div>
+      <div class="card-thumb-meta">${[card.type, card.rarity, cardDisplaySet(card)].filter(Boolean).join(' · ')}</div>
     </div>`;
 }
 
@@ -1398,7 +1414,7 @@ function renderCardRow(card) {
   return `<div class="card-row" data-card-id="${escId(card.id)}" onclick="openModal('${escId(card.id)}')">
       <span class="cr-mana${cost===''?' empty':''}">${cost}</span>
       <div class="cr-name">${card.name}</div>
-      <span class="cr-meta cr-set">${setBadge(card.set)}</span>
+      <span class="cr-meta cr-set">${setBadge(cardDisplaySet(card))}</span>
       <span class="cr-rarity ${rarity.toLowerCase()}">${rarityAbbr(rarity)}</span>
       <span class="cr-meta cr-type">${card.type || ''}</span>
     </div>`;
@@ -2123,7 +2139,10 @@ function openModal(id) {
     ? card.printings
     : [{ set: card.set, product: '', slug: card.slug, artist: (card.artists && card.artists[0]) || '' }];
   renderPrintingControls();
-  let _pIdx = window._modalPrintings.findIndex(p => p.slug === card.slug);
+  // If a Set filter is active, open on that printing; else the default (Beta-preferred).
+  const _ap = activePrinting(card);
+  let _pIdx = _ap ? window._modalPrintings.findIndex(p => p.slug === _ap.slug) : -1;
+  if (_pIdx < 0) _pIdx = window._modalPrintings.findIndex(p => p.slug === card.slug);
   setPrinting(_pIdx < 0 ? 0 : _pIdx);
   document.getElementById('modal-add-btn').style.display = 'none';
   document.getElementById('modal-overlay').classList.add('open');

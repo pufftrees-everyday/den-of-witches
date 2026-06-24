@@ -189,6 +189,21 @@
     const slug = variant ? variant.slug : (card.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'');
     const artistSet = new Set();
     sets.forEach(s => (s.variants||[]).forEach(v => { if (v.artist && v.artist.trim()) artistSet.add(v.artist.trim()); }));
+    // Distinct printings = one art per set+product (foil/rainbow collapse into the
+    // standard art). Each carries its own artist, so the right art is attributed
+    // to the right artist. Beta-preferred printing comes first.
+    const _seen = new Map();
+    sets.forEach(s => (s.variants||[]).forEach(v => {
+      if (!v.slug) return;
+      const base = v.slug.replace(/-(s|f|rf)$/, '');
+      const isStd = v.finish === 'Standard';
+      const ex = _seen.get(base);
+      if (!ex || (isStd && ex.finish !== 'Standard')) {
+        _seen.set(base, { set: s.name, product: v.product || '', slug: v.slug, artist: (v.artist || '').trim(), finish: v.finish });
+      }
+    }));
+    const _rank = nm => /beta/i.test(nm) ? 0 : /alpha/i.test(nm) ? 1 : 2;
+    const printings = [..._seen.values()].sort((a, b) => _rank(a.set) - _rank(b.set));
     return {
       name: card.name,
       type: g.type || '',
@@ -201,6 +216,7 @@
       set: set ? set.name : '',
       slug,
       artists: [...artistSet],
+      printings,
     };
   }
 
@@ -220,8 +236,16 @@
     } catch (e) { statusEl.textContent = 'Could not load card data.'; return; }
 
     const want = artist.trim().toLowerCase();
+    // Show each card under the artist who illustrated the matching printing, with
+    // THAT printing's art/set (so a card reprinted by a different artist appears
+    // under each artist showing their own version). First match = Beta-preferred.
     const cards = raw.map(normalize)
-      .filter(c => c.artists.some(a => a.toLowerCase() === want))
+      .map(c => {
+        const pr = (c.printings || []).find(p => p.artist && p.artist.toLowerCase() === want);
+        if (!pr) return null;
+        return { ...c, slug: pr.slug, set: pr.set, artists: [pr.artist] };
+      })
+      .filter(Boolean)
       .sort((a, b) => a.name.localeCompare(b.name));
 
     if (!cards.length) { statusEl.textContent = `No cards found for artist "${artist}".`; return; }
