@@ -1,11 +1,12 @@
 {
-  "generated": "2026-06-24T17:18:10.950Z",
+  "generated": "2026-06-24T22:51:02.832Z",
   "source": "JustTCG (justtcg.com)",
   "game": "Sorcery: Contested Realm",
   "counts": {
-    "standard": 1089,
-    "foil": 1077,
-    "sealed": 41
+    "standard": 1137,
+    "foil": 1078,
+    "sealed": 41,
+    "promo": 9
   },
   "prices": {
     "Death Dealer": {
@@ -14,7 +15,7 @@
     "Philosopher's Stone": {
       "market": 89
     },
-    "Avatar of Air": {
+    "Avatar of Air (Preconstructed Deck)": {
       "market": 332.6
     },
     "Courtesan Thaïs": {
@@ -38,7 +39,7 @@
     "King Arthur": {
       "market": 7
     },
-    "Avatar of Earth": {
+    "Avatar of Earth (Preconstructed Deck)": {
       "market": 211.68
     },
     "The Four Elementals Preconstructed Deck: Earth": {
@@ -56,13 +57,13 @@
     "Persecutor": {
       "market": 0.15
     },
-    "Avatar of Water": {
+    "Avatar of Water (Preconstructed Deck)": {
       "market": 149.28
     },
     "Ruby Core": {
       "market": 50.92
     },
-    "Avatar of Fire": {
+    "Avatar of Fire (Preconstructed Deck)": {
       "market": 142.22
     },
     "The Four Elementals Preconstructed Deck: Water": {
@@ -116,9 +117,6 @@
     "Maiden, Mother, Crone": {
       "market": 54.16
     },
-    "Spellslinger": {
-      "market": 7.29
-    },
     "Fields of Phyxis": {
       "market": 0.31
     },
@@ -152,9 +150,6 @@
     "Pied Piper of Hameln": {
       "market": 45.22
     },
-    "Swap": {
-      "market": 0.46
-    },
     "Boudicca": {
       "market": 44.51
     },
@@ -170,9 +165,6 @@
     "Garden of Eden": {
       "market": 36.81
     },
-    "Skeleton": {
-      "market": 36.64
-    },
     "Witch": {
       "market": 36.6
     },
@@ -180,7 +172,7 @@
       "market": 29.75
     },
     "Spire": {
-      "market": 0.39
+      "market": 34.75
     },
     "Sorcerer": {
       "market": 0.24
@@ -278,8 +270,8 @@
     "Jack the Ripper": {
       "market": 20.55
     },
-    "Foot Soldier": {
-      "market": 16.57
+    "Foot Soldier (Forest)": {
+      "market": 20.46
     },
     "Merlin": {
       "market": 20.22
@@ -303,7 +295,7 @@
       "market": 8.96
     },
     "Tadpole Pool": {
-      "market": 5.16
+      "market": 13.17
     },
     "Mover of Mountains": {
       "market": 19.03
@@ -335,6 +327,9 @@
     "Ignis Rex": {
       "market": 17.47
     },
+    "Foot Soldier (Mountain)": {
+      "market": 17.39
+    },
     "Amulet of Niniane": {
       "market": 17.27
     },
@@ -343,6 +338,9 @@
     },
     "Tithe": {
       "market": 16.82
+    },
+    "Foot Soldier (River)": {
+      "market": 16.57
     },
     "Moonsong Talagelum": {
       "market": 16.51
@@ -395,9 +393,6 @@
     "River of Flame": {
       "market": 7.84
     },
-    "Sir Lancelot": {
-      "market": 5.6
-    },
     "Doctor Demetrius": {
       "market": 13.5
     },
@@ -427,6 +422,9 @@
     },
     "Mix Ignis": {
       "market": 3.14
+    },
+    "River of Flame (Preconstructed Deck)": {
+      "market": 12
     },
     "Kiss of Judas": {
       "market": 12
@@ -494,6 +492,9 @@
     "Cerberus in Chains": {
       "market": 6.16
     },
+    "Earthquake (Preconstructed Deck)": {
+      "market": 9.49
+    },
     "Pendulum of Peril": {
       "market": 1.67
     },
@@ -512,8 +513,8 @@
     "Lord of the Void": {
       "market": 3.73
     },
-    "Spear of Destiny": {
-      "market": 1.9
+    "Spear of Destiny (Preconstructed Deck)": {
+      "market": 9.15
     },
     "Dragonlord's Lair": {
       "market": 9.01
@@ -575,11 +576,14 @@
     "Blasted Oak": {
       "market": 1.3
     },
+    "Spellslinger (Draft Kit)": {
+      "market": 7.29
+    },
     "Rhitta Gawr of Snowdonia": {
       "market": 7.23
     },
-    "Grandmaster Wizard": {
-      "market": 4.84
+    "Grandmaster Wizard (Preconstructed Deck)": {
+      "market": 7.18
     },
     "Boneyard": {
       "market": 3.03
@@ -607,6 +611,9 @@
     },
     "Orpheus' Crossing": {
       "market": 6.73
+    },
+    "Grandmaster Wizard": {
+      "market": 4.84
     },
     "Abaddon Succubus": {
       "market": 6.65
@@ -659,6 +666,9 @@
     "Sea of Ash": {
       "market": 5.99
     },
+    "Queen of Midland (Preconstructed Deck)": {
+      "market": 5.95
+    },
     "Windmill": {
       "market": 2.82
     },
@@ -676,6 +686,9 @@
     },
     "Cage of Sidrak": {
       "market": 5.7
+    },
+    "Sir Lancelot": {
+      "market": 5.6
     },
     "Baba Yaga's Hut": {
       "market": 5.6
@@ -725,6 +738,9 @@
     "Silver Bullet": {
       "market": 5.17
     },
+    "Tadpole Pool (Preconstructed Deck)": {
+      "market": 5.16
+    },
     "The Faerie Queene": {
       "market": 5.16
     },
@@ -742,6 +758,9 @@
     },
     "The Ninth Legion": {
       "market": 5.09
+    },
+    "Spear of Destiny": {
+      "market": 1.9
     },
     "13 Treasures of Britain": {
       "market": 5.01
@@ -818,6 +837,9 @@
     "Day of Judgment": {
       "market": 4.48
     },
+    "Cloud City (Preconstructed Deck)": {
+      "market": 4.4
+    },
     "The Great Drowning of Men": {
       "market": 4.37
     },
@@ -848,6 +870,9 @@
     "All Mortals Gone": {
       "market": 4.08
     },
+    "Midland Army (Preconstructed Deck)": {
+      "market": 4.01
+    },
     "Avalon": {
       "market": 4.01
     },
@@ -856,6 +881,9 @@
     },
     "Lighthouse": {
       "market": 1.99
+    },
+    "Maelstrom (Preconstructed Deck)": {
+      "market": 3.84
     },
     "Torshammar Trinket": {
       "market": 2.17
@@ -875,8 +903,11 @@
     "Enchantress": {
       "market": 0.67
     },
-    "Screaming Skull": {
-      "market": 1.13
+    "Screaming Skull (Preconstructed Deck)": {
+      "market": 3.73
+    },
+    "Mother Nature (Preconstructed Deck)": {
+      "market": 3.7
     },
     "Armageddon": {
       "market": 3.69
@@ -905,8 +936,8 @@
     "The Empyrean": {
       "market": 3.5
     },
-    "Ancient Dragon": {
-      "market": 0.78
+    "Ancient Dragon (Preconstructed Deck)": {
+      "market": 3.49
     },
     "Oasis": {
       "market": 1.28
@@ -920,6 +951,9 @@
     "Blasphemy": {
       "market": 3.33
     },
+    "Vesuvius (Preconstructed Deck)": {
+      "market": 3.19
+    },
     "Chorus of Condemnation": {
       "market": 3.18
     },
@@ -932,8 +966,14 @@
     "Crossroads": {
       "market": 1.47
     },
-    "Diluvian Kraken": {
-      "market": 0.46
+    "King of the Realm (Preconstructed Deck)": {
+      "market": 2.99
+    },
+    "Doomsday Prophet (Preconstructed Deck)": {
+      "market": 2.91
+    },
+    "Diluvian Kraken (Preconstructed Deck)": {
+      "market": 2.89
     },
     "Elementalist": {
       "market": 0.91
@@ -941,8 +981,8 @@
     "Adept Illusionist": {
       "market": 1.46
     },
-    "Shifting Sands": {
-      "market": 0.16
+    "Shifting Sands (Preconstructed Deck)": {
+      "market": 2.79
     },
     "Highland Falconer": {
       "market": 1.55
@@ -959,11 +999,11 @@
     "Flame of the First Ones": {
       "market": 2.64
     },
-    "Red Desert": {
-      "market": 0.16
+    "Red Desert (Preconstructed Deck)": {
+      "market": 2.6
     },
-    "Stone-gaze Gorgons": {
-      "market": 0.48
+    "Stone-gaze Gorgons (Preconstructed Deck)": {
+      "market": 2.6
     },
     "Royal Bodyguard": {
       "market": 1.18
@@ -971,8 +1011,8 @@
     "Seer": {
       "market": 0.81
     },
-    "Bull Demons of Adum": {
-      "market": 0.51
+    "Bull Demons of Adum (Preconstructed Deck)": {
+      "market": 2.49
     },
     "Polar Explorers": {
       "market": 1.18
@@ -986,14 +1026,14 @@
     "Bottomless Pit": {
       "market": 1.36
     },
-    "Bone Rabble": {
-      "market": 0.09
-    },
     "Yog-Sothoth": {
       "market": 2.25
     },
     "Mountain Peaks": {
       "market": 2.24
+    },
+    "Ancient Dragon": {
+      "market": 0.78
     },
     "Primordial Spring": {
       "market": 0.75
@@ -1010,8 +1050,8 @@
     "Grey Wolves": {
       "market": 0.53
     },
-    "Pirate Ship": {
-      "market": 0.07
+    "Pirate Ship (Preconstructed Deck)": {
+      "market": 1.99
     },
     "Replication": {
       "market": 0.54
@@ -1022,8 +1062,11 @@
     "Chaos Twister": {
       "market": 1.14
     },
-    "Nightmare": {
-      "market": 0.51
+    "Screaming Skull": {
+      "market": 1.13
+    },
+    "Nightmare (Preconstructed Deck)": {
+      "market": 1.88
     },
     "Black Obelisk": {
       "market": 0.63
@@ -1049,8 +1092,8 @@
     "Crave Golem": {
       "market": 0.15
     },
-    "Major Explosion": {
-      "market": 0.74
+    "Major Explosion (Preconstructed Deck)": {
+      "market": 1.5
     },
     "Nimbus Jinn": {
       "market": 1.33
@@ -1070,8 +1113,8 @@
     "Mask of Mayhem": {
       "market": 0.67
     },
-    "Unland Angler": {
-      "market": 0.53
+    "Unland Angler (Preconstructed Deck)": {
+      "market": 1.43
     },
     "Golden Dawn": {
       "market": 1.4
@@ -1091,8 +1134,8 @@
     "Lacuna Entity": {
       "market": 1.34
     },
-    "Upwelling": {
-      "market": 0.15
+    "Upwelling (Preconstructed Deck)": {
+      "market": 1.33
     },
     "Squirming Mass": {
       "market": 0.59
@@ -1109,11 +1152,14 @@
     "Poison Nova": {
       "market": 0.57
     },
-    "Infernal Legion": {
-      "market": 1.05
+    "Waypoint Portal (Preconstructed Deck)": {
+      "market": 1.26
     },
-    "Wrath of the Sea": {
-      "market": 0.42
+    "Infernal Legion (Preconstructed Deck)": {
+      "market": 1.25
+    },
+    "Wrath of the Sea (Preconstructed Deck)": {
+      "market": 1.25
     },
     "Zephyranne Airship": {
       "market": 0.5
@@ -1157,6 +1203,9 @@
     "Free City": {
       "market": 0.31
     },
+    "Infernal Legion": {
+      "market": 1.05
+    },
     "Seasoned Sellsword": {
       "market": 0.36
     },
@@ -1166,32 +1215,38 @@
     "Chains of Prometheus": {
       "market": 0.75
     },
-    "Brobdingnag Bullfrog": {
-      "market": 0.21
+    "Nightmare": {
+      "market": 0.51
     },
-    "Flood": {
-      "market": 0.19
+    "Brobdingnag Bullfrog (Preconstructed Deck)": {
+      "market": 0.99
     },
-    "Ogre Goons": {
-      "market": 0.06
+    "Floodplain (Preconstructed Deck)": {
+      "market": 0.99
     },
-    "Sling Pixies": {
-      "market": 0.17
+    "Flood (Preconstructed Deck)": {
+      "market": 0.99
     },
-    "Spectral Stalker": {
-      "market": 0.1
+    "Ogre Goons (Preconstructed Deck)": {
+      "market": 0.99
     },
-    "Spire Lich": {
-      "market": 0.18
+    "Sling Pixies (Preconstructed Deck)": {
+      "market": 0.99
     },
-    "Thunderstorm": {
-      "market": 0.3
+    "Spectral Stalker (Preconstructed Deck)": {
+      "market": 0.99
     },
-    "Undertow": {
-      "market": 0.23
+    "Spire Lich (Preconstructed Deck)": {
+      "market": 0.99
     },
-    "Wills-o'-the-Wisp": {
-      "market": 0.23
+    "Thunderstorm (Preconstructed Deck)": {
+      "market": 0.99
+    },
+    "Undertow (Preconstructed Deck)": {
+      "market": 0.99
+    },
+    "Wills-o'-the-Wisp (Preconstructed Deck)": {
+      "market": 0.99
     },
     "Bureau of Occult Control": {
       "market": 0.98
@@ -1202,6 +1257,12 @@
     "Sisters of Silence": {
       "market": 0.49
     },
+    "Thunderstorm": {
+      "market": 0.3
+    },
+    "Diluvian Kraken": {
+      "market": 0.46
+    },
     "Vindictive Nation": {
       "market": 0.95
     },
@@ -1211,20 +1272,20 @@
     "Dwarven Forge": {
       "market": 0.75
     },
-    "Guile Sirens": {
-      "market": 0.19
+    "Guile Sirens (Preconstructed Deck)": {
+      "market": 0.94
     },
-    "Riptide": {
-      "market": 0.13
+    "Riptide (Preconstructed Deck)": {
+      "market": 0.94
     },
-    "Sea Serpent": {
-      "market": 0.08
+    "Sea Serpent (Preconstructed Deck)": {
+      "market": 0.94
     },
-    "Sunken Treasure": {
-      "market": 0.14
+    "Sunken Treasure (Preconstructed Deck)": {
+      "market": 0.94
     },
-    "Swan Maidens": {
-      "market": 0.06
+    "Swan Maidens (Preconstructed Deck)": {
+      "market": 0.94
     },
     "Wraetannis Titan": {
       "market": 0.53
@@ -1238,14 +1299,23 @@
     "Askelon Phoenix": {
       "market": 0.5
     },
+    "Wrath of the Sea": {
+      "market": 0.42
+    },
     "Paladins of Bazia": {
       "market": 0.89
+    },
+    "Major Explosion": {
+      "market": 0.74
     },
     "Meteor Shower": {
       "market": 0.36
     },
     "Unlikely Alliance": {
       "market": 0.44
+    },
+    "Wraetannis Titan (Preconstructed Deck)": {
+      "market": 0.87
     },
     "Sylvan Splendor": {
       "market": 0.87
@@ -1301,6 +1371,9 @@
     "Recurring Specter": {
       "market": 0.43
     },
+    "Bull Demons of Adum": {
+      "market": 0.51
+    },
     "Active Volcano": {
       "market": 0.75
     },
@@ -1325,6 +1398,9 @@
     "Candlemas Monks": {
       "market": 0.68
     },
+    "Island Leviathan (Preconstructed Deck)": {
+      "market": 0.7
+    },
     "No Man's Land": {
       "market": 0.7
     },
@@ -1345,6 +1421,9 @@
     },
     "Grösse Poltergeist": {
       "market": 0.45
+    },
+    "Unland Angler": {
+      "market": 0.53
     },
     "Heirloom Lost": {
       "market": 0.66
@@ -1424,6 +1503,9 @@
     "Quagmire": {
       "market": 0.2
     },
+    "Sling Pixies": {
+      "market": 0.17
+    },
     "Archimago": {
       "market": 0.56
     },
@@ -1450,6 +1532,9 @@
     },
     "Phase Assassin": {
       "market": 0.31
+    },
+    "Stone-gaze Gorgons": {
+      "market": 0.48
     },
     "Summoning Sphere": {
       "market": 0.33
@@ -1550,6 +1635,9 @@
     "Sea Raider": {
       "market": 0.17
     },
+    "Sunken Treasure": {
+      "market": 0.14
+    },
     "Leap Attack": {
       "market": 0.45
     },
@@ -1583,8 +1671,8 @@
     "Bane Widow": {
       "market": 0.16
     },
-    "Deep-Sea Mermaids": {
-      "market": 0.11
+    "Deep-Sea Mermaids (Preconstructed Deck)": {
+      "market": 0.47
     },
     "Apply Alkahest": {
       "market": 0.47
@@ -1607,6 +1695,9 @@
     "Secret Tunnel": {
       "market": 0.25
     },
+    "Undertow": {
+      "market": 0.23
+    },
     "Unland Eel": {
       "market": 0.22
     },
@@ -1614,6 +1705,9 @@
       "market": 0.46
     },
     "Hyperparasite": {
+      "market": 0.46
+    },
+    "Swap": {
       "market": 0.46
     },
     "Autumn Unicorn": {
@@ -1637,6 +1731,9 @@
     "Mountain Pass": {
       "market": 0.18
     },
+    "Spire Lich": {
+      "market": 0.18
+    },
     "Wolpertinger": {
       "market": 0.44
     },
@@ -1645,6 +1742,9 @@
     },
     "Giant Shark": {
       "market": 0.26
+    },
+    "Guile Sirens": {
+      "market": 0.19
     },
     "Scavenging Fiend": {
       "market": 0.15
@@ -1694,11 +1794,14 @@
     "Sphinx Sarcophagus": {
       "market": 0.41
     },
-    "Valley": {
+    "Valley (Preconstructed Deck)": {
       "market": 0.41
     },
     "Anui Undine": {
       "market": 0.18
+    },
+    "Flood": {
+      "market": 0.19
     },
     "Mariner's Curse": {
       "market": 0.18
@@ -1778,6 +1881,9 @@
     "Sawbones": {
       "market": 0.39
     },
+    "Spire (Preconstructed Deck)": {
+      "market": 0.39
+    },
     "Autumn River": {
       "market": 0.17
     },
@@ -1792,6 +1898,9 @@
     },
     "Remote Desert": {
       "market": 0.15
+    },
+    "Shifting Sands": {
+      "market": 0.16
     },
     "Tragedy Worrywart": {
       "market": 0.15
@@ -1880,7 +1989,7 @@
     "Shrike Orchard": {
       "market": 0.35
     },
-    "Wasteland": {
+    "Wasteland (Preconstructed Deck)": {
       "market": 0.35
     },
     "Common Sense": {
@@ -1923,6 +2032,9 @@
       "market": 0.11
     },
     "Drought": {
+      "market": 0.15
+    },
+    "Upwelling": {
       "market": 0.15
     },
     "Windblast": {
@@ -2069,7 +2181,7 @@
     "Stitched Abomination": {
       "market": 0.28
     },
-    "Stream": {
+    "Stream (Preconstructed Deck)": {
       "market": 0.28
     },
     "Hillock Basilisk": {
@@ -2120,8 +2232,14 @@
     "Regurgitator": {
       "market": 0.26
     },
+    "Brobdingnag Bullfrog": {
+      "market": 0.21
+    },
     "Humble Village": {
       "market": 0.14
+    },
+    "Red Desert": {
+      "market": 0.16
     },
     "Tufted Turtles": {
       "market": 0.12
@@ -2149,6 +2267,9 @@
     },
     "Saracen Raiders": {
       "market": 0.24
+    },
+    "Wills-o'-the-Wisp": {
+      "market": 0.23
     },
     "Death Knight": {
       "market": 0.24
@@ -2207,6 +2328,12 @@
     "Peculiar Port": {
       "market": 0.22
     },
+    "Riptide": {
+      "market": 0.13
+    },
+    "Sea Serpent": {
+      "market": 0.08
+    },
     "Annual Fair": {
       "market": 0.21
     },
@@ -2227,6 +2354,9 @@
     },
     "Sinterfee": {
       "market": 0.21
+    },
+    "Deep-Sea Mermaids": {
+      "market": 0.11
     },
     "Disenchant": {
       "market": 0.13
@@ -2639,6 +2769,9 @@
     "Sandstorm": {
       "market": 0.07
     },
+    "Swan Maidens": {
+      "market": 0.06
+    },
     "Wall of Air": {
       "market": 0.06
     },
@@ -2723,8 +2856,14 @@
     "Ice Lance": {
       "market": 0.11
     },
+    "Pirate Ship": {
+      "market": 0.07
+    },
     "Raal Dromedary": {
       "market": 0.05
+    },
+    "Spectral Stalker": {
+      "market": 0.1
     },
     "Wicker Manikin": {
       "market": 0.1
@@ -2813,6 +2952,9 @@
     "Miracle Workers": {
       "market": 0.08
     },
+    "Ogre Goons": {
+      "market": 0.06
+    },
     "Snow Leopard": {
       "market": 0.07
     },
@@ -2824,6 +2966,9 @@
     },
     "Squeakers": {
       "market": 0.11
+    },
+    "Bone Rabble": {
+      "market": 0.09
     },
     "Algae Bloom": {
       "market": 0.11
@@ -3502,9 +3647,6 @@
     "Blasted Oak": {
       "market": 14.05
     },
-    "Amazon Warriors": {
-      "market": 1.47
-    },
     "Lilith": {
       "market": 186.58
     },
@@ -3705,9 +3847,6 @@
     },
     "Kairos the Archivist": {
       "market": 106.43
-    },
-    "Lightning Bolt": {
-      "market": 4.22
     },
     "Observatory": {
       "market": 29.27
@@ -4228,7 +4367,7 @@
     "East-West Dragon": {
       "market": 5.14
     },
-    "Blizzard (Foil)": {
+    "Blizzard (Misprint)": {
       "market": 36.33
     },
     "Belfry": {
@@ -4336,8 +4475,8 @@
     "Thunderstorm": {
       "market": 5.79
     },
-    "Blink (Foil)": {
-      "market": 22.5
+    "Blink (Misprint)": {
+      "market": 29.9
     },
     "Meteor Shower": {
       "market": 4.76
@@ -4489,6 +4628,9 @@
     "Blightstone": {
       "market": 22.57
     },
+    "Blink (Corrected)": {
+      "market": 22.5
+    },
     "Flaming Sword": {
       "market": 4.19
     },
@@ -4506,9 +4648,6 @@
     },
     "Sold-out Cemetery": {
       "market": 21.64
-    },
-    "Bone Rabble": {
-      "market": 2.66
     },
     "Apprentice Wizard": {
       "market": 5.09
@@ -4794,6 +4933,9 @@
     },
     "Wings of Invention": {
       "market": 1.71
+    },
+    "Lightning Bolt": {
+      "market": 4.22
     },
     "Call to War": {
       "market": 4.16
@@ -5134,6 +5276,9 @@
     "Fertile Earth": {
       "market": 9.58
     },
+    "Amazon Warriors": {
+      "market": 1.47
+    },
     "Autumn River": {
       "market": 3.2
     },
@@ -5232,6 +5377,9 @@
     },
     "Sir Agravaine": {
       "market": 8.46
+    },
+    "Bone Rabble": {
+      "market": 2.66
     },
     "Fade": {
       "market": 1.15
@@ -6632,6 +6780,54 @@
     },
     "Foot Soldiers (Box Topper)": {
       "market": 0.18
+    }
+  },
+  "promos": {
+    "Witherwing Hero": {
+      "Alpha Investments Promo": {
+        "foil": 250
+      }
+    },
+    "Amazon Warriors": {
+      "Alpha Investments Promo": {
+        "foil": 188.13
+      }
+    },
+    "Sorcerer": {
+      "Store Alternate Art Promo": {
+        "foil": 140.69
+      }
+    },
+    "Lightning Bolt": {
+      "Team Covenant Promo": {
+        "foil": 105.83
+      }
+    },
+    "Spellslinger": {
+      "Promo": {
+        "standard": 52.8
+      }
+    },
+    "Swap": {
+      "SCGCon Promo": {
+        "standard": 45
+      }
+    },
+    "Skeleton": {
+      "Alpha Investment Promo": {
+        "standard": 36.64
+      }
+    },
+    "Bone Rabble": {
+      "Store Alternate Art Promo": {
+        "foil": 21.37,
+        "standard": 2.27
+      }
+    },
+    "Sir Lancelot": {
+      "Team Covenant": {
+        "standard": 13.8
+      }
     }
   }
 }
