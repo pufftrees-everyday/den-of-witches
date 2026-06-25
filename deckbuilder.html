@@ -1025,9 +1025,9 @@
   <div class="header-main" style="display:flex;align-items:center;gap:16px;">
     <div class="logo"><a href="index.html" style="color:var(--gold);text-decoration:none;font-family:'Cinzel Decorative',serif;font-weight:700;letter-spacing:0.04em;display:flex;align-items:center;gap:9px;"><img src="icon-192.png" alt="" style="width:30px;height:30px;border-radius:6px;display:block;">Cursed Realm</a></div>
         <a href="collection.html" class="header-link nav-collapsible">My Vault</a>
-    <button class="btn btn-ghost nav-collapsible" onclick="window.location.href='decks.html'">My Workshop</button>
+    <button class="btn btn-ghost nav-collapsible" onclick="navGuard('decks.html')">My Workshop</button>
     <a href="archive.html" class="header-link nav-collapsible">The Archive</a>
-    <button class="btn btn-primary nav-collapsible" onclick="window.location.href='deckbuilder.html'">New Deck</button>
+    <button class="btn btn-primary nav-collapsible" onclick="navGuard('deckbuilder.html')">New Deck</button>
     <div class="more-menu">
       <button class="more-trigger header-link nav-collapsible" onclick="toggleMoreMenu(event)">More <span style="font-size:0.6rem;">▾</span></button>
       <div class="more-dropdown" id="more-dropdown">
@@ -1269,7 +1269,7 @@
         <button class="btn btn-ghost" onclick="toggleScrollEditor()">Done</button>
       </div>
       <div class="scroll-editor-hint">Write a description, strategy notes, mulligan guide, or play tips. Readers see this as the deck's “Scroll” on the deck page.</div>
-      <textarea id="scroll-textarea" class="scroll-textarea" maxlength="6000" placeholder="Describe your deck's game plan…" oninput="deckScroll = this.value;"></textarea>
+      <textarea id="scroll-textarea" class="scroll-textarea" maxlength="6000" placeholder="Describe your deck's game plan…" oninput="deckScroll = this.value; markDirty();"></textarea>
     </div>
   </div>
 
@@ -1323,7 +1323,7 @@
           <input type="text" id="deck-name-input" name="deckTitle" placeholder="Tap to name your deck…"
                  autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false"
                  data-lpignore="true" data-1p-ignore data-form-type="other"
-                 oninput="refreshDeckNameState()" onchange="refreshDeckNameState()">
+                 oninput="refreshDeckNameState(); markDirty();" onchange="refreshDeckNameState()">
         </div>
         <div class="deck-actions">
           <button class="btn btn-ghost" onclick="saveDeck()">Save</button>
@@ -1501,6 +1501,17 @@
   </div>
 </div>
 
+<div class="confirm-overlay" id="leave-overlay" onclick="if(event.target===this)closeLeaveWarning()">
+  <div class="confirm-box">
+    <div class="confirm-title">Leave the Workshop?</div>
+    <div class="confirm-msg">You have <b>unsaved changes</b> to this deck. If you leave now, your progress will be lost.<br><br>Save your deck first to keep it, or leave anyway.</div>
+    <div class="confirm-actions">
+      <button class="btn btn-ghost" onclick="closeLeaveWarning()">Stay</button>
+      <button class="btn btn-danger" onclick="confirmLeaveNav()">Leave anyway</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <!-- HOVER PREVIEW (desktop, list view only) -->
@@ -1563,9 +1574,47 @@ function commitUndo(before) {
   deckHistory.push(before);
   if (deckHistory.length > UNDO_LIMIT) deckHistory.shift();
   updateUndoButton();
+  markDirty();
 }
 // Reset undo history — called when a whole deck is loaded/replaced (fresh edit session).
-function resetUndoHistory() { deckHistory = []; updateUndoButton(); }
+function resetUndoHistory() { deckHistory = []; updateUndoButton(); deckDirty = false; }
+
+// ── UNSAVED-CHANGES GUARD ──
+// True once the deck has been edited since the last save/load. We warn before any
+// internal navigation that would discard it, and let external links (target=_blank)
+// open in a new tab without a warning. A beforeunload backstop covers tab close /
+// refresh / typed-URL navigation that a click handler can't intercept.
+let deckDirty = false;
+let pendingNavUrl = null;
+function markDirty() { if (!readOnly) deckDirty = true; }
+// Buttons that navigate via window.location route through this so they get the warning.
+function navGuard(url) {
+  if (deckDirty && !readOnly) { pendingNavUrl = url; document.getElementById('leave-overlay').classList.add('open'); }
+  else window.location.href = url;
+}
+function closeLeaveWarning() { document.getElementById('leave-overlay').classList.remove('open'); pendingNavUrl = null; }
+function confirmLeaveNav() {
+  deckDirty = false; // clear so the beforeunload backstop doesn't double-prompt
+  document.getElementById('leave-overlay').classList.remove('open');
+  if (pendingNavUrl) window.location.href = pendingNavUrl;
+}
+// Intercept clicks on internal links while there are unsaved changes. External links
+// (target=_blank, http(s)://, mailto:) and in-page anchors (#, javascript:) pass through.
+document.addEventListener('click', (e) => {
+  if (!deckDirty || readOnly) return;
+  const a = e.target.closest ? e.target.closest('a[href]') : null;
+  if (!a) return;
+  if (a.target === '_blank') return;
+  const href = a.getAttribute('href') || '';
+  if (!href || href[0] === '#' || /^(https?:|mailto:|tel:|javascript:)/i.test(href)) return;
+  e.preventDefault();
+  pendingNavUrl = a.href;
+  document.getElementById('leave-overlay').classList.add('open');
+}, true);
+// Backstop for tab close / refresh / browser navigation we can't intercept with a modal.
+window.addEventListener('beforeunload', (e) => {
+  if (deckDirty && !readOnly) { e.preventDefault(); e.returnValue = ''; }
+});
 function updateUndoButton() {
   const btn = document.getElementById('undo-btn');
   if (btn) btn.disabled = deckHistory.length === 0;
@@ -2983,6 +3032,7 @@ async function saveDeck() {
         }
         if (!saved) throw new Error('Could not generate a unique code');
       }
+      deckDirty = false;
       toast(`"${name}" saved to your account`);
       renderVisibilityBar();
       return;
@@ -2999,6 +3049,7 @@ async function saveDeck() {
   activeDeckId = id;
   saved[id] = { name, deck: JSON.parse(JSON.stringify(deck)), scroll: (deckScroll || '').trim(), savedAt: new Date().toISOString() };
   localStorage.setItem('grimoire_decks', JSON.stringify(saved));
+  deckDirty = false;
   toast(currentUser ? `"${name}" saved locally` : `"${name}" saved!`);
 }
 
