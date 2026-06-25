@@ -452,6 +452,25 @@
     pointer-events: none;
   }
 
+  /* Hover-reveal add/remove controls on explorer cards (Card + Large views).
+     Mirrors the deck panel's .dvg-controls so moving a card left↔right feels the
+     same; the + is accented because adding to the deck is the primary action.
+     Hover-only (touch devices use the card modal / Text & Detailed views). */
+  .ci-controls {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(0deg, rgba(11,10,15,0.96) 58%, transparent);
+    padding: 16px 4px 5px;
+    display: flex; gap: 4px; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.15s; z-index: 4;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .card-item:hover .ci-controls { opacity: 1; }
+  }
+  .ci-count { min-width: 20px; text-align: center; font-family: 'Cinzel', serif; font-size: 0.82rem; font-weight: 700; color: var(--shimmer); }
+  /* Higher specificity than .qty-btn (defined later) so the accent isn't overridden */
+  .ci-controls .ci-add { background: var(--rune); border-color: var(--arcane); color: #fff; }
+  .ci-controls .ci-add:hover { background: var(--arcane); color: #fff; }
+
   /* DRAG AND DROP */
   .card-item[draggable="true"] { cursor: grab; }
   .card-item[draggable="true"]:active { cursor: grabbing; }
@@ -1995,13 +2014,21 @@ function renderCardGrid(append = false) {
 
 function renderDbCardItem(card) {
   const inDeck = getDeckCountForCard(card.id);
-  return `<div class="card-item" draggable="true" data-card-id="${escId(card.id)}"
-    onclick="openModal('${escId(card.id)}')"
-    ondragstart="onCardDragStart(event,'${escId(card.id)}')"
+  const id = escId(card.id);
+  // Hover overlay mirroring the deck panel: − removes one from the deck, + adds one.
+  const controls = readOnly ? '' : `<div class="ci-controls">
+      <button class="qty-btn" onclick="event.stopPropagation();quickRemoveFromDeck('${id}')" title="Remove one from deck" aria-label="Remove one from deck">−</button>
+      <span class="ci-count">${inDeck}</span>
+      <button class="qty-btn ci-add" onclick="event.stopPropagation();quickAddToDeck('${id}')" title="Add one to deck" aria-label="Add one to deck">+</button>
+    </div>`;
+  return `<div class="card-item" draggable="true" data-card-id="${id}"
+    onclick="openModal('${id}')"
+    ondragstart="onCardDragStart(event,'${id}')"
     ondragend="onCardDragEnd(event)">
     <img src="${getImageUrl(card)}" alt="${card.name}" loading="lazy" onerror="this.style.opacity='0.2'" draggable="false">
     ${inDeck > 0 ? `<div class="in-deck-badge">×${inDeck}</div>` : ''}
     <div class="card-item-name">${card.name}</div>
+    ${controls}
   </div>`;
 }
 
