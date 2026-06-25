@@ -1062,6 +1062,14 @@
         </div>
       </div>
 
+      <!-- ALIGNMENT (derived umbrella over Undead / Demon / Monster) -->
+      <div>
+        <div class="adv-section-title">Alignment</div>
+        <div class="adv-chips">
+          <button class="adv-chip" onclick="toggleEvilChip(this)" title="Undead, Demon, or Monster">Evil</button>
+        </div>
+      </div>
+
       <!-- COST & POWER RANGES -->
       <div>
         <div class="adv-section-title">Cost &amp; Power <button class="stone-clear" onclick="clearRanges()">clear</button></div>
@@ -1235,6 +1243,9 @@ async function loadCards() {
     const data = await res.json();
     const raw = Array.isArray(data) ? data : (data.data || data.cards || []);
     if (!raw.length) throw new Error('Empty card list');
+    // "Evil" is a derived umbrella category, not a printed subtype: a card is Evil
+    // if its subTypes include any of these. Defined once, used per card below.
+    const EVIL_TYPES = ['undead', 'demon', 'monster'];
     allCards = raw.map(card => {
       const g = card.guardian || {};
       // Prefer the Beta printing (cheaper, widely available) over Alpha;
@@ -1265,6 +1276,9 @@ async function loadCards() {
       }));
       const _rank = nm => /beta/i.test(nm) ? 0 : /alpha/i.test(nm) ? 1 : 2;
       const printings = [..._seen.values()].sort((a, b) => _rank(a.set) - _rank(b.set));
+      // Derived "Evil" flag — whole-word match (tolerating a trailing plural "s").
+      const _subs = (card.subTypes || '').toLowerCase();
+      const isEvil = EVIL_TYPES.some(t => new RegExp('\\b' + t + 's?\\b').test(_subs));
       return {
         id: card.name,
         name: card.name,
@@ -1278,6 +1292,7 @@ async function loadCards() {
         rules_text: g.rulesText || '',
         element: Array.isArray(card.elements) ? card.elements.join(', ') : (card.elements || ''),
         subTypes: card.subTypes || '',
+        isEvil,
         set: firstSet ? firstSet.name : '',
         slug: firstVariant ? firstVariant.slug : null,
         sets: (card.sets || []).map(s => s.name),
@@ -1447,7 +1462,7 @@ function setViewMode(mode) {
 }
 
 // FILTERS
-const activeFilters = { type: new Set(), set: new Set(), rarity: new Set(), element: new Set() };
+const activeFilters = { type: new Set(), set: new Set(), rarity: new Set(), element: new Set(), evil: false };
 let elementLock = false;
 function cardElements(card) {
   if (!card.element) return [];
@@ -1552,6 +1567,16 @@ function toggleAdvChip(btn) {
   updateSummary();
 }
 
+// Evil is a single on/off umbrella toggle (not a subtype group), so it has its
+// own boolean on activeFilters rather than a Set in advFilters.
+function toggleEvilChip(btn) {
+  activeFilters.evil = !activeFilters.evil;
+  btn.classList.toggle('active', activeFilters.evil);
+  updateAdvToggleDot();
+  filterCards();
+  updateSummary();
+}
+
 function clearGroup(group) {
   activeFilters[group].clear();
   document.querySelectorAll(`.stone-option[data-group="${group}"]`).forEach(b => b.classList.remove('active'));
@@ -1574,7 +1599,8 @@ function clearRanges() {
 }
 
 function clearAllFilters() {
-  Object.keys(activeFilters).forEach(g => activeFilters[g].clear());
+  Object.keys(activeFilters).forEach(g => { if (activeFilters[g] instanceof Set) activeFilters[g].clear(); });
+  activeFilters.evil = false;
   Object.keys(advFilters).forEach(g => advFilters[g].clear());
   document.querySelectorAll('.stone-option.active, .adv-chip.active').forEach(c => c.classList.remove('active'));
   document.getElementById('search-input').value = '';
@@ -1597,7 +1623,7 @@ function toggleAdvanced() {
 }
 
 function updateAdvToggleDot() {
-  const hasActive = Object.values(advFilters).some(s => s.size > 0);
+  const hasActive = Object.values(advFilters).some(s => s.size > 0) || activeFilters.evil;
   const toggle = document.getElementById('advanced-toggle');
   toggle.classList.toggle('has-active', hasActive);
 }
@@ -1612,6 +1638,7 @@ function updateSummary() {
   if (advFilters.artifactSubtype.size) parts.push([...advFilters.artifactSubtype].join(', '));
   if (advFilters.siteSubtype.size) parts.push([...advFilters.siteSubtype].join(', '));
   if (advFilters.keyword.size) parts.push([...advFilters.keyword].join(', '));
+  if (activeFilters.evil) parts.push('Evil');
   const costMin = document.getElementById('cost-min')?.value;
   const costMax = document.getElementById('cost-max')?.value;
   const powMin = document.getElementById('power-min')?.value;
@@ -1842,6 +1869,9 @@ function filterCards() {
     // Keyword filter — all selected keywords must appear in rules text
     const rt = (c.rules_text || '').toLowerCase();
     if (advFilters.keyword.size && ![...advFilters.keyword].every(kw => rt.includes(kw.toLowerCase()))) return false;
+
+    // Evil umbrella toggle (Undead / Demon / Monster)
+    if (activeFilters.evil && !c.isEvil) return false;
 
     // Cost range
     if (costMin !== null && (c.cost == null || c.cost < costMin)) return false;
