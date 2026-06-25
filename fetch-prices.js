@@ -71,6 +71,21 @@ function pickVariantPrice(variants, foil) {
   return v && v.price != null ? v.price : null;
 }
 
+// Map a JustTCG `set_name` to the canonical set name used in cards.json, so the
+// Vault can look up a printing's price by the same set label it already has.
+// Keyword-based (like PROMO_RE) and order-sensitive; unknown sets are returned
+// verbatim so they show up in the run summary and we can extend this list.
+function canonicalSet(setName) {
+  const s = (setName || '').toLowerCase();
+  if (/arthur/.test(s))  return 'Arthurian Legends';
+  if (/beta/.test(s))    return 'Beta';
+  if (/alpha/.test(s))   return 'Alpha';
+  if (/gothic/.test(s))  return 'Gothic';
+  if (/dragon/.test(s))  return 'Dragonlord';
+  if (/promo/.test(s))   return 'Promotional';
+  return (setName || '').trim();
+}
+
 async function fetchWithKey(url) {
   const res = await fetch(url, {
     headers: { 'x-api-key': API_KEY, 'Content-Type': 'application/json' }
@@ -84,14 +99,14 @@ function saveProgress(data) {
 
 async function fetchAllPrices() {
   // Load existing if resuming
-  let existing = { cards: {}, foils: {}, sealed: {}, promos: {} };
+  let existing = { cards: {}, foils: {}, sealed: {}, promos: {}, bySet: {} };
   let startOffset = 0;
 
   if (!FRESH && fs.existsSync(OUTPUT_FILE)) {
     try {
       const old = JSON.parse(fs.readFileSync(OUTPUT_FILE, 'utf8'));
       if (old.cards) {
-        existing = { cards: old.cards || {}, foils: old.foils || {}, sealed: old.sealed || {}, promos: old.promos || {} };
+        existing = { cards: old.cards || {}, foils: old.foils || {}, sealed: old.sealed || {}, promos: old.promos || {}, bySet: old.bySet || {} };
         const total = Object.keys(existing.cards).length + Object.keys(existing.foils).length + Object.keys(existing.sealed).length;
         startOffset = Math.floor(Object.keys(existing.cards).length / PAGE_SIZE) * PAGE_SIZE;
         console.log(`Resuming — already have ${total} entries, starting at offset ${startOffset}`);
@@ -107,6 +122,11 @@ async function fetchAllPrices() {
   // promos: cleanName -> qualifier -> { standard?, foil? }
   // (e.g. promos["Lightning Bolt"]["Team Covenant Promo"] = { foil: 14.99 })
   const promos = existing.promos;
+  // bySet: cleanName -> canonicalSetName -> { standard?, foil? } — per-printing
+  // prices so the Vault can treat e.g. Alpha and Beta as separate, separately
+  // priced holdings. (e.g. bySet["Apprentice Wizard"]["Alpha"] = { standard: 1.2 })
+  const bySet = existing.bySet;
+  const setNamesSeen = {}; // raw set_name -> { canonical, count } (for the run summary)
 
   let offset = startOffset;
   let hasMore = true;
@@ -128,7 +148,7 @@ async function fetchAllPrices() {
 
         if (res.status === 429) {
           // Save progress and exit
-          const output = buildOutput(cards, foils, sealed, promos);
+          const output = buildOutput(cards, foils, sealed, promos, bySet);
           saveProgress(output);
           console.log(`\nRate limited! Progress saved (${Object.keys(cards).length} standard, ${Object.keys(foils).length} foil, ${Object.keys(sealed).length} sealed).`);
           console.log('Run the script again to resume.');
@@ -180,13 +200,23 @@ async function fetchAllPrices() {
           const slot = (promos[cleanName] = promos[cleanName] || {});
           const entry = (slot[promo] = slot[promo] || {});
           if (entry[finish] == null || price < entry[finish]) entry[finish] = price;
-        } else if (foil) {
-          if (!foils[cleanName] || price < foils[cleanName].market) {
-            foils[cleanName] = { market: price };
-          }
         } else {
-          if (!cards[cleanName] || price < cards[cleanName].market) {
-            cards[cleanName] = { market: price };
+          const finish = foil ? 'foil' : 'standard';
+          // Top-level name-keyed maps (lowest across printings) — unchanged, so the
+          // rest of the site keeps working exactly as before.
+          if (foil) {
+            if (!foils[cleanName] || price < foils[cleanName].market) foils[cleanName] = { market: price };
+          } else {
+            if (!cards[cleanName] || price < cards[cleanName].market) cards[cleanName] = { market: price };
+          }
+          // Per-set price (min within a set+finish), so Alpha/Beta/etc. stay distinct.
+          const setName = canonicalSet(card.set_name);
+          if (setName) {
+            const seen = (setNamesSeen[card.set_name || ''] = setNamesSeen[card.set_name || ''] || { canonical: setName, count: 0 });
+            seen.count++;
+            const bs = (bySet[cleanName] = bySet[cleanName] || {});
+            const ss = (bs[setName] = bs[setName] || {});
+            if (ss[finish] == null || price < ss[finish]) ss[finish] = price;
           }
         }
       }
@@ -203,7 +233,7 @@ async function fetchAllPrices() {
 
   console.log('\n\nFetch complete!');
 
-  const output = buildOutput(cards, foils, sealed, promos);
+  const output = buildOutput(cards, foils, sealed, promos, bySet);
   saveProgress(output);
 
   // Count promo price points + list the distinct qualifiers we detected, so the
@@ -221,6 +251,21 @@ async function fetchAllPrices() {
   console.log(`Foil cards:     ${Object.keys(foils).length}`);
   console.log(`Sealed products: ${Object.keys(sealed).length}`);
   console.log(`Promo cards:    ${Object.keys(promos).length} (${promoPoints} price points)`);
+  console.log(`Per-set cards:  ${Object.keys(bySet).length}`);
+
+  // Distinct set names JustTCG returned and how each mapped to a cards.json set —
+  // confirms the canonicalSet() mapping covers every set (anything that maps to
+  // itself is unrecognized and needs a rule added).
+  const setRows = Object.entries(setNamesSeen).sort((a, b) => b[1].count - a[1].count);
+  if (setRows.length) {
+    console.log(`Set names detected (raw → canonical · price points):`);
+    setRows.forEach(([raw, info]) => {
+      const flag = (info.canonical.toLowerCase() === (raw || '').toLowerCase().trim()
+        && !['alpha','beta','gothic','dragonlord','promotional','arthurian legends'].includes(info.canonical.toLowerCase()))
+        ? '  ⚠ UNRECOGNIZED' : '';
+      console.log(`   - "${raw}" → "${info.canonical}": ${info.count}${flag}`);
+    });
+  }
   const qualList = Object.entries(promoQuals).sort((a, b) => b[1] - a[1]);
   if (qualList.length) {
     console.log(`Promo qualifiers detected:`);
@@ -240,8 +285,9 @@ async function fetchAllPrices() {
   console.log(`\nSaved to prices.json — upload to GitHub!`);
 }
 
-function buildOutput(cards, foils, sealed, promos) {
+function buildOutput(cards, foils, sealed, promos, bySet) {
   promos = promos || {};
+  bySet = bySet || {};
   return {
     generated: new Date().toISOString(),
     source: 'JustTCG (justtcg.com)',
@@ -251,6 +297,7 @@ function buildOutput(cards, foils, sealed, promos) {
       foil: Object.keys(foils).length,
       sealed: Object.keys(sealed).length,
       promo: Object.keys(promos).length,
+      bySet: Object.keys(bySet).length,
     },
     prices: cards,
     foils,
@@ -258,6 +305,9 @@ function buildOutput(cards, foils, sealed, promos) {
     // Promotional / special printings, kept separate from the booster prices.
     // Shape: { "Card Name": { "Team Covenant Promo": { standard?, foil? }, ... } }
     promos,
+    // Per-set prices so the Vault can price each printing (Alpha/Beta/etc.) on its
+    // own. Shape: { "Card Name": { "Alpha": { standard?, foil? }, "Beta": {...} } }
+    bySet,
   };
 }
 
