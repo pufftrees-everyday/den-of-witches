@@ -1441,7 +1441,7 @@
 <div class="modal-overlay" id="import-overlay" onclick="closeImport(event)">
   <div class="import-modal">
     <h2>Import Decklist</h2>
-    <p>Paste your decklist below — one card per line.</p>
+    <p>Paste your decklist below — one card per line. Imported cards are <b>added</b> to your current deck, so you can paste in batches.</p>
     <textarea id="import-text" placeholder="1Archimago&#10;Artifact (4)&#10;1Ring of Morrigan&#10;1&#10;..."></textarea>
     <div style="display:flex;gap:8px;margin-top:12px;">
       <button class="btn btn-primary" style="flex:1" onclick="runImport()">Import</button>
@@ -3763,7 +3763,10 @@ function runImport() {
   const text = document.getElementById('import-text').value.trim();
   if (!text) return;
   const lines = text.split('\n').map(l=>l.trim()).filter(Boolean);
-  const newDeck = { avatar:{}, atlas:{}, spellbook:{}, collection:{} };
+  // Start from the CURRENT deck so an import ADDS to it instead of replacing it
+  // (e.g. paste minions, then paste magic — both should stick). Deep-cloned so a
+  // failed/aborted import can't mutate the live deck before we commit.
+  const newDeck = JSON.parse(JSON.stringify(deck));
   let matched=0, skipped=0, collFull=0;
   // Section headers that appear in a pasted decklist. The Maybeboard/Sideboard
   // header flips us into "collection" mode so those cards land in the Deck Collection.
@@ -3803,23 +3806,28 @@ function runImport() {
 
     // Main deck: route by card type.
     const section = getDeckSection(card);
-    const actualQty = section === 'avatar' ? 1 : Math.min(qty, limit);
+    // Avatar is singular — an imported avatar replaces whatever's there (never stack two).
+    if (section === 'avatar') {
+      newDeck.avatar = { [key]: { card, qty: 1 } };
+      matched++;
+      continue;
+    }
+    const actualQty = Math.min(qty, limit);
     if (newDeck[section][key]) { newDeck[section][key].qty = Math.min(newDeck[section][key].qty + actualQty, limit); }
     else { newDeck[section][key] = { card, qty: actualQty }; }
     matched++;
   }
   if (matched === 0) { toast('No cards matched — check format'); return; }
+  // Import merges into the current deck, so keep the active deck identity —
+  // Save updates the deck you're editing rather than spawning a fresh one.
   const undoBefore = serializeDeck();
   deck = newDeck;
   commitUndo(undoBefore);
-  activeDeckCode = null; // imported deck is brand new and unsaved → next Save creates a fresh owned deck
-  activeDeckId = null;
-  activeDeckPublic = false;
   renderDeck();
   renderCardGrid();
   renderVisibilityBar();
   closeImport();
-  let msg = `Imported ${matched} cards`;
+  let msg = `Added ${matched} cards`;
   const extras = [];
   if (skipped) extras.push(`${skipped} not found`);
   if (collFull) extras.push(`${collFull} over Collection limit`);
