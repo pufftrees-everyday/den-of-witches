@@ -195,6 +195,16 @@ then variant where `finish==='Standard' && product==='Booster'`. Example real sl
   search (sections + glossary, highlights matches), clickable TOC sidebar (collapsible on mobile),
   page-number jump (3–37), per-section page badges, \n→paragraphs. The site's "Rulebook" nav link
   (More menu + mobile nav on all pages) points here now, not the old Drive PDF.
+- **event-guide.html** — "Guide to Sorcery Events." A near-clone of rulebook.html (same head/CSS/nav/
+  controls/TOC/search/page-jump JS), loading **event-guide-content.json** instead. Presents the official
+  2026 tournament guide's three parts as the three TOC groups — A Player's / An Organizer's / A Judge's
+  Guide — with each guide's sections nested beneath. Same data shape as the rulebook (`{title,released,
+  pageCount, toc, sections:[{id,title,page,text}]}`) but **no glossary/quickReference**, and TOC `items`
+  are `{label,id}` pairs (not bare titles) so the three guides can reuse section names like "Intro"/
+  "Your Role"/"You're Not Alone" without anchor collisions. Bullet lists use `•` (level 1), `–` (level 2),
+  `·` (level 3) line prefixes — same `\n`→paragraph rendering as the rulebook. Source PDF transcribed
+  verbatim; page numbers (2–27) are derived from the PDF. Linked as "Event Guide" right after every
+  "Rulebook" nav link (More menu + mobile nav, site-wide). Credit footer points to curiosa.io Codex/FAQs.
 - **videos.html** — "Community Channels" page (hardcoded YouTube channels). Linked in nav.
 - **gallery.html** — redirect stub to archive.html (preserves query/hash, `noindex`); not a real page.
 - **set-inspector.html** — diagnostic, unlinked (can be deleted).

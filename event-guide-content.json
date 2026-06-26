@@ -1,0 +1,316 @@
+{
+  "title": "Guide to Sorcery Events",
+  "released": "2026",
+  "pageCount": 30,
+  "toc": [
+    {
+      "group": "A Player's Guide to Sorcery Events",
+      "items": [
+        {
+          "label": "Intro",
+          "id": "p1-intro"
+        },
+        {
+          "label": "General Rules",
+          "id": "p1-general-rules"
+        },
+        {
+          "label": "Come Prepared",
+          "id": "p1-come-prepared"
+        },
+        {
+          "label": "Sleeves",
+          "id": "p1-sleeves"
+        },
+        {
+          "label": "Alters, Artist Proofs, etc",
+          "id": "p1-alters"
+        },
+        {
+          "label": "Fair Play — Community Comes First",
+          "id": "p1-fair-play"
+        },
+        {
+          "label": "Starting a Round",
+          "id": "p1-starting-a-round"
+        },
+        {
+          "label": "Draft Rules",
+          "id": "p1-draft-rules"
+        },
+        {
+          "label": "Sealed Rules",
+          "id": "p1-sealed-rules"
+        },
+        {
+          "label": "Constructed Rules",
+          "id": "p1-constructed-rules"
+        },
+        {
+          "label": "Takebacks",
+          "id": "p1-takebacks"
+        },
+        {
+          "label": "Clear Game State",
+          "id": "p1-clear-game-state"
+        },
+        {
+          "label": "Time & Tie Breakers",
+          "id": "p1-time-tiebreakers"
+        },
+        {
+          "label": "Concessions & Intentional Draws",
+          "id": "p1-concessions"
+        },
+        {
+          "label": "Notable Cards & FAQs",
+          "id": "p1-notable-cards"
+        },
+        {
+          "label": "Notes & Spectating",
+          "id": "p1-notes-spectating"
+        }
+      ]
+    },
+    {
+      "group": "An Organizer's Guide to Sorcery Events",
+      "items": [
+        {
+          "label": "Intro",
+          "id": "p2-intro"
+        },
+        {
+          "label": "You're Not Alone",
+          "id": "p2-youre-not-alone"
+        },
+        {
+          "label": "Your Role",
+          "id": "p2-your-role"
+        },
+        {
+          "label": "Addendum 1: Hosting an Event",
+          "id": "p2-add1-hosting"
+        },
+        {
+          "label": "Addendum 2: Example Tournament Structures",
+          "id": "p2-add2-structures"
+        },
+        {
+          "label": "Addendum 3: Grand Contest Guidelines",
+          "id": "p2-add3-grand"
+        }
+      ]
+    },
+    {
+      "group": "A Judge's Guide to Sorcery Events",
+      "items": [
+        {
+          "label": "Intro",
+          "id": "p3-intro"
+        },
+        {
+          "label": "You're Not Alone",
+          "id": "p3-youre-not-alone"
+        },
+        {
+          "label": "Your Role",
+          "id": "p3-your-role"
+        },
+        {
+          "label": "Guiding Principles",
+          "id": "p3-guiding-principles"
+        },
+        {
+          "label": "Addendum 1: Resources",
+          "id": "p3-add1-resources"
+        },
+        {
+          "label": "Addendum 2: Procedures",
+          "id": "p3-add2-procedures"
+        },
+        {
+          "label": "Addendum 3: Examples of Tricky Situations",
+          "id": "p3-add3-tricky"
+        }
+      ]
+    }
+  ],
+  "sections": [
+    {
+      "id": "p1-intro",
+      "title": "Intro",
+      "page": 2,
+      "text": "Sorcery tournaments exist to celebrate Creativity, Mastery, and Wonder. These guidelines are here to protect fair competition and the shared experience alike. Sorcery is sustained by community, creativity, and shared stories, and tournaments are a major part of that experience. As such, we all share the responsibility to ensure these spaces remain fair and welcoming for our fellow sorcerers. Above all, remember Sorcery's Golden Rule:\n\n\"Use common sense. Be cool.\"\n\nIf a situation feels unclear, seek clarity. If tension rises, choose respect. If you're unsure, ask a judge — not to argue, but to clarify and resolve. Play hard. Play fair. Help make the game worth returning to. Welcome to Sorcery tournaments."
+    },
+    {
+      "id": "p1-general-rules",
+      "title": "General Rules",
+      "page": 2,
+      "text": "Regardless of format, a few principles remain constant across all Sorcery tournaments:\n\n• The Golden Rule always applies: Use common sense. Be cool.\n• Matches are played as best-of-one games unless otherwise specified.\n• Event organizers will communicate round times, tiebreakers, and any event-specific procedures before play begins.\n\nThese guidelines exist to support fair competition, clear communication, and an enjoyable experience for everyone at the table."
+    },
+    {
+      "id": "p1-come-prepared",
+      "title": "Come Prepared",
+      "page": 2,
+      "text": "Preparation honors your opponents and strengthens the competition. To those ends, it is useful if you know what to bring and understand the rules in advance, but judges and other players will be there to help and support you if you're new.\n\nYou'll need:\n• A method to track life.\n• A playmat.\n• Tokens your deck requires.\n\nFor Constructed Events, you will also need:\n• Your deck, with: 60+ card spellbook, and 30+ card atlas, and your Avatar.\n• A collection with up to 10 cards.\n• A decklist (be sure to confirm with your event organizer how decklists should be submitted).\n\nFor Draft and Sealed Events, you will also need:\n• Any sleeves that you may require for your decks.\n• Note: Spellslinger and draft sites will be available if needed.\n\nBefore the event:\n• Register on the Play Network.\n• Review card FAQs and the Codex.\n• Confirm decklist submission details."
+    },
+    {
+      "id": "p1-sleeves",
+      "title": "Sleeves",
+      "page": 3,
+      "text": "If playing with cards that have visibly different backs (e.g. foils, different printings, etc.), players are required to sleeve their decks in two visibly different kinds of opaque sleeves, one for your Spellbook and one for your Atlas. A third type is recommended for your collection so you can easily reset it between games, but be prepared to resleeve them in the correct type of sleeve if a collection card finds its way into your hand, Spellbook, or Atlas. Reminder: Don't forget to reset your collection at the end of each game!"
+    },
+    {
+      "id": "p1-alters",
+      "title": "Alters, Artist Proofs, etc",
+      "page": 3,
+      "text": "We love seeing the creativity players and artists bring to the game! Unique presentations, such as altered cards and artist proofs are great examples of this. If you want to bring them to your tournament, keep the following guidelines in mind:\n\n• Card name and game text must be clearly visible and unaltered\n• Must be respectful and not offensive\n• Does not confuse the game state, such as using another card's art\n• The alteration does not cause a difference to card shape or thickness to the extent the card effectively becomes marked.\n\nJudges will have the final say about these sorts of cards, so if you are unsure, ask in advance."
+    },
+    {
+      "id": "p1-fair-play",
+      "title": "Fair Play — Community Comes First",
+      "page": 3,
+      "text": "Winning matters. How you win matters more. Treat opponents, judges, and organizers with respect — especially during disagreements.\n\nWe expect players to:\n• Communicate clearly.\n• Resolve disagreements calmly.\n• Uphold fair play and reject cheating in any form.\n• Be kind, fair, and respectful during play.\n• Call a judge when needed — not to argue, but to clarify.\n\nJudges are here to protect fairness and flow so that everyone can have fun. We encourage players to reach out for their help! Floor judges may consult with a head judge in particularly tricky cases, but their rulings are final."
+    },
+    {
+      "id": "p1-starting-a-round",
+      "title": "Starting a Round",
+      "page": 4,
+      "text": "When a round begins:\n• Find your table promptly.\n• Introduce yourself and confirm that you're properly paired.\n• Follow the setup instructions from the rulebook, remembering to shuffle your decks thoroughly and present them for additional shuffling and/or cutting.\n• Starting with the first, players take their mulligans.\n\nThen, if you're both ready:\n• Play!"
+    },
+    {
+      "id": "p1-draft-rules",
+      "title": "Draft Rules",
+      "page": 4,
+      "text": "• Players must announce whenever they draft a foil card.\n• Players only keep cards that they actually draft.\n• Between drafting each booster, players will have a little time to review the cards they've drafted so far. While actively drafting cards in a pack, players should not look at their previously drafted cards.\n• Between games, players may freely change their draft deck from among the cards they drafted.\n• All 15 cards from each booster will be drafted without replacement; if you draft a card that isn't tournament legal, you obviously keep the card, but it still uses up your draft pick.\n• Players will have 20 minutes for deckbuilding after drafting is complete.\n• Your spellbook must include 24 or more spell cards, and your atlas must include 12 or more sites. There are no rarity restrictions.\n• You may only use sites you draft, plus draft ordinary sites (i.e. Spire, Valley, Wasteland, Stream), which will be provided as needed.\n• You may only use avatars you draft, plus Spellslinger, which will be provided as needed.\n• Keep your 45-card draft pool separate from all other cards and available for review by judges at any point during the event. Adding extra cards from outside your card pool is grounds for disqualification and banning from future events."
+    },
+    {
+      "id": "p1-sealed-rules",
+      "title": "Sealed Rules",
+      "page": 4,
+      "text": "• Players will have 20 minutes for deckbuilding.\n• Your spellbook must include 24 or more spell cards, and your atlas must include 12 or more sites. There are no rarity restrictions.\n• Between games, players may freely change their sealed deck from among the cards they opened.\n• You may only use sites you open, plus draft ordinary sites (i.e. Spire, Valley, Wasteland, Stream), which will be provided as needed.\n• You may only use avatars you open, plus Spellslinger, which will be provided as needed.\n• Keep your 90 card sealed pool separate from all other cards and available for review by judges at any point during the event. Adding extra cards from outside your card pool is grounds for disqualification and banning from future events."
+    },
+    {
+      "id": "p1-constructed-rules",
+      "title": "Constructed Rules",
+      "page": 5,
+      "text": "• All official Sorcery cards are legal, and must match the name and printed text on curiosa.io.\n• Deck rules:\n– Exactly 1 avatar\n· Avatars without text boxes may be played so long as you have a reference copy with the card text on hand.\n· If you are playing Dragonlord as your avatar, you must \"set aside\" one Unique dragon before set up. Refer to the FAQs for more information.\n– 60+ spells\n– 30+ sites\n– Up to 10 collection cards of any type"
+    },
+    {
+      "id": "p1-takebacks",
+      "title": "Takebacks",
+      "page": 5,
+      "text": "We want everyone to play their best game and have fun, so Sorcery allows for limited takebacks during your turn to enable timely decision-making during play and minimize 'gotcha' moments. Takebacks are OK until any of these occur:\n\n• New information is revealed by your opponent (e.g. decision to Defend or not, or an opponent ending their turn)\n• A random event resolves\n• You gain information (drawing a card or looking at a card)\n• So many actions have resolved that it's too complicated to easily revert the gamestate (call a judge if you are uncertain)\n\nIf unsure, call a judge."
+    },
+    {
+      "id": "p1-clear-game-state",
+      "title": "Clear Game State",
+      "page": 5,
+      "text": "Both players share responsibility for a clean and clear game space. Clarity speeds play and builds trust.\n\n• Keep your sites clearly positioned closest to you in the grid square and facing you.\n• Keep your units tidy, visible, and facing you.\n• Carried artifacts should be displayed under the unit that is carrying them.\n• Artifacts that are not carried should be clearly separated from unit cards.\n• If you are using sleeves, make sure they are visibly different for spells, sites, and collection.\n• Mark relevant information, such as Flooded, Disabled, etc."
+    },
+    {
+      "id": "p1-time-tiebreakers",
+      "title": "Time & Tie Breakers",
+      "page": 6,
+      "text": "We suggest 50 minutes per game, which should be ample time for the vast majority of Sorcery games played at a reasonable speed. However, you should check with your tournament organizer or staff to confirm how long rounds will take during the event.\n\nUse this time you share with your opponent respectfully. A little thinking is fine, but please ensure you are playing reasonably quickly so the game doesn't reach the time limit.\n\nUntimed rounds may occur in finals or decisive matches, as per the tournament organizer's instructions. These untimed games ensure there is a decisive result, but players are still expected to play at a reasonable pace.\n\nIf you are still playing when time is called, three bonus turns will be played. Complete the current turn, then start counting turns. For example, if time is called on your turn, you'll finish your turn. Then, your opponent will take a turn (1), then you (2), then your opponent (3).\n\nIf the game still isn't over after the bonus turns, apply these final tiebreakers:\n• If exactly one player is on Death's Door, they lose.\n• Otherwise, both players lose. Note: This is entered as a zero-point draw in the play network.\n\nWe expect a reasonable pace. Judges may intervene if necessary.\n\nTime is a shared resource among both players, and each player should strive to use it thoughtfully and evenly. It's also reasonable to expect that if a player gains substantial new information, they might need some time to adjust. In the end, judges must use their judgment. Judges may apply any remedy they deem appropriate, including warning the player, granting the opponent extra time or bonus turns, applying a game loss, etc."
+    },
+    {
+      "id": "p1-concessions",
+      "title": "Concessions & Intentional Draws",
+      "page": 6,
+      "text": "You may concede at any time — freely and without pressure. However, Sorcery events do not allow intentionally engineered draws.\n\nYou may not:\n• Offer inducements.\n• Determine match outcomes randomly.\n• Make deals of any kind.\n• Pressure or ask an opponent to concede for any reason."
+    },
+    {
+      "id": "p1-notable-cards",
+      "title": "Notable Cards & FAQs",
+      "page": 6,
+      "text": "Some cards require judge supervision due to unusual mechanics. Call a judge before resolving:\n• Erik's Curiosa (once ripped, you will play the rest of the event with one less spell)\n• Kairos the Archivist (call a judge when resolving both its genesis and deathrite abilities)\n\nWhen resolving a Chaos Twister, you may call a judge, but you don't need to. We encourage you to talk with your opponent before Twisting to ensure the effect is properly resolved. Your opponent may call a judge if they think it was unfairly resolved, and you may need to re-do it.\n\nUse the most updated card text available and consult FAQs on Curiosa when uncertain."
+    },
+    {
+      "id": "p1-notes-spectating",
+      "title": "Notes & Spectating",
+      "page": 7,
+      "text": "• Brief notes are allowed if they do not slow the game.\n• You may bring a copy of your decklist to look at during the game, but otherwise you may not bring any other pre-written notes to the game.\n• Spectators must remain silent and not disturb play in any way. If a spectator notices a rule mistake, please alert a judge immediately."
+    },
+    {
+      "id": "p2-intro",
+      "title": "Intro",
+      "page": 9,
+      "text": "Sorcery Organized Play exists to bring players together in celebration of Creativity, Mastery, and Wonder.\n\nAs an Organizer, your role extends beyond scheduling rounds, distributing prizes, and reporting results. You are the steward of the experience each player will have at your event. Every event you run helps shape how players experience Sorcery and whether they choose to return for another.\n\nThe most successful events are not necessarily the largest, nor the most competitive. They are the events where players feel welcomed, challenged, and inspired. They are the events where new friendships are formed, creativity is celebrated, competition feels fair, and players leave with stories worth retelling.\n\nAbove all, remember Sorcery's Golden Rule: Use common sense. Be cool.\n\nWhen faced with uncertainty, prioritize the player experience. When faced with conflict, seek clarity and fairness. When faced with a choice between strict procedure and good judgment, remember that the purpose of Organized Play is to sustain the game and the community that surrounds it.\n\nRemember, each individual event fits together and builds the greater community experience. Together they sustain the ongoing community of players, stores, judges, organizers, artists, and creators who keep the realm alive.\n\nYou are not simply running a tournament, a draft night, or a casual meet up. You are building community. You are setting the table and inviting others to gather around it."
+    },
+    {
+      "id": "p2-youre-not-alone",
+      "title": "You're Not Alone",
+      "page": 9,
+      "text": "Running a great Sorcery event is a team effort. Organizers, judges, store owners, volunteers, and players all contribute to the experience in different ways.\n\nAs an organizer, your role is not to personally solve every challenge that arises. Instead, focus on creating a welcoming environment and delivering a great event experience. Lean on your judges and volunteers to help maintain fairness, answer questions, resolve disputes, and support your players.\n\nJudges are trusted partners in creating a fair and welcoming environment. They help players navigate rules questions, protect the integrity of competition, and ensure disputes are resolved consistently and respectfully. Together, organizers and judges create the conditions that allow players to focus on what matters most: creativity, mastery, and wonder.\n\nThe best events are not built by a single person — they are created by a community working together."
+    },
+    {
+      "id": "p2-your-role",
+      "title": "Your Role",
+      "page": 10,
+      "text": "As a Tournament Organizer, your primary responsibility is to create an environment where Creativity, Mastery, and Wonder can thrive.\n\nCreativity — Create Space for Expression\n\nSorcery is a game of imagination. Players should feel excited and supported to express themselves through deckbuilding, thematic choices, artistic expression, and community participation.\n\nYour role is not to determine what creativity looks like, but to create space for it to flourish.\n\nMastery — Create Fair Competition\n\nPlayers invest time and effort into learning the game, refining their strategies, and preparing for events. They deserve an environment where success is earned and competition is respected.\n\nWork with your judges to ensure events are fair, transparent, and well-run so that players can trust the results and take pride in their achievements.\n\nWonder — Create Moments Worth Remembering\n\nPlayers may forget their final standings, but they rarely forget how an event made them feel.\n\nA welcoming atmosphere, thoughtful presentation, memorable prizes, shared celebrations, artist interactions, and meaningful community moments all contribute to the sense of wonder that makes Sorcery special.\n\nSmall details matter. The goal is not perfection — it is creating an experience worth returning to."
+    },
+    {
+      "id": "p2-add1-hosting",
+      "title": "Addendum 1: Hosting an Event",
+      "page": 11,
+      "text": "There are many different ways to organize and run your Sorcery events. Here are some suggestions based on experiences of communities around the world who have run successful and enjoyable Sorcery events. You can borrow from, tweak, and try out any of the suggestions below to suit your local community's needs and preferences.\n\nStep 1 — Choose Your Tournament Structure\n\nWhat kind of experience are you creating?\n\nChoose the format, size, and style of event that best suits your community and your goals. Check out Addendum 3 below for some suggested formats for your event.\n\nTournament Structure Best Practices:\n• Best of 1 matches.\n• 50 minute timed Swiss rounds, meaning the following number of rounds depending on how many players are participating:\n– 4-8 players: 3 rounds\n– 9-16 players: 4 rounds\n– 17-32 players: 5 rounds\n– 33-64 players: 6 rounds\n– 65-128 players: 7 rounds\n– 129-256 players: 8 rounds\n– 257-512 players: 9 rounds\n• Top cuts are entirely optional, especially for smaller events. However, if you want to run a top cut for your event, we recommend these top cut numbers based on player numbers:\n– 9-16 players — Top 4 cut after Swiss rounds\n– 17-128 players — Top 8 cut after Swiss rounds\n– 129+ players — Top 16 cut after Swiss rounds\n• For scheduling within your tournament, assume 60 minutes per round, as some matches may go to time.\n• For Sealed, add an extra 50 minutes before the rounds start for players to open their packs, build and sleeve their decks.\n• For Draft, add an extra hour for players to draft, build and sleeve their decks.\n\nStep 2 — Set Your Event Up for Success\n\nLay the foundations.\n\nDetermine entry fees, prize support, staffing requirements, venue needs, and any products required for Limited play. Think about the overall player experience and how your event can best celebrate Creativity, Mastery, and Wonder.\n• When pricing your event, you can balance the cost of prizes and use of your space (or space rental), the cost of judges and staff, and the cost of any product being used for sealed or draft play.\n• Be sure to leverage Sorcery's organized play program to get access prize support for regular store play (Store Kits) and Cornerstone championships (Cornerstone Kits) (https://sorcerytcg.com/organized-play).\n• It's also worth remembering that your players also earn Dust for participating in events run through the Sorcery Play Network, allowing them to unlock additional prizes and rewards. https://sorcerytcg.com/news/dust-in-sorcery-contested-realm\n\nPrizing Best Practices\n• We recommend ensuring prizes aren't allocated too heavily to the event's top performers. They should certainly be recognized for their mastery of the game, but so too should participants who demonstrate creativity, contribute to the event's overall wonder, and help build the Sorcery community.\n• We recommend having some participation prizes so that players towards the bottom of the final standings don't walk away from the event empty-handed.\n• Creativity & Wonder Spot Prizes: Tournament Organizers are encouraged to use their judgment, with input from judges and volunteers where helpful, to recognize memorable moments of creativity, imagination, generosity, artistry, or wonder that make an event uniquely Sorcery.\n\nStep 3 — Announce Your Event\n\nInvite players to the table.\n\nPost your event on the Sorcery Play Network, promote it through your local community and social channels, and give players plenty of notice — especially for major championships where travel may be involved.\n\nThe more notice you give, the more opportunities players have to join your community and widen the table.\n\nIt's also very important to get your tournament posted on the Sorcery Play Network (play.sorcerytcg.com), so that players can easily find it and register. You can also post links to the tickets on social media, including the Sorcery Discord (under the #organized-play channel), the Sorcery subreddit, the Sorcery Official Facebook group, and any other social media groups your players frequent.\n\nStep 4 — Build Your Team\n\nYou're not alone.\n\nOrganizers, judges, store owners, volunteers, and players all contribute to the experience. Lean on your judges to help maintain fairness and answer rules questions so you can focus on creating a welcoming and memorable event.\n\nIf you want to have an accredited Sorcery judge at your event, you can reach out to any judges in your local community or through the Sorcery Discord. If there is someone in your local community who would like to become a judge, they can find out more about the Sorcery Judge program here: https://sorcerytcg.com/news/announcing-the-sorcery-contested-realm-judge-program\n\nStrong communities are built by people working together.\n\nStep 5 — Prepare the Table\n\nCreate a welcoming space.\n\nMake sure you have the materials, prizes, playmats, tokens, timers, and other resources needed to run your event smoothly. For Limited events, ensure players have easy access to everything they need to participate. Small details make a big difference.\n\nWhatever type of event you are running, you are likely to need:\n• Playmats for your players (2-player mats tend to work best depending on your table size)\n• Peripherals for players to purchase if required, such as sleeves\n• A round timer that's visible to players, or regular time announcements so players know how long is left in the round as they play\n• Prizes\n• A judge, especially if your event has 16 or more players\n\nIf you are running a Sealed or Draft event, you will need to make sure you have:\n• Draft Kits (about one per four players), or as many copies as necessary of:\n– Spellslinger\n– The four Draft Sites (Wasteland, Stream, Valley and Spire)\n• Booster packs for players to use for the draft or sealed event\n• Tokens for players to use\n• Copies of the collection cards found in the Gothic Box Topper pack (Ghoul, Hellhounds, Horrible Hybrids, Penitent Knight, Desecrated Ground, Consecrated Ground, Rubble) and ideally some copies of Serava Townsfolk and Eltham Townsfolk for players to borrow.\n\nStep 6 — Welcome Your Players\n\nSet the tone.\n\nIntroduce yourself, your judges, and your staff. Let players know how to ask questions and remind them of:\n• Sorcery's Golden Rule: Use common sense. Be cool.\n• Prizes: announce and confirm to players before the start of the first round\n• A reminder for your players about Sorcery's approach to takebacks and maintaining a clear game state. You can find more detail about these in our \"Player's Guide\"\n\nA warm welcome creates the foundation for a memorable event.\n\nStep 7 — Create Something Worth Returning To\n\nThis is the true goal.\n\nPlayers may forget individual matches, but they rarely forget how an event made them feel. Every game played, every friendship formed, every creative deck, and every memorable moment contributes to something larger."
+    },
+    {
+      "id": "p2-add2-structures",
+      "title": "Addendum 2: Example Tournament Structures",
+      "page": 15,
+      "text": "Here are some tried and true event formats for your consideration, but you are free to design your events as you wish!\n\nLocal Sealed event\n• Time required: ~4 hrs\n• Players supported: 4-32\n• Overview: 30 min deckbuilding, 3 hours for 3 rounds of play.\n• Product Needed: 6 boosters per player plus prize boosters (see below). Draft kits, tokens and playmats.\n• Prizing: Booster packs. We recommend a booster pack per win and a booster pack to anyone who doesn't get any wins. You could add participation prizes, and prizes for anyone who goes 3-0, using materials from the Sorcery Store Kit.\n\nLocal Constructed event\n• Time required: 3-4 hrs (for 4-16 players), or 5 hours for 17-32 players\n• Players supported: 4+\n• Overview:\n– 3 hours and 3 rounds for 4-8 players,\n– 4 hours and 4 rounds for 9-16 players, or\n– 5 hours for 5 rounds for 17-32 players.\n• Product Needed: Packs as prizes for players, plus materials from the Sorcery Store Kit (if available). We recommend 1 booster pack per round for every 2 players (e.g. pack per win), plus a couple of extra packs for players with 0 wins at the end of the event. You can also add some promos from the Sorcery Store Kit to the prize pool for your local events, if available.\n\nCornerstone Constructed Championship\n• Time required: 5 hr 30 min (or 8 hr 30 min with a top cut)\n• Players supported: Flexible, usually suits about 8-40 players. The indicative timing here is for 17-32 players.\n– If you have 9-16 players, play only 4 rounds and reduce event time by 1 hour.\n– If you have 33-40 players, play 6 rounds and increase event time by 1 hour\n• Overview: 30 min for checkin and announcements, 5 hours for 5 rounds of play (17-32 players). If you run a top cut, you will need some additional time. For 17-128 players, a single elimination cut to top 8 will usually take about two to three hours, depending on the pace of play in the final matches.\n• Product Needed: 3 boosters per player if you do pack-per-win, or 0 boosters per player if you don't. Have playmats on hand.\n• Prizing: Our Cornerstone Kits include prizes for all players and for your judges and community champions. Your store can add prizes to the pool in addition to the Cornerstone Kit, such as booster packs or other special prizes your players might enjoy.\n\nEscalation League\n• Time required: Flexible. Takes place over several weeks.\n• Players Supported: Flexible\n• Overview: Players get 6 boosters to build a sealed deck and then play with other players in your store over several weeks. After each week, players have the option to buy 1-2 boosters to improve their deck.\n• Product Needed: 6 boosters per player to start, plus 2 boosters per player per week, which they can buy to add to their decks.\n• Prizing: Whatever you want! You could use the Sorcery Store Kit materials to support your league, booster pack prizes, or any other prizes you think your community would enjoy."
+    },
+    {
+      "id": "p2-add3-grand",
+      "title": "Addendum 3: Grand Contest Guidelines",
+      "page": 17,
+      "text": "The following is some guidance if you have been selected by Erik's Curiosa to host a Grand Contest organized play event. Sorcery Grand Contests bring Sorcerers from across the region together for a shared experience, meet new rivals, and test their mastery.\n\nFormats\n\nGrand Contests can be run using any official Sorcery format:\n• Sealed\n• Draft\n• Constructed\n\nYou can find out more about each of these formats on our website at https://sorcerytcg.com/formats or in our Player's Guide.\n\nDistributing Prizes\n\nEach Grand Contest should be supported by two Grand Contest Kits and a pair of Gothic Print Sheets. This should include:\n• 2x Gothic Print Sheets\n• 2 x Foil alternate-art Silver Bullet promotional cards\n• 8x Non-foil alternate-art Silver Bullet promotional cards\n• 8x Foil alternate-art Cranky Overseer promotional cards\n• 8x Alternate-art Foil Swap promotional cards\n• 64x Alternate-art Croaking Swamp promotional cards\n\nPrizes from the kit should be distributed as follows:\n• Champion — Print sheet, Foil Silver Bullet, Non-Foil Silver Bullet, Croaking Swamp\n• Runner-up — Foil Silver Bullet, Non-foil Silver Bullet, Croaking Swamp\n• 3rd-8th — Non-foil Silver Bullet, Croaking Swamp\n• 9+ — Croaking Swamp\n• Community champions — Foil Swap\n• Judges — Foil Cranky Overseer\n• Standout community member or exemplar of Wonder and Creativity — Gothic Print Sheet (see below)\n\nWe recommend adding booster pack prizes to the prize pool. Our recommendation is 1 pack per 2 players per round, which equates to a pack for each winner each round during Swiss play. So if you have 64 players, you would add 32 packs to the prize pool each Swiss round. You could also add other prizes your community may enjoy, or additional packs for the top finishers or other players who exhibit Wonder and Creativity.\n\nCelebrating Creativity and Wonder\n\nTournament Organizers are encouraged to award spot prizes (such as the Gothic Print Sheet) that recognize Creativity and Wonder alongside competitive achievement. These awards are inherently subjective, and that is by design. The organizer and/or keystone judge should use their judgment, drawing on observations from judges, volunteers, and players where helpful. Celebrate those moments that make an event uniquely Sorcery: a beautifully themed deck, an imaginative costume, an act of generosity, an unforgettable play, or any contribution that inspires joy and connection within the community. There is no single right answer. Celebrate and reward the players who help make your event memorable.\n\nJudges and Staffing\n\nWe recommend at least 1 judge per 32 players you expect to have at your event.\n\nIf you are expecting:\n• 33-64 players, plan for at least 2 judges.\n• 65-96 players, plan for at least 3 judges.\n• 97-128 players, plan for at least 4 judges.\n\nJudges should handle:\n• rules questions\n• judge calls during matches\n• disputes between players\n• disqualifications, warnings or other sanctions, which should usually not be required\n• deck checks (ideally you would conduct random deck checks in the back half of the Swiss rounds on the top 2-6 tables, depending on judge capacity).\n\nIdeally, you would have a scorekeeper and tournament organiser in addition to these judge positions.\n\nThe tournament organiser should handle:\n• announcements to the players about the tournament structure\n• logistics including prizes, staff breaks, table setup with playmats and table numbers, etc\n• information for players such as housekeeping, bathrooms, food, etc\n• answering player questions about any of the above\n• coordination of scorekeeper, judges, and players to ensure everything is running smoothly.\n\nThe scorekeeper should:\n• accept results from players\n• ensure the results are entered correctly into the software\n• monitor round time, ensure it is displayed to players and that regular time announcements are made."
+    },
+    {
+      "id": "p3-intro",
+      "title": "Intro",
+      "page": 20,
+      "text": "Sorcery Organized Play exists to bring players together in celebration of Creativity, Mastery, and Wonder.\n\nAs a judge, your role extends beyond answering rules questions and resolving disputes. You are a steward of the experience. Every ruling you make helps shape how players experience Sorcery and whether they leave feeling respected, heard, and eager to return.\n\nThe best judges are not those who make the most rulings. They are the judges who create trust. They help players navigate uncertainty with confidence, competition with integrity, and disagreement with respect.\n\nAbove all, remember Sorcery's Golden Rule: Use common sense. Be cool.\n\nWhen faced with uncertainty, seek clarity. When faced with disagreement, seek understanding. When faced with a difficult ruling, remember that your responsibility is not only to the rules of the game, but also to the players who have gathered to enjoy it.\n\nEvery event contributes to a larger community of players, stores, judges, organizers, artists, and creators who keep the realm alive. As a judge, you help ensure that the community remains welcoming, fair, and worthy of the trust players place in it.\n\nYou are not simply enforcing rules. You are protecting the experience."
+    },
+    {
+      "id": "p3-youre-not-alone",
+      "title": "You're Not Alone",
+      "page": 20,
+      "text": "Judging is a collaborative effort. Organizers, judges, volunteers, and players all contribute to a successful event.\n\nOrganizers are responsible for hosting the event and creating a welcoming environment. Judges help protect the integrity of competition and support players through rules questions, policy decisions, and dispute resolution.\n\nWhen possible, work with your fellow judges and organizers. Ask questions. Seek second opinions. Escalate complex situations when appropriate. The goal is not to appear infallible — it is to reach the best outcome for the event and the players participating in it.\n\nThe best events are created by people working together toward a shared goal."
+    },
+    {
+      "id": "p3-your-role",
+      "title": "Your Role",
+      "page": 21,
+      "text": "As a judge, your primary responsibility is to protect an environment where Creativity, Mastery, and Wonder can thrive.\n\nCreativity — Protect Space for Expression\n\nSorcery thrives on imagination. Players express themselves through deckbuilding, artistic expression, thematic choices, and unique approaches to the game.\n\nCreativity should be welcomed wherever possible. When making decisions and interacting with the event's participants, look for ways to preserve player expression while maintaining clarity, fairness, and the event's integrity.\n\nYour role is to ensure that creativity can flourish within a fair and understandable game environment.\n\nMastery — Protect Fair Competition\n\nMastery is earned through preparation, skill, and good decision-making. Players deserve confidence that games are being played fairly and that outcomes are determined by the choices made at the table. This is where judges play their most visible role.\n\nYou are responsible for:\n• Applying rules consistently.\n• Resolving disputes fairly.\n• Maintaining tournament integrity.\n• Protecting players from cheating and unsporting conduct.\n• Ensuring all participants have confidence in the event's results.\n\nPlayers should leave believing that success was earned and competition was fair.\n\nWonder — Protect the Experience\n\nPlayers may forget individual rulings, but they rarely forget how those rulings made them feel.\n\nA judge's demeanor matters. Patience, empathy, professionalism, and clear communication all contribute to the overall experience of an event.\n\nA good ruling resolves a problem. A great ruling resolves a problem while preserving the enjoyment of the game and the dignity of participants.\n\nLook for opportunities to reduce tension, explain decisions clearly, and help players move forward confidently. Small moments of care can have a lasting impact."
+    },
+    {
+      "id": "p3-guiding-principles",
+      "title": "Guiding Principles",
+      "page": 22,
+      "text": "When making decisions:\n• Prioritize fairness.\n• Listen to players, ensuring they feel heard.\n• Treat players with respect.\n• Preserve the integrity of competition.\n• Protect the experience whenever possible.\n\nMost importantly:\n\nUse common sense. Be cool."
+    },
+    {
+      "id": "p3-add1-resources",
+      "title": "Addendum 1: Resources",
+      "page": 23,
+      "text": "The primary source of truth for game rules, card text, and FAQ clarifications is curiosa.io.\n• Game rules: https://curiosa.io/codex\n– Remember to check the changelog for summaries of updates here: https://curiosa.io/codex/changelog\n• Card text and FAQs: https://curiosa.io/cards\n– The best way of viewing FAQs is within context for each card, but as judges, it may be useful to you to be aware of the complete FAQ list, here."
+    },
+    {
+      "id": "p3-add2-procedures",
+      "title": "Addendum 2: Procedures",
+      "page": 24,
+      "text": "Best Practices for Announcements at the Start of a Tournament\n\nPlayers are most attentive at the start of the event, so it's a great chance to make announcements. Here are some common things you might want to cover:\n• Both players are responsible for following the game rules properly.\n– Check threshold on all spells cast\n– Ongoing effects from sites\n• Keep the game state clear.\n– This is covered in detail in the Player's Guide.\n• Always feel free to call a judge if you have any questions or concerns!\n\nJudge Intervention In Case of Illegal Play\n\nIf a judge notices an illegal play, the judge should proactively alert the players and help to resolve the situation; they need not (and should not) wait for a player to call them. Of course, a judge should never give play advice, merely alert players to the rules of the game.\n\nTakebacks\n\nSorcery allows for limited takebacks during your main phase for convenience and to minimize \"gotcha\" moments. We want everyone to play their best game and have fun, which aligns with the golden rule.\n\nThese takeback rules are intentionally designed to be reasonably lenient while maintaining a good speed of play. We want to encourage a fun, relaxed environment, even when playing competitively and minimize the number of \"gotcha\" plays.\n\nTakebacks are OK until any of these occur:\n• New information is revealed by your opponent (e.g. decision to Defend or not, or to end their turn)\n• A random event resolves\n• You gain information (drawing a card or looking at a card)\n• So many actions have resolved that it's too complicated to easily revert the gamestate (call a judge if you are uncertain)\n\nTwo further notes:\n• Excessive takebacks can slow down play; if you are concerned, talk with your opponent politely and/or call a judge.\n• If both players agree freely, you may take back however you wish. It's important that a player is not pressured to accept takebacks beyond what's specified here.\n\nGeneral Reminder\n\nIf both players agree to a take back, regardless of anything above, as long as neither player was pressured or coerced in any way, it's fine to allow a take back. The goal is to have fun and play a good game.\n\nExamples and Clarifications regarding the Takebacks Rules\n\nNo new information revealed by opponent\nI announce that I'm casting Common Sense, and place it in my cemetery. Before searching my deck, I change my mind and take it back. I return Common Sense to my hand, and have not cast the spell.\n\nSearching your own deck\nI play Common Sense and start to look through my deck. At this point, takebacks are no longer possible. Even though I theoretically knew all the cards in my deck and I'm potentially not gaining new information, it would be too burdensome to shuffle your deck and remember the position of any cards previously seen, including any mulligan'ed cards. Therefore, for speed of play and consistency, once you start looking at your deck to search, takebacks aren't allowed.\n\nCollection\nI look at my collection during the game. This does not influence takebacks in any way, since that's information already available to me, and the order doesn't matter.\n\nNew information revealed by opponent\nI announce that I'm attacking your site with my Petrosian Cavalry. You could Defend with your Vile Imp, but you decline. Once you decline to Defend, I can no longer take back my attack (or anything that occurred prior to that attack), since you revealed the information that you wouldn't Defend, which was previously unknown to me.\n\nMandatory Triggered Abilities\nI announce that I'm summoning my Apprentice Wizard to my Colour out of Space. The spell resolves, and before I draw my spell, you alert me that your Shark is going to come fight my Wizard, since the Colour out of Space is a water site in your Shark's body of water. No new information has been revealed, since that is a mandatory trigger. I would be allowed to take back my casting of the Apprentice Wizard, and perhaps summon it to a different location or not at all. Note: If I had drawn a spell and then we realized the Shark issue, the players should call a judge, since a game rule was broken (the Shark resolves before the card draw). The judge would then talk with both players and decide how to fix the rules error (potentially giving both players a warning, since both players are responsible for properly following the game rules).\n\nPassive Abilities, No new information\nI place my Tower nearby a Smokestacks of Gnaak, then I try to cast a spell requiring an extra mana. You alert me that I don't have that much mana, because the Smokestacks negated the genesis ability. I take back my spell, and I can also take back my Tower, playing it in a different square, or playing a different site entirely.\n\nMultiple Actions, No new information\nI cast Seven-League Boots to my Megamoeba. Then, my Megamoeba uses Move and Attack, stepping in multiple ways, including trying to move over a Perilous Bridge. My opponent points out that I can't move the Megamoeba over the Perilous Bridge. We know exactly what locations the Megamoeba occupied before Move and Attack, so we take back to that point. I realize that I don't want to cast my Seven-League Boots either, so I take that back too.\n\nForgetting to Tap Your Avatar to Draw a Site\nSometimes a player will forget to tap their avatar to draw a site and end their turn with their avatar untapped. Normal takeback rules apply: As long as no new information has been revealed, it's fine to take back and let them tap to draw a site. Note that the opponent choosing to draw a site or spell at the start of their turn is new information, and technically would prohibit takebacks after that. Nonetheless, please be cool and if it's obvious your opponent would have tapped to draw a site, please allow it.\n\nDefender Taking Back their Choice to Defend\nIf the active player declares an attack, then the defender chooses to defend, and then no new information or action is revealed by the attacking player, the defender may take back their defending choice. For example: I attack your site with my Daperyll Vampire. You defend with your Foot Soldier. I kill your Foot Soldier and heal 4 life; at that moment, before I've had a chance to declare any other actions, you decide that you want to take back the Foot Soldier's defense so that I don't heal. That's fine!\n\nNotes:\n• If the defending player takes back their defending choice, the attacker will also have an opportunity to further take back their attack!\n• If the acting player declares further actions (or ends their turn) after the defend choice, it is too late to take back, since new information was revealed.\n• If there are multiple units involved in defending, once the attacker splits up damage between all the defending units, new information has been revealed and it's too late to take back.\n\nSlow Play\n\nThere is no specific time limit per game action, but players are expected to make their decisions at a reasonable speed. A judge must use their judgment!\n\nA general guideline might be that if you have time to get bored waiting, it has taken too long. Another guideline might be if one player is using substantially more time than the other, it could be slow play. A third possible guideline is if the game will not finish within 50 minutes, it could be slow play.\n\nTime is a shared resource among both players, and each player should strive to use it thoughtfully and fairly. It's also reasonable to expect that if a player gains substantial new information, they might need some time to adjust. In the end, judges must use their judgment. Judges may apply any remedy they deem appropriate, including warning the player, granting the opponent extra time or bonus turns, applying a game loss, etc."
+    },
+    {
+      "id": "p3-add3-tricky",
+      "title": "Addendum 3: Examples of Tricky Situations",
+      "page": 27,
+      "text": "Some judging situations are straightforward: the rulebook, FAQs, or Codex provide a clear answer.\n\nOthers are more difficult. A player may accidentally cast a spell without the required threshold, forget an ongoing effect, draw extra cards, or make another honest mistake that is only discovered several turns later.\n\nBoth players share responsibility for maintaining a legal game state. Encourage players to help each other remember thresholds, ongoing effects, and other game rules. Nevertheless, mistakes will happen.\n\nWhen they do, players should call a judge immediately.\n\nYour role is not to mechanically apply a penalty. Your role is to restore fairness.\n\nWhen evaluating a tricky situation:\n• Listen carefully to both players and ensure they feel heard.\n• Rewind the game state to the point of the error, if this can be done cleanly and fairly.\n• If rewinding is not practical, use your judgment to adjust the game state so that no player benefits from the illegal action.\n• Consult other judges whenever helpful.\n\nThe exact remedy will vary from situation to situation. You may choose to rewind fully, partially rewind, compensate one player for lost information or advantage, or apply another fair solution. There is intentionally no exhaustive list of remedies.\n\nThe important principles are:\n• Honest mistakes should not provide an advantage.\n• Honest mistakes should not be punished more harshly than necessary.\n• Players should be left feeling that they were treated fairly and respectfully.\n\nIf a player intentionally breaks the rules to gain an advantage, that is cheating and should be treated accordingly.\n\nAbove all, remember: your goal is not to achieve a perfect reconstruction of the game. Your goal is to preserve the integrity of the competition while protecting the player experience.\n\nWe trust your judgment.\n\nExample: Casting Grandmaster Wizard Without Sufficient Threshold\nIra casts Grandmaster Wizard with only 1 air threshold. Neither player notices the mistake. Ira draws three cards, and ends his turn. David takes his turn, doing several things, including killing the Grandmaster Wizard. Ira starts his next turn, draws a card, plays a Tower, and then realizes the mistake. The players call a judge.\n\nAt this point, some tournament rules might try to give a definitive answer, but Sorcery tournament rules say simply that \"the judge uses their judgment to make things fair.\"\n\nMost importantly, you should talk to the players to find out what they think is fair, and what they would want to happen. Ensure that both players feel equally heard. After that discussion, here are some examples of what you might decide (not an exhaustive list):\n\nSolution 1. Full Rewind\nSince Ira knows what 4 cards he drew (3 from Grandmaster + 1 from start of this turn), and David's actions are easy enough to revert, it's possible to rewind. Therefore, the game is rewound to the point where Ira illegally played Grandmaster Wizard, life totals are updated, sites are returned to hand, etc. Ira's four extra cards are shuffled into his deck. The judge decides that David gets to keep the card he drew at the start of his turn as compensation for all the information he revealed on his turn. Play continues from Ira's turn just before playing the Grandmaster Wizard.\n\nWhy it works:\n• The illegal action is entirely undone.\n• The game returns to a legal state.\n• A minor compensation addresses information revealed during the rewind.\n\nSolution 2. Partial Rewind with Compensation\nSince Ira had the Tower in hand last turn, the judge rules that Ira retroactively played the Tower last turn instead. The Tower is placed in the location of the previous site, and the previous site is returned to Ira's hand. Ira continues with his current turn and is able to play a site normally now. Even though Ira would have had 1 extra mana last turn from the Tower, he is not allowed to use it retroactively because it might have changed David's whole turn.\n\nWhy it works:\n• The judge does not attempt to fully recreate the game.\n• A legal alternative game state is substituted.\n• The judge intentionally limits retroactive benefits to preserve fairness.\n\nSolution 3. No Rewind, Compensation Only\nAfter David killed Ira's Grandmaster Wizard, he played Pillars of Zeiros to banish it. This is such significant information revealed that trying to rewind would be too difficult. Therefore, the judge rules that nothing is rewound, but as compensation to David, he gets to immediately draw an extra card.\n\nWhy it works:\n• The game state remains exactly as it is.\n• The judge acknowledges that rewinding would be more disruptive than helpful.\n• Compensation is used to restore balance instead.\n\nThe point of these resolutions is that there isn't a single, definitive way to handle a situation. Any of the bullets above would be correct, if that's what the judge decided, having listened to the players and used their judgment.\n\nThere are so many different possibilities about what happened, what can be easily rewound, how the players feel, how much information was gained, how much advantage was received, etc. In the end, we rely on the judge to use their judgment, since we believe that will yield the most fair and fun results.\n\nIn summary:\n• Talk with both of the players and understand what they think would be fair.\n– Rewind if possible.\n• If rewinding isn't possible, based on your discussion with the players, adjust the game state so that the illegal play didn't give any advantage.\n– Consult with other judges as needed.\n\nTo avoid all of this, encourage players to pay attention to the game and ensure both players are both following the rules!\n\nCheating\n\nWe expect the highest standards of fair play among Sorcery players and cheating does not happen at Sorcery events. We do not tolerate it.\n\nNote that players may unintentionally break the game rules, which is not cheating if it was accidental. In the example above, if Ira honestly didn't realize he lacked the threshold to cast the Grandmaster Wizard, that is a mistake, but not cheating. If he knowingly cast the spell without meeting the threshold, that is cheating. Please note that almost all incidents of this kind of mistake are unintentional. This is where you must use your judgment.\n\nThis is not an exhaustive list of possible cheating:\n• Knowingly breaking any game rule.\n• Using marked cards.\n• Insufficiently randomized decks.\n• Mismatched decklist and physical cards.\n\nIn addition to the Grandmaster Wizard example above (where you would need to decide if Ira knowingly or unknowingly broke the game rule), here's a marked cards example:\n• Looking closely at a player's card sleeves, some are visibly different from others. You ask the player about it and they explain they used some newer and some older sleeves, but it wasn't intentional. Looking at the cards in those marked sleeves, there doesn't seem to be a pattern. Therefore, you determine that the player unknowingly used marked sleeves. You direct them to get fresh sleeves, and there is no penalty.\n• Alternately, you notice that the three marked sleeves are two Sinkholes and Roots of Yggdrasil in a Geomancer deck. The player gives the same explanation as above. Using your judgment, you conclude that the player really did know those sleeves were different and used them anyway, gaining an advantage. That is cheating.\n\nExcept in the most clear-cut cases, there will likely be some uncertainty between an honest mistake and cheating. As a judge, you are empowered to use your judgment. Multiple cases of \"honest mistakes\" that consistently advantage the player may point toward cheating. Please discuss cases like this with the head judge.\n\nIf someone is cheating, they should be disqualified from the event, receive no prizes, and likely be banned from future events. If this ever happens, please notify Erik's Curiosa by emailing support@sorcerytcg.com."
+    }
+  ],
+  "glossary": [],
+  "quickReference": []
+}

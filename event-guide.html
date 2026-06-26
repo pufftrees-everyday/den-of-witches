@@ -11,19 +11,19 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Rulebook — Cursed Realm</title>
-<meta name="description" content="Search the full Sorcery: Contested Realm rulebook — rules, glossary, and quick reference.">
+<title>Guide to Sorcery Events — Cursed Realm</title>
+<meta name="description" content="The official 2026 Guide to Sorcery Events — the Player's, Organizer's, and Judge's guides to Sorcery: Contested Realm tournaments.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://cursedrealm.org/rulebook.html">
-<meta property="og:title" content="The Rulebook — Cursed Realm">
-<meta property="og:description" content="Search the full Sorcery: Contested Realm rulebook — rules, glossary, and quick reference.">
+<meta property="og:url" content="https://cursedrealm.org/event-guide.html">
+<meta property="og:title" content="Guide to Sorcery Events — Cursed Realm">
+<meta property="og:description" content="The official 2026 Guide to Sorcery Events — the Player's, Organizer's, and Judge's guides to Sorcery: Contested Realm tournaments.">
 <meta property="og:image" content="https://cursedrealm.org/social-banner.png?v=2">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:site_name" content="Cursed Realm">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="The Rulebook — Cursed Realm">
-<meta name="twitter:description" content="Search the full Sorcery: Contested Realm rulebook — rules, glossary, and quick reference.">
+<meta name="twitter:title" content="Guide to Sorcery Events — Cursed Realm">
+<meta name="twitter:description" content="The official 2026 Guide to Sorcery Events — the Player's, Organizer's, and Judge's guides to Sorcery: Contested Realm tournaments.">
 <meta name="twitter:image" content="https://cursedrealm.org/social-banner.png?v=2">
 <meta name="theme-color" content="#0b0a0f">
 <link rel="icon" type="image/png" href="favicon-32.png">
@@ -254,8 +254,8 @@
         <a href="videos.html" class="more-item">Videos</a>
         <a href="artists.html" class="more-item">Artists</a>
         <a href="tracker.html" class="more-item">Life Tracker</a>
-        <a href="rulebook.html" class="more-item active">Rulebook</a>
-        <a href="event-guide.html" class="more-item">Event Guide</a>
+        <a href="rulebook.html" class="more-item">Rulebook</a>
+        <a href="event-guide.html" class="more-item active">Event Guide</a>
         <a href="https://play.sorcerytcg.com/" target="_blank" rel="noopener" class="more-item">Play Network</a>
         <a href="https://sorcerytcg.com/" target="_blank" rel="noopener" class="more-item">Sorcery TCG</a>
         <a href="https://discord.gg/Ry84Dnd8X" target="_blank" rel="noopener" class="more-item more-discord">Join our Discord</a>
@@ -276,8 +276,8 @@
   <a href="videos.html" class="header-link">Videos</a>
   <a href="artists.html" class="header-link">Artists</a>
   <a href="tracker.html" class="header-link">Life Tracker</a>
-  <a href="rulebook.html" class="header-link active">Rulebook</a>
-  <a href="event-guide.html" class="header-link">Event Guide</a>
+  <a href="rulebook.html" class="header-link">Rulebook</a>
+  <a href="event-guide.html" class="header-link active">Event Guide</a>
   <a href="https://play.sorcerytcg.com/" target="_blank" class="header-link">Play Network</a>
   <a href="https://sorcerytcg.com/" target="_blank" class="header-link">Sorcery TCG</a>
   <a href="https://discord.gg/Ry84Dnd8X" target="_blank" rel="noopener" class="header-link mobile-discord">Join our Discord</a>
@@ -285,14 +285,14 @@
 
 <div class="page">
   <div class="rb-hero">
-    <h1 class="rb-title">The Rulebook</h1>
+    <h1 class="rb-title">Guide to Sorcery Events</h1>
     <p class="rb-sub" id="rb-subtitle">Loading…</p>
   </div>
 
   <div class="rb-controls">
     <div class="rb-search-wrap">
       <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.9 14.32a8 8 0 111.41-1.41l4.42 4.41-1.41 1.42-4.42-4.42zM8 14A6 6 0 108 2a6 6 0 000 12z"/></svg>
-      <input type="search" id="rb-search" class="rb-search" placeholder="Search rules and glossary…" aria-label="Search the rulebook" autocomplete="off">
+      <input type="search" id="rb-search" class="rb-search" placeholder="Search the event guide…" aria-label="Search the event guide" autocomplete="off">
     </div>
     <div class="rb-pagejump">
       <label for="rb-page">Page</label>
@@ -307,13 +307,15 @@
   <div class="rb-layout">
     <nav class="rb-toc" id="rb-toc" aria-label="Table of contents"></nav>
     <main class="rb-content" id="rb-content">
-      <div class="rb-status">Summoning the rulebook…</div>
+      <div class="rb-status">Summoning the event guide…</div>
     </main>
   </div>
 
   <p class="rb-credit" id="rb-credit">
-    Rules content from <a href="https://sorcerytcg.com/" target="_blank" rel="noopener">Sorcery: Contested Realm</a>,
-    © Erik's Curiosa Limited — reproduced with permission.
+    Official tournament rules by <a href="https://sorcerytcg.com/" target="_blank" rel="noopener">Erik's Curiosa</a> —
+    reproduced from the 2026 Guide to Sorcery Events. See the
+    <a href="https://curiosa.io/codex" target="_blank" rel="noopener">Codex</a> and
+    <a href="https://curiosa.io/cards" target="_blank" rel="noopener">FAQs</a> at curiosa.io.
   </p>
 </div>
 
@@ -341,11 +343,10 @@
     if (CR.supa) CR.supa.auth.onAuthStateChange((ev) => { if(ev==='SIGNED_IN'||ev==='SIGNED_OUT') CR.refreshUser().then(()=>CR.renderAuthBar('auth-bar')); });
   })();
 
-  // ── Rulebook ──
+  // ── Event Guide ──
   let DATA = null;
   let titleToId = {};       // section title (lowercased) → section id
-  let glossarySorted = [];  // glossary sorted by term
-  let MIN_PAGE = 3, MAX_PAGE = 37;
+  let MIN_PAGE = 2, MAX_PAGE = 27;
 
   const $ = id => document.getElementById(id);
   function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
@@ -390,26 +391,8 @@
       ${renderText(s.text, q)}
     </section>`;
   }
-  // Terms get a distinct anchor prefix (r-g- glossary, r-q- quick ref) so they
-  // never collide with section ids that share the same slug (e.g. "mana").
-  function renderTerm(t, q, prefix){
-    return `<div class="rb-term" id="${prefix}${esc(t.id)}" data-page="${t.page}" tabindex="-1">
-      <div class="rb-term-head">
-        <span class="rb-term-name">${highlight(t.term, q)}</span>
-        <span class="rb-page-badge" title="Page ${t.page}">Page ${t.page}</span>
-      </div>
-      <div class="rb-term-def">${renderText(t.definition, q)}</div>
-    </div>`;
-  }
-  function renderTermGroup(id, title, terms, q, prefix){
-    return `<section class="rb-section rb-group" id="${id}" tabindex="-1">
-      <div class="rb-section-head"><h2 class="rb-section-title">${esc(title)}</h2></div>
-      <div class="rb-terms">${terms.map(t => renderTerm(t, q, prefix)).join('')}</div>
-    </section>`;
-  }
 
   function secMatches(s, q){ return (s.title + ' ' + s.text).toLowerCase().includes(q); }
-  function termMatches(t, q){ return (t.term + ' ' + t.definition).toLowerCase().includes(q); }
 
   function renderContent(rawQuery){
     const q = (rawQuery || '').trim().toLowerCase();
@@ -419,14 +402,8 @@
     const sections = q ? DATA.sections.filter(s => secMatches(s, q)) : DATA.sections;
     sections.forEach(s => { html += renderSection(s, q); total++; });
 
-    const gloss = q ? glossarySorted.filter(t => termMatches(t, q)) : glossarySorted;
-    if (gloss.length){ html += renderTermGroup('r-glossary', 'Glossary', gloss, q, 'r-g-'); total += gloss.length; }
-
-    const qref = q ? DATA.quickReference.filter(t => termMatches(t, q)) : DATA.quickReference;
-    if (qref.length){ html += renderTermGroup('r-quick-reference', 'Quick Reference', qref, q, 'r-q-'); total += qref.length; }
-
     if (q && total === 0){
-      html = `<div class="rb-noresults">No rules or terms match “<b>${esc(rawQuery.trim())}</b>”.<br>Try a different word.</div>`;
+      html = `<div class="rb-noresults">No sections match “<b>${esc(rawQuery.trim())}</b>”.<br>Try a different word.</div>`;
     }
     container.innerHTML = html;
 
@@ -450,16 +427,22 @@
     DATA.toc.forEach(group => {
       let links = '';
       (group.items || []).forEach(item => {
-        const id = titleToId[String(item).toLowerCase()];
-        const anchor = id ? 'r-' + id : '';
-        links += `<a class="rb-toc-link" href="#${anchor}" onclick="return tocGo(event,'${anchor}')">${esc(item)}</a>`;
+        // Items may be a plain title string (resolved via titleToId) or an
+        // explicit {label,id} pair — the latter lets the three guides reuse
+        // section names like "Intro" / "Your Role" without anchor collisions.
+        let label, anchor;
+        if (item && typeof item === 'object'){
+          label = item.label || item.title || '';
+          anchor = item.id ? 'r-' + item.id : '';
+        } else {
+          label = item;
+          const id = titleToId[String(item).toLowerCase()];
+          anchor = id ? 'r-' + id : '';
+        }
+        links += `<a class="rb-toc-link" href="#${anchor}" onclick="return tocGo(event,'${anchor}')">${esc(label)}</a>`;
       });
       html += tocGroup(group.group, links);
     });
-    // Reference group for the glossary + quick reference
-    html += tocGroup('Reference',
-      `<a class="rb-toc-link" href="#r-glossary" onclick="return tocGo(event,'r-glossary')">Glossary</a>
-       <a class="rb-toc-link" href="#r-quick-reference" onclick="return tocGo(event,'r-quick-reference')">Quick Reference</a>`);
     nav.innerHTML = html;
   }
   function toggleTocGroup(btn){
@@ -495,14 +478,9 @@
     if (isNaN(n)) return;
     n = Math.max(MIN_PAGE, Math.min(MAX_PAGE, n));
     input.value = n;
-    // First block (section, then glossary, then quick reference) on that page;
-    // if the exact page has nothing, fall to the next page that does.
-    // Each entry carries its own anchor (terms use the r-g-/r-q- prefixes).
-    const ordered = [
-      ...DATA.sections.map(x => ({ page: x.page, anchor: 'r-' + x.id })),
-      ...glossarySorted.map(x => ({ page: x.page, anchor: 'r-g-' + x.id })),
-      ...DATA.quickReference.map(x => ({ page: x.page, anchor: 'r-q-' + x.id }))
-    ];
+    // First section on that page; if the exact page has nothing, fall to the
+    // next page that does.
+    const ordered = DATA.sections.map(x => ({ page: x.page, anchor: 'r-' + x.id }));
     let target = ordered.find(x => x.page === n) || ordered.filter(x => x.page >= n).sort((a,b)=>a.page-b.page)[0];
     if (!target) return;
     clearSearchIfActive();
@@ -519,31 +497,27 @@
     if (toc.classList.contains('open')) { toc.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }
   }
 
-  async function loadRulebook(){
+  async function loadGuide(){
     try {
-      const res = await fetch('rulebook-content.json');
+      const res = await fetch('event-guide-content.json');
       if (!res.ok) throw new Error('HTTP ' + res.status);
       DATA = await res.json();
       DATA.sections = DATA.sections || [];
-      DATA.glossary = DATA.glossary || [];
-      DATA.quickReference = DATA.quickReference || [];
       DATA.toc = DATA.toc || [];
 
       titleToId = {};
       DATA.sections.forEach(s => { titleToId[String(s.title).toLowerCase()] = s.id; });
-      glossarySorted = [...DATA.glossary].sort((a,b) => String(a.term).localeCompare(String(b.term)));
 
       // Page bounds from the data (input is clamped to these)
-      const allPages = [...DATA.sections, ...DATA.glossary, ...DATA.quickReference]
-        .map(x => x.page).filter(p => typeof p === 'number');
+      const allPages = DATA.sections.map(x => x.page).filter(p => typeof p === 'number');
       if (allPages.length){ MIN_PAGE = Math.min(...allPages); MAX_PAGE = Math.max(...allPages); }
       const pageInput = $('rb-page');
       pageInput.min = MIN_PAGE; pageInput.max = MAX_PAGE;
       pageInput.placeholder = MIN_PAGE + '–' + MAX_PAGE;
 
       $('rb-subtitle').textContent =
-        (DATA.title || 'Rulebook') + (DATA.released ? ' · Released ' + DATA.released : '') + (DATA.pageCount ? ' · ' + DATA.pageCount + ' pages' : '');
-      document.title = (DATA.title ? DATA.title.replace(/—.*$/, '').trim() : 'Rulebook') + ' — Cursed Realm';
+        (DATA.title || 'Guide to Sorcery Events') + (DATA.released ? ' · ' + DATA.released : '') + (DATA.pageCount ? ' · ' + DATA.pageCount + ' pages' : '');
+      document.title = (DATA.title ? DATA.title.replace(/—.*$/, '').trim() : 'Guide to Sorcery Events') + ' — Cursed Realm';
 
       buildToc();
       renderContent('');
@@ -558,12 +532,12 @@
       }
     } catch (e) {
       console.warn(e);
-      $('rb-content').innerHTML = '<div class="rb-status">Could not load the rulebook.<br><small>' + esc(e.message || '') + '</small></div>';
+      $('rb-content').innerHTML = '<div class="rb-status">Could not load the event guide.<br><small>' + esc(e.message || '') + '</small></div>';
       $('rb-subtitle').textContent = '';
     }
   }
 
-  loadRulebook();
+  loadGuide();
 </script>
 </body>
 </html>
