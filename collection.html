@@ -822,7 +822,7 @@
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="cr-auth.js?v=13"></script>
-<script src="price-chart.js?v=1"></script>
+<script src="price-chart.js?v=2"></script>
 </head>
 <body>
 
@@ -2352,12 +2352,22 @@ function totalQtyMaps() {
 }
 async function vhFetch(names) {
   const rows = [];
+  const PAGE = 1000; // Supabase/PostgREST caps every response at 1000 rows
   for (let i = 0; i < names.length; i += 80) {
     const part = names.slice(i, i + 80);
     const list = '(' + part.map(n => '"' + n.replace(/"/g, '\\"') + '"').join(',') + ')';
-    const url = `${VH_SUPA_URL}/rest/v1/price_history?card_name=in.${encodeURIComponent(list)}&select=captured_at,card_name,finish,market&order=captured_at.asc`;
-    const res = await fetch(url, { headers: { apikey: VH_SUPA_ANON, Authorization: 'Bearer ' + VH_SUPA_ANON } });
-    if (res.ok) rows.push(...await res.json());
+    // Order by the full primary key so offset paging is stable (no dupes/gaps
+    // at page boundaries). WITHOUT pagination we'd silently get only the oldest
+    // 1000 rows per batch — freezing the chart's recent history (and undervaluing
+    // every series) as more daily snapshots accumulate.
+    const base = `${VH_SUPA_URL}/rest/v1/price_history?card_name=in.${encodeURIComponent(list)}&select=captured_at,card_name,finish,market&order=captured_at.asc,card_name.asc,finish.asc`;
+    for (let offset = 0; ; offset += PAGE) {
+      const res = await fetch(`${base}&limit=${PAGE}&offset=${offset}`, { headers: { apikey: VH_SUPA_ANON, Authorization: 'Bearer ' + VH_SUPA_ANON } });
+      if (!res.ok) break;
+      const page = await res.json();
+      rows.push(...page);
+      if (page.length < PAGE) break; // last page reached
+    }
   }
   return rows;
 }

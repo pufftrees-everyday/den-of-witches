@@ -25,9 +25,18 @@
     el.innerHTML = '<div class="pc-title">Price History</div><div class="pc-status">Loading…</div>';
     let rows = [];
     try {
-      const url = `${SUPABASE_URL}/rest/v1/price_history?card_name=eq.${encodeURIComponent(cardName)}&select=captured_at,finish,market&order=captured_at.asc`;
-      const res = await fetch(url, { headers: { apikey: SUPABASE_ANON, Authorization: 'Bearer ' + SUPABASE_ANON } });
-      if (res.ok) rows = await res.json();
+      // Page through results — PostgREST caps each response at 1000 rows, so
+      // once a card accumulates more than that (≈months of daily capture) an
+      // unpaginated fetch would silently drop its most recent history.
+      const PAGE = 1000;
+      const base = `${SUPABASE_URL}/rest/v1/price_history?card_name=eq.${encodeURIComponent(cardName)}&select=captured_at,finish,market&order=captured_at.asc,finish.asc`;
+      for (let offset = 0; ; offset += PAGE) {
+        const res = await fetch(`${base}&limit=${PAGE}&offset=${offset}`, { headers: { apikey: SUPABASE_ANON, Authorization: 'Bearer ' + SUPABASE_ANON } });
+        if (!res.ok) break;
+        const page = await res.json();
+        rows.push(...page);
+        if (page.length < PAGE) break;
+      }
     } catch (e) { /* offline / table missing → empty state */ }
     if (mine !== token) return; // a newer load started; ignore this stale result
     if (!rows.length) {
