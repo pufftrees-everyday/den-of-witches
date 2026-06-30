@@ -141,7 +141,8 @@
   .card-price { display: none; color: var(--sage); font-variant-numeric: tabular-nums; }
   body.show-prices .deck-list-row .card-price, body.show-prices .deck-detail-row .card-price { display: inline-block; margin-left: 10px; min-width: 56px; text-align: right; }
   .cell-price { display: none; }
-  body.show-prices .cell-price { display: block; position: absolute; left: 6px; bottom: 6px; background: rgba(11,10,15,0.85); color: var(--sage); font-size: 0.72rem; font-weight: 700; padding: 2px 6px; border-radius: 5px; border: 1px solid var(--border-strong); }
+  body.show-prices .cell-price { display: block; position: absolute; left: 50%; transform: translateX(-50%); bottom: 6px; z-index: 3; background: rgba(11,10,15,0.85); color: var(--sage); font-size: 1.05rem; font-weight: 700; padding: 4px 11px; border-radius: 8px; border: 1px solid var(--border-strong); white-space: nowrap; }
+  .deck-grid.large body.show-prices .cell-price { font-size: 1.25rem; padding: 5px 13px; }
 
   /* Spellbook TYPE grouping toggle */
   .type-toggle { flex-shrink: 0; font-family: 'Cinzel', serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--rune); background: transparent; border: 1px solid var(--border-strong); border-radius: 4px; padding: 4px 12px; cursor: pointer; transition: all 0.15s; }
@@ -342,8 +343,11 @@
   .deck-card-cell .cell-name { padding: 6px 8px; font-size: 0.78rem; color: var(--shimmer); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
   /* Threshold overlay — hidden by default, shown when body.show-thresholds */
-  .th-overlay { position: absolute; left: 6px; bottom: 6px; display: none; align-items: center; gap: 6px; z-index: 3; flex-wrap: wrap; max-width: calc(100% - 12px); background: rgba(11,10,15,0.78); border: 1px solid var(--border-strong); border-radius: 9px; padding: 5px 9px; backdrop-filter: blur(2px); }
+  .th-overlay { position: absolute; left: 50%; transform: translateX(-50%); bottom: 6px; display: none; align-items: center; justify-content: center; gap: 6px; z-index: 4; flex-wrap: wrap; max-width: calc(100% - 12px); background: rgba(11,10,15,0.78); border: 1px solid var(--border-strong); border-radius: 9px; padding: 5px 9px; backdrop-filter: blur(2px); }
   body.show-thresholds .th-overlay { display: inline-flex; }
+  /* When both threshold + price are shown, lift the thresholds above the price pill so they stack, centered, without overlapping */
+  body.show-thresholds.show-prices .th-overlay { bottom: 46px; }
+  .deck-grid.large body.show-thresholds.show-prices .th-overlay { bottom: 52px; }
   .th-group { display: inline-flex; gap: 2px; align-items: center; }
   /* Overlay icons are large & always upright (never inherit card rotation) */
   .th-icon { width: 40px; height: 40px; object-fit: contain; display: inline-block; transform: none !important; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.8)); }
