@@ -3776,15 +3776,21 @@ function runImport() {
   let matched=0, skipped=0, collFull=0;
   // Section headers that appear in a pasted decklist. The Maybeboard/Sideboard
   // header flips us into "collection" mode so those cards land in the Deck Collection.
-  const mainSectionRe = /^(Avatar|Artifact|Minion|Magic|Aura|Site|Spell|Atlas|Spellbook)\s*(\(\d+\))?\s*$/i;
-  const sideboardRe = /^(Maybeboard|Sideboard|Side ?Deck|Deck Collection|Collection)\s*(\(\d+\))?\s*$/i;
+  // Allow an optional trailing parenthetical descriptor — our own export writes
+  // "Collection (Sideboard)" and "Atlas (Sites)" — not just a "(12)" count.
+  const mainSectionRe = /^(Avatar|Artifact|Minion|Magic|Aura|Site|Spell|Atlas|Spellbook)\s*(\([^)]*\))?\s*$/i;
+  const sideboardRe = /^(Maybeboard|Sideboard|Side ?Deck|Deck Collection|Collection)\s*(\([^)]*\))?\s*$/i;
   let inCollection = false;
   const collTotal = () => Object.values(newDeck.collection).reduce((s,e)=>s+(e.qty||0),0);
 
   for (const line of lines) {
-    if (sideboardRe.test(line)) { inCollection = true; continue; }   // entering the sideboard
-    if (mainSectionRe.test(line)) { inCollection = false; continue; } // back to a main section
-    if (line.startsWith('//')) continue;
+    // Strip a leading comment marker first — the exporter writes every section
+    // header as a comment ("// Collection (Sideboard)"), so we must test the
+    // header BEFORE skipping comments or the sideboard break is never seen.
+    const header = line.replace(/^(?:\/\/+|#+)\s*/, '').trim();
+    if (sideboardRe.test(header)) { inCollection = true; continue; }   // entering the sideboard
+    if (mainSectionRe.test(header)) { inCollection = false; continue; } // back to a main section
+    if (line.startsWith('//') || line.startsWith('#')) continue;       // other comments (deck title, etc.)
     const m = line.match(/^(\d+)[xX]?\s*(.+)/);
     if (!m) continue;
     const qty = parseInt(m[1]);
