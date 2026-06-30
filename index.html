@@ -629,6 +629,12 @@
   /* Cap at 380px — the native width of low-res sets (Alpha/Beta/Promo/Dragonlord),
      so card art is never upscaled past its source resolution. */
   .card-grid.large-view { grid-template-columns: repeat(auto-fill, minmax(300px, 380px)); justify-content: center; }
+  /* Large view is the biggest view: its rotated Sites should be wider than Card
+     view's (which use minmax(380px,1fr)). Scoped above the phone breakpoint so
+     mobile keeps the compact sites-only sizing. */
+  @media (min-width: 701px) {
+    .card-grid.large-view.sites-only { grid-template-columns: repeat(auto-fill, minmax(520px, 1fr)); }
+  }
   /* Clean Text view rows: cost · name · threshold symbols (distinct from Detailed) */
   .th-group { display: inline-flex; gap: 2px; align-items: center; }
   .th-row-icon { width: 15px; height: 15px; object-fit: contain; display: inline-block; vertical-align: middle; }
