@@ -760,6 +760,21 @@
   body.show-thresholds .th-toggle-knob { transform: translateX(19px); background: var(--gold); }
   body.show-thresholds .threshold-toggle { color: var(--gold); }
 
+  /* Price toggle + per-card prices (read-only "View Deck" preview, mirrors deck.html) */
+  .deck-price-control { display: inline-flex; align-items: center; gap: 7px; }
+  .price-toggle { background: none; border: none; cursor: pointer; padding: 0; display: inline-flex; align-items: center; }
+  .pr-toggle-track { width: 40px; height: 21px; border-radius: 11px; background: var(--twilight); border: 1px solid var(--border-strong); position: relative; transition: background 0.2s, border-color 0.2s; display: inline-block; flex-shrink: 0; }
+  .pr-toggle-knob { position: absolute; top: 2px; left: 2px; width: 15px; height: 15px; border-radius: 50%; background: var(--rune); transition: transform 0.2s, background 0.2s; }
+  body.show-prices .pr-toggle-track { background: rgba(90,138,106,0.25); border-color: var(--sage); }
+  body.show-prices .pr-toggle-knob { transform: translateX(19px); background: var(--sage); }
+  .deck-price-total { font-family: 'Cinzel', serif; font-size: 0.72rem; color: var(--sage); white-space: nowrap; }
+  .deck-price-total b { color: var(--gold); font-size: 0.9rem; }
+  .deck-price-total .dpt-date { color: var(--rune); font-style: italic; font-weight: 400; }
+  .card-price { display: none; color: var(--sage); font-variant-numeric: tabular-nums; }
+  body.show-prices .deck-card-row .card-price { display: inline-block; margin-left: 8px; min-width: 52px; text-align: right; }
+  .cell-price { display: none; }
+  body.show-prices .dvg-card .cell-price { display: block; position: absolute; left: 5px; bottom: 5px; background: rgba(11,10,15,0.85); color: var(--sage); font-size: 0.7rem; font-weight: 700; padding: 2px 6px; border-radius: 5px; border: 1px solid var(--border-strong); z-index: 2; }
+
   .dvg-qty {
     position: absolute; bottom: 5px; right: 5px;
     background: rgba(11,10,15,0.9); border: 1px solid var(--border-strong);
@@ -1337,6 +1352,13 @@
             <button class="deck-sort-btn" data-sort="cost" onclick="setDeckSort('cost')">Mana</button>
           </div>
         </div>
+        <div class="deck-price-control" id="db-price-control" style="display:none;">
+          <span class="deck-sort-label">Price</span>
+          <button class="price-toggle" onclick="toggleDeckPrices()" title="Show card prices and total deck value">
+            <span class="pr-toggle-track"><span class="pr-toggle-knob"></span></span>
+          </button>
+          <span class="deck-price-total" id="db-deck-price-total"></span>
+        </div>
       </div>
     </div>
 
@@ -1698,6 +1720,50 @@ const IMAGE_BASE = 'https://pub-5999238092ad418ca60e7a9ad641cf57.r2.dev/';
 // RARITY LIMITS
 const RARITY_LIMITS = { 'Ordinary': 4, 'Exceptional': 3, 'Elite': 2, 'Unique': 1 };
 
+// ── PRICES (for the read-only "View Deck" preview) ──
+let prices = {};          // card name -> { market } (standard, from prices.json)
+let priceDate = null;
+let showDeckPrices = localStorage.getItem('grimoire_deckview_prices') === '1';
+async function loadPrices() {
+  try {
+    const res = await fetch('prices.json');
+    if (!res.ok) return;
+    const pdata = await res.json();
+    prices = pdata.prices || {};
+    priceDate = pdata.generated ? new Date(pdata.generated).toLocaleDateString() : null;
+    // If prices arrive after we're already previewing, light up the control.
+    if (readOnly) { renderDeck(); enableDeckPriceUI(); }
+  } catch (e) { /* prices optional — silently skip */ }
+}
+function cardPrice(name) { return (prices[name] && prices[name].market) || 0; }
+// Deck Value = avatar + atlas + spellbook (not the sideboard Collection), matching deck.html.
+function deckTotalPrice() {
+  let t = 0;
+  ['avatar','atlas','spellbook'].forEach(sec =>
+    Object.values(deck[sec] || {}).forEach(({card,qty}) => { t += cardPrice(card.name) * (qty||0); }));
+  return t;
+}
+function toggleDeckPrices() {
+  showDeckPrices = !showDeckPrices;
+  localStorage.setItem('grimoire_deckview_prices', showDeckPrices ? '1' : '0');
+  document.body.classList.toggle('show-prices', showDeckPrices);
+  updateDeckPriceTotal();
+}
+function updateDeckPriceTotal() {
+  const el = document.getElementById('db-deck-price-total');
+  if (!el) return;
+  el.innerHTML = `Deck Value: <b>$${deckTotalPrice().toFixed(2)}</b>` + (priceDate ? ` <span class="dpt-date">· ${priceDate}</span>` : '');
+}
+// Show the Price control only in read-only view and only when price data exists.
+function enableDeckPriceUI() {
+  const ctrl = document.getElementById('db-price-control');
+  if (!ctrl) return;
+  const hasPrices = readOnly && Object.keys(prices).length > 0;
+  ctrl.style.display = hasPrices ? '' : 'none';
+  if (hasPrices) { document.body.classList.toggle('show-prices', showDeckPrices); updateDeckPriceTotal(); }
+  else { document.body.classList.remove('show-prices'); }
+}
+
 // ── LOAD CARDS ──
 async function loadCards() {
   try {
@@ -1733,6 +1799,7 @@ async function loadCards() {
       };
     }).sort((a, b) => a.name.localeCompare(b.name));
     filterCards();
+    loadPrices(); // non-blocking — powers the read-only preview's Price toggle
     // Load shared deck from ?d= , or saved deck from ?deck=
     const params = new URLSearchParams(window.location.search);
     const sharedCode = params.get('d');
@@ -2915,6 +2982,7 @@ function renderDeckCard(section, key, card, qty) {
     <img src="${getImageUrl(card)}" alt="${card.name}" loading="lazy" onerror="this.style.opacity='0.2'" draggable="false">
     ${qty > 1 ? `<div class="dvg-qty">×${qty}</div>` : ''}
     ${thresholdOverlay(card)}
+    ${readOnly && cardPrice(card.name) > 0 ? `<span class="cell-price">$${(cardPrice(card.name)*qty).toFixed(2)}</span>` : ''}
     ${controls}
   </div>`;
 }
@@ -2969,6 +3037,7 @@ function renderDeckCardRow(section, key, card, qty) {
     <span class="dr-name">${card.name}</span>
     ${thr}
     <span class="db-row-rarity ${rarityClass}">${rarity}</span>
+    ${readOnly && cardPrice(card.name) > 0 ? `<span class="card-price">$${(cardPrice(card.name)*qty).toFixed(2)}</span>` : ''}
     ${controls}
   </div>`;
 }
@@ -3709,6 +3778,7 @@ function enterReadOnly(author, ownerCode, fromBuilder) {
   closeAvatarPicker();
   syncDeckViewToggle();
   renderDeck();
+  enableDeckPriceUI();
 }
 
 // "View Deck" from the builder: save the deck, then preview it exactly the way
@@ -3740,6 +3810,10 @@ function exitReadOnly() {
   const ed = document.getElementById('edit-header');
   if (ro) ro.style.display = 'none';
   if (ed) ed.style.display = 'block';
+  // Leave price mode behind when returning to editing.
+  document.body.classList.remove('show-prices');
+  const pc = document.getElementById('db-price-control');
+  if (pc) pc.style.display = 'none';
 }
 
 // Copy the viewed deck into the user's own builder (editable)
