@@ -2578,6 +2578,15 @@ function vaultQtyMaps() {
   add(getOwnedDecks());
   return { std, foil };
 }
+// Combined std/foil qty maps across a list of {cards} items (binders / decks).
+function aggCardMaps(items) {
+  const std = {}, foil = {};
+  items.forEach(o => Object.entries(o.cards || {}).forEach(([n, q]) => {
+    if (q.std) std[n] = (std[n] || 0) + q.std;
+    if (q.foil) foil[n] = (foil[n] || 0) + q.foil;
+  }));
+  return { std, foil };
+}
 async function vhFetch(names) {
   const rows = [];
   const PAGE = 1000; // Supabase/PostgREST caps every response at 1000 rows
@@ -2661,11 +2670,17 @@ function vhRender() {
   const cur = totalSeries.length ? totalSeries[totalSeries.length - 1].v : 0;
   let html = '<button class="vh-refresh" onclick="vhRefresh()">↻ Refresh</button>';
   html += `<div class="vh-current"><span>Current total</span> <b>$${cur.toFixed(2)}</b></div>`;
-  // Main chart: overall Total + a Loose Cards line (cards not yet in a binder).
+  // Main chart: overall Total + a breakdown by source (loose / binders / decks).
   const loose = looseQtyMaps();
   const looseSeries = vhSeriesFrom(vhRows, loose.std, loose.foil);
+  const binderAgg = aggCardMaps(bindersFor('vault'));
+  const binderAggSeries = vhSeriesFrom(vhRows, binderAgg.std, binderAgg.foil);
+  const deckAgg = aggCardMaps(getOwnedDecks());
+  const deckAggSeries = vhSeriesFrom(vhRows, deckAgg.std, deckAgg.foil);
   const mainSeries = [{ label: 'Total', color: 'var(--gold)', points: totalSeries }];
   if (looseSeries.length) mainSeries.push({ label: 'Loose Cards', color: 'var(--arcane)', points: looseSeries });
+  if (binderAggSeries.length) mainSeries.push({ label: 'Binders', color: 'var(--sage)', points: binderAggSeries });
+  if (deckAggSeries.length) mainSeries.push({ label: 'Owned Decks', color: 'var(--ember)', points: deckAggSeries });
   html += vhRenderChart(mainSeries);
   if (mainSeries.length > 1) html += vhLegend(mainSeries);
   // One line per binder / per owned deck, valued at each recorded snapshot.
