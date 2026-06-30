@@ -1353,6 +1353,7 @@
         <div class="deck-actions">
           <button class="btn btn-ghost" onclick="saveDeck()">Save</button>
           <button class="btn btn-primary" onclick="shareDeck()">Share</button>
+          <button class="btn btn-ghost" onclick="viewOwnDeck()" title="Save and preview your deck the way others see it, then come back to editing">👁 View Deck</button>
           <button class="btn btn-ghost" onclick="openDeckStats()">Stats</button>
           <button class="btn btn-ghost" id="scroll-btn" onclick="toggleScrollEditor()">📜 Scroll</button>
           <button class="btn btn-ghost" onclick="openImport()">Import</button>
@@ -3669,7 +3670,7 @@ async function loadSharedDeck(code, forceView) {
 }
 
 // ── READ-ONLY VIEWING MODE ──
-function enterReadOnly(author, ownerCode) {
+function enterReadOnly(author, ownerCode, fromBuilder) {
   readOnly = true;
   viewDeckAuthor = author;
   document.body.classList.add('viewing-deck');
@@ -3680,21 +3681,45 @@ function enterReadOnly(author, ownerCode) {
     : 'Shared Deck';
   document.getElementById('ro-name').textContent = name;
   document.getElementById('ro-author').innerHTML = author ? `by <b>${author}</b>` : '';
-  // Owner viewing their own deck → show Edit, hide Copy, back to My Decks
-  const isOwnerView = !!ownerCode;
   const editBtn = document.getElementById('ro-edit-btn');
   const copyBtn = document.getElementById('ro-copy-btn');
   const backBtn = document.getElementById('ro-back-btn');
-  if (editBtn) editBtn.style.display = isOwnerView ? '' : 'none';
-  if (copyBtn) copyBtn.style.display = isOwnerView ? 'none' : '';
-  if (backBtn) {
-    backBtn.textContent = isOwnerView ? '← My Workshop' : '← The Archive';
-    backBtn.setAttribute('onclick', isOwnerView ? "window.location.href='decks.html'" : "window.location.href='archive.html'");
+  if (fromBuilder) {
+    // Previewing your OWN in-progress deck from the builder: the back button
+    // resumes editing in place (no navigation). Edit/Copy aren't needed.
+    if (editBtn) editBtn.style.display = 'none';
+    if (copyBtn) copyBtn.style.display = 'none';
+    if (backBtn) {
+      backBtn.style.display = '';
+      backBtn.textContent = '← Back to Editing';
+      backBtn.setAttribute('onclick', 'editViewedDeck()');
+    }
+  } else {
+    // Owner viewing their own deck via a link → show Edit, hide Copy, back to My Decks
+    const isOwnerView = !!ownerCode;
+    if (editBtn) editBtn.style.display = isOwnerView ? '' : 'none';
+    if (copyBtn) copyBtn.style.display = isOwnerView ? 'none' : '';
+    if (backBtn) {
+      backBtn.style.display = '';
+      backBtn.textContent = isOwnerView ? '← My Workshop' : '← The Archive';
+      backBtn.setAttribute('onclick', isOwnerView ? "window.location.href='decks.html'" : "window.location.href='archive.html'");
+    }
   }
   // Hide the avatar picker if it tried to open
   closeAvatarPicker();
   syncDeckViewToggle();
   renderDeck();
+}
+
+// "View Deck" from the builder: save the deck, then preview it exactly the way
+// it appears from the Archive/deck page — with a "← Back to Editing" button to
+// resume building where you left off.
+async function viewOwnDeck() {
+  if (getDeckCounts().total === 0) { toast('Add some cards to your deck first'); return; }
+  // Persist before previewing (skip a redundant write if already saved & clean).
+  if (deckDirty || (!activeDeckCode && !activeDeckId)) { await saveDeck(); }
+  enterReadOnly('', activeDeckCode || null, true);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // Owner clicked "Edit this deck" from their own read-only view
