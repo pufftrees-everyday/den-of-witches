@@ -294,6 +294,11 @@
   .ss-num { font-family: 'Cinzel', serif; font-size: 1.5rem; font-weight: 700; color: var(--gold); line-height: 1.1; }
   .ss-num .ss-sub { font-size: 0.75rem; color: var(--rune); font-weight: 400; }
   .ss-lbl { font-size: 0.72rem; color: var(--rune); letter-spacing: 0.05em; text-transform: uppercase; margin-top: 5px; }
+  /* Vault value breakdown by source (loose / binders / decks) */
+  .ss-breakdown { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .ss-bd { display: inline-flex; align-items: baseline; gap: 7px; background: rgba(11,10,15,0.4); border: 1px solid var(--border); border-left: 3px solid var(--sage); border-radius: 6px; padding: 7px 12px; }
+  .ss-bd-lbl { font-family: 'Cinzel', serif; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--rune); }
+  .ss-bd-val { font-family: 'Cinzel', serif; font-size: 0.95rem; font-weight: 700; color: var(--gold); font-variant-numeric: tabular-nums; }
 
   /* Collection value over time */
   .vh-panel { margin-top: 18px; background: linear-gradient(180deg, rgba(37,35,56,0.5), rgba(17,16,24,0.5)); border: 1px solid var(--border-strong); border-radius: 8px; overflow: hidden; }
@@ -2475,6 +2480,23 @@ function renderSectionStats(view) {
     ? 'Loose cards + binders + owned decks'
     : view === 'all' ? 'Loose cards only — not yet in a binder' : '';
 
+  // My Vault: break the total value down by source (loose / binders / owned decks)
+  let breakdownHtml = '';
+  if (view === 'vault') {
+    const lm = looseQtyMaps();
+    let looseVal = 0;
+    new Set([...Object.keys(lm.std), ...Object.keys(lm.foil)]).forEach(n => {
+      looseVal += (prices[n]?.market || 0) * (lm.std[n] || 0) + (foilPrices[n]?.market || 0) * (lm.foil[n] || 0);
+    });
+    const binderVal = bindersFor('vault').reduce((s, b) => s + binderValue(b), 0);
+    const decksVal = ownedDecksTotalValue();
+    const parts = [['Loose Cards', looseVal], ['Binders', binderVal], ['Owned Decks', decksVal]].filter(([, v]) => v > 0);
+    if (parts.length) {
+      breakdownHtml = `<div class="ss-breakdown">` + parts.map(([l, v]) =>
+        `<span class="ss-bd"><span class="ss-bd-lbl">${l}</span><span class="ss-bd-val">$${v.toFixed(2)}</span></span>`).join('') + `</div>`;
+    }
+  }
+
   panel.style.display = '';
   panel.innerHTML = `
     <div class="ss-head" style="border-color:${accent}">
@@ -2487,6 +2509,7 @@ function renderSectionStats(view) {
       <div class="ss-stat"><div class="ss-num">${uniqueCount}</div><div class="ss-lbl">Unique Cards</div></div>
       <div class="ss-stat"><div class="ss-num">${stdCount} <span class="ss-sub">std</span> / ${foilCount} <span class="ss-sub" style="color:var(--arcane)">foil</span></div><div class="ss-lbl">Standard vs Foil</div></div>
     </div>
+    ${breakdownHtml}
     ${setsHtml ? `<div class="ss-sets"><span class="ss-sets-label">Top Sets</span>${setsHtml}</div>` : ''}
   `;
 }
