@@ -351,6 +351,14 @@
   .vault-empty-title { font-family: 'Cinzel', serif; font-size: 1.3rem; font-weight: 700; color: var(--parchment); margin-bottom: 8px; }
   .vault-empty-body { font-family: 'Crimson Pro', serif; font-size: 0.98rem; color: var(--rune); line-height: 1.6; max-width: 420px; }
   .vault-empty-body b { color: var(--arcane); }
+
+  /* Loose Cards → binder nudge */
+  .loose-prompt { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin: 18px 0 0; padding: 13px 16px; background: linear-gradient(180deg, rgba(200,169,110,0.10), rgba(200,169,110,0.03)); border: 1px solid var(--border-strong); border-left: 3px solid var(--gold); border-radius: 6px; }
+  .loose-prompt-text { font-family: 'Crimson Pro', serif; font-size: 0.98rem; color: var(--parchment); line-height: 1.5; flex: 1 1 320px; }
+  .loose-prompt-text b { color: var(--gold); }
+  .loose-prompt-text .lp-val { color: var(--sage); font-weight: 700; }
+  .loose-prompt-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .loose-select { background: #13111e; border: 1px solid var(--border-strong); border-radius: 3px; color: var(--shimmer); font-family: 'Cinzel', serif; font-size: 0.78rem; padding: 7px 10px; cursor: pointer; }
   .card-grid.sites-only { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
   .card-grid.sites-only .card-thumb { aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; }
   .card-grid.sites-only .card-thumb img { position: absolute; width: 75%; aspect-ratio: 3/4; transform: rotate(90deg); object-fit: contain; }
@@ -878,7 +886,7 @@
   <div class="gallery-head">
     <div>
       <div class="gallery-title"><img src="icon-192.png" alt="">My Vault</div>
-      <div class="gallery-sub">Your personal hoard — track every card you own in your <b>Vault</b>, build <b>Wants</b> lists for cards you're hunting, and list cards for <b>Trades</b>. Marking a Vault card for trade moves it into Trades. Use Card Search to browse the full Realm and add cards to any section.</div>
+      <div class="gallery-sub">Your personal hoard — every card you own lands in <b>Loose Cards</b>, ready to be tucked into <b>Binders</b> to stay organized. Build <b>Wants</b> lists for cards you're hunting and list cards for <b>Trades</b>. Use Card Search to browse the full Realm and add cards to any section.</div>
     </div>
   </div>
 
@@ -892,13 +900,13 @@
   <!-- COLLECTION BAR -->
   <div class="collection-bar">
     <div class="collection-stats">
-      <div class="cstat have-stat">Vault: <b id="stat-have">0</b><span id="stat-have-value" style="color:var(--sage);font-size:0.78rem;"></span></div>
+      <div class="cstat have-stat">Loose Cards: <b id="stat-have">0</b><span id="stat-have-value" style="color:var(--sage);font-size:0.78rem;"></span></div>
       <div class="cstat trade-stat">Trades: <b id="stat-trade">0</b><span id="stat-trade-value" style="color:var(--arcane);font-size:0.78rem;"></span></div>
       <div class="cstat want-stat">Want: <b id="stat-want">0</b><span id="stat-want-value" style="color:var(--ember);font-size:0.78rem;"></span></div>
     </div>
     <div class="view-toggle section-switcher">
       <button class="view-btn active" id="sec-search" onclick="setView('search')">Card Search</button>
-      <button class="view-btn" id="sec-collection" onclick="setView('all')">Vault</button>
+      <button class="view-btn" id="sec-collection" onclick="setView('all')">Loose Cards</button>
       <button class="view-btn" id="sec-trade" onclick="setView('trade')">Trades</button>
       <button class="view-btn" id="sec-wants" onclick="setView('want')">Wants</button>
       <button class="view-btn" id="sec-decks" onclick="setView('decks')">Owned Decks</button>
@@ -906,7 +914,7 @@
     <div class="collection-actions">
       <button class="btn btn-ghost" id="import-btn" onclick="openCollectionImport()">⬆ Import</button>
       <div class="export-menu">
-        <button class="btn btn-ghost" id="export-btn" onclick="toggleExportMenu(event)"><span id="export-btn-label">⬇ Export Vault</span> <span style="font-size:0.6rem;">▾</span></button>
+        <button class="btn btn-ghost" id="export-btn" onclick="toggleExportMenu(event)"><span id="export-btn-label">⬇ Export Loose Cards</span> <span style="font-size:0.6rem;">▾</span></button>
         <div class="export-dropdown" id="export-dropdown">
           <button class="export-item" onclick="doExport('text')"><b>Plain text</b><span>Just <code>2x Card Name</code> lines — paste anywhere</span></button>
           <button class="export-item" onclick="doExport('prices')"><b>With prices</b><span>Prices + total value, credited to Cursed Realm &amp; scrape date</span></button>
@@ -1113,6 +1121,9 @@
     </div>
   </div>
 
+  <!-- Loose Cards prompt (Loose Cards tab only) — nudge cards into a binder -->
+  <div id="loose-prompt" class="loose-prompt" style="display:none;"></div>
+
   <div id="result-count" class="result-count" style="margin-top:16px;"></div>
   <div id="price-source-note" class="price-source-note" style="display:none;"></div>
   <div id="card-grid" class="card-grid">
@@ -1277,7 +1288,7 @@ function bEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;
 const binderUI = { collapsed: {}, addFinish: {}, sort: {}, search: {}, searchSet: {} }; // transient per-binder UI state
 // Whole-section collapse state (Vault Binders / Trade Binders / Owned Decks).
 // Collapsed by default — expand to reveal the contents.
-const sectionCollapsed = { vaultBinders: true, tradeBinders: true, ownedDecks: true };
+const sectionCollapsed = { vaultBinders: false, tradeBinders: true, ownedDecks: true };
 function toggleBindersSection(parent) {
   const k = parent === 'trade' ? 'tradeBinders' : 'vaultBinders';
   sectionCollapsed[k] = !sectionCollapsed[k];
@@ -1419,6 +1430,89 @@ function createBinder(parent) {
   binderUI.collapsed[newId] = false; // a brand-new binder opens so you can fill it
   saveBinders(); renderBinders(); updateStats();
 }
+// Everyone starts with one "My Cards" vault binder. Seed it once per browser
+// (guarded by a flag so a binder the user deliberately deleted won't come back).
+function ensureDefaultBinder() {
+  try {
+    if (localStorage.getItem('grimoire_seeded_mycards')) return;
+    if (bindersFor('vault').length > 0) { localStorage.setItem('grimoire_seeded_mycards', '1'); return; }
+    const binders = getBinders();
+    const newId = 'b' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36);
+    binders.push({ id: newId, parent: 'vault', name: 'My Cards', cards: {} });
+    saveBinders();
+    localStorage.setItem('grimoire_seeded_mycards', '1');
+  } catch (e) { /* storage unavailable — skip seeding */ }
+}
+
+// Loose cards = cards owned but not yet placed in a binder (the bare have/haveFoil
+// quantities on the collection entries themselves).
+function looseCardStats() {
+  const col = getCollection();
+  let std = 0, foil = 0, uniq = 0, val = 0;
+  for (const [k, e] of Object.entries(col)) {
+    if (k === BINDERS_KEY || k === OWNED_DECKS_KEY || !e || typeof e !== 'object') continue;
+    const s = e.have || 0, f = e.haveFoil || 0;
+    if (!s && !f) continue;
+    uniq++; std += s; foil += f;
+    val += (prices[k]?.market || 0) * s + (foilPrices[k]?.market || 0) * f;
+  }
+  return { std, foil, uniq, val, total: std + foil };
+}
+// Render the "tuck your loose cards into a binder" nudge on the Loose Cards tab.
+function renderLoosePrompt() {
+  const el = document.getElementById('loose-prompt');
+  if (!el) return;
+  if (currentView !== 'all') { el.style.display = 'none'; el.innerHTML = ''; return; }
+  const c = looseCardStats();
+  if (!c.total) { el.style.display = 'none'; el.innerHTML = ''; return; }
+  const vbinders = bindersFor('vault');
+  const opts = vbinders.map(b => `<option value="${b.id}">${bEsc(b.name)}${binderCardCount(b) ? ` (${binderCardCount(b)})` : ''}</option>`).join('');
+  el.style.display = '';
+  el.innerHTML = `
+    <div class="loose-prompt-text">💡 You have <b>${c.total} loose card${c.total === 1 ? '' : 's'}</b>${c.val > 0 ? ` <span class="lp-val">$${c.val.toFixed(2)}</span>` : ''} not yet in a binder. Tuck them into one to keep your Vault organized.</div>
+    <div class="loose-prompt-actions">
+      ${vbinders.length
+        ? `<select id="loose-target" class="loose-select">${opts}</select><button class="btn btn-primary" onclick="moveLooseToBinder()">Move all to binder</button>`
+        : `<button class="btn btn-primary" onclick="createBinderForLoose()">Create a binder</button>`}
+    </div>`;
+}
+// Move every loose card into the chosen vault binder (default: the dropdown value).
+function moveLooseToBinder(binderId) {
+  const sel = document.getElementById('loose-target');
+  const id = binderId || (sel && sel.value);
+  const b = id && findBinder(id);
+  if (!b) { toast('Pick a binder first'); return; }
+  const col = getCollection();
+  let moved = 0;
+  for (const [k, e] of Object.entries(col)) {
+    if (k === BINDERS_KEY || k === OWNED_DECKS_KEY || !e || typeof e !== 'object') continue;
+    const s = e.have || 0, f = e.haveFoil || 0;
+    if (!s && !f) continue;
+    if (!b.cards[k]) b.cards[k] = { std: 0, foil: 0 };
+    b.cards[k].std = (b.cards[k].std || 0) + s;
+    b.cards[k].foil = (b.cards[k].foil || 0) + f;
+    e.have = 0; e.haveFoil = 0;
+    if (entryEmpty(e)) delete col[k];
+    moved += s + f;
+  }
+  if (!moved) { toast('No loose cards to move'); return; }
+  saveCollection(col); // binders live inside the collection object, so this persists them
+  binderUI.collapsed[b.id] = false;     // open the binder so the result is visible
+  sectionCollapsed.vaultBinders = false; // make sure the binders section is expanded
+  updateStats(); renderBinders(); renderLoosePrompt(); filterCards();
+  toast(`Moved ${moved} card${moved === 1 ? '' : 's'} into “${b.name}”`);
+}
+// No binders yet → make one, then move the loose cards into it.
+function createBinderForLoose() {
+  const name = (prompt('Name this binder:', 'My Cards') || '').trim();
+  if (!name) return;
+  const binders = getBinders();
+  const newId = 'b' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36);
+  binders.push({ id: newId, parent: 'vault', name, cards: {} });
+  saveBinders();
+  moveLooseToBinder(newId);
+}
+
 function renameBinder(id) {
   const b = findBinder(id); if (!b) return;
   const name = (prompt('Rename binder:', b.name) || '').trim();
@@ -1762,6 +1856,7 @@ function updateStats() {
   if (typeof currentView !== 'undefined' && currentView !== 'search') {
     renderSectionStats(currentView);
   }
+  renderLoosePrompt();
 }
 
 // ── LOAD CARDS ──
@@ -2021,9 +2116,9 @@ function emptyStateMessage() {
     return '<div class="status" style="padding:48px 0">No cards match your search.</div>';
   }
   const msgs = {
-    all:   { icon: '📚', title: 'Your Vault is empty', body: 'Head to <b>Card Search</b> and tap <span style="color:var(--sage)">✓ Have</span> on cards you own to add them to your Vault.' },
+    all:   { icon: '📚', title: 'No loose cards', body: 'Head to <b>Card Search</b> and tap <span style="color:var(--sage)">✓ Have</span> on cards you own — they’ll land here as loose cards you can then tuck into a <b>binder</b>.' },
     want:  { icon: '🔍', title: 'Your Wants list is empty', body: 'In <b>Card Search</b>, tap <span style="color:var(--ember)">♡ Want</span> on cards you’re hunting for and they’ll appear here.' },
-    trade: { icon: '⇄', title: 'Your Trades are empty', body: 'Tap <span style="color:var(--arcane)">⇄ Trade</span> on a card in <b>Card Search</b> or your <b>Vault</b> to list it for trade. Trading a Vault card moves it here.' },
+    trade: { icon: '⇄', title: 'Your Trades are empty', body: 'Tap <span style="color:var(--arcane)">⇄ Trade</span> on a card in <b>Card Search</b> or your <b>Loose Cards</b> to list it for trade. Trading an owned card moves it here.' },
   };
   const m = msgs[currentView];
   if (!m) return '<div class="status" style="padding:48px 0">No cards to show.</div>';
@@ -2233,7 +2328,7 @@ function setView(view) {
   // Update export button label to match the section
   const exportLabel = document.getElementById('export-btn-label');
   if (exportLabel) {
-    exportLabel.textContent = view === 'want' ? '⬇ Export Wants' : view === 'trade' ? '⬇ Export Trades' : '⬇ Export Vault';
+    exportLabel.textContent = view === 'want' ? '⬇ Export Wants' : view === 'trade' ? '⬇ Export Trades' : '⬇ Export Loose Cards';
   }
   // Card Search hides the stats panel; the three vault sections show it
   const inVaultSection = (view !== 'search' && view !== 'decks');
@@ -2252,6 +2347,7 @@ function setView(view) {
   if (view === 'all' && anyCardFilterActive()) clearCardFilters();
   renderSectionStats(view);
   renderBinders();
+  renderLoosePrompt();
   // Value-over-time lives on the Vault tab (it covers the whole collection).
   const vhPanel = document.getElementById('value-history-panel');
   if (vhPanel) {
@@ -2267,23 +2363,29 @@ function renderSectionStats(view) {
   if (!panel) return;
   if (view === 'search' || view === 'decks') { panel.style.display = 'none'; panel.innerHTML = ''; return; }
 
-  const flag = view === 'want' ? 'want' : view === 'trade' ? 'trade' : 'have';
-  const foilFlag = flag + 'Foil';
   const col = getCollection();
 
   let stdCount = 0, foilCount = 0, uniqueCount = 0, totalVal = 0;
   const setCounts = {}; const elemCounts = {};
-  allCards.forEach(c => {
-    const e = col[c.id]; if (!e) return;
-    const std = e[flag] || 0, foil = e[foilFlag] || 0;
+  const tally = (name, std, foil) => {
     if (std === 0 && foil === 0) return;
+    const c = allCards.find(x => x.id === name);
     uniqueCount++;
     stdCount += std; foilCount += foil;
-    totalVal += (prices[c.name]?.market || 0) * std + (foilPrices[c.name]?.market || 0) * foil;
-    const set = c.set || 'Unknown'; setCounts[set] = (setCounts[set] || 0) + std + foil;
-    const els = (c.element || '').split(',').map(s => s.trim()).filter(Boolean);
+    totalVal += (prices[name]?.market || 0) * std + (foilPrices[name]?.market || 0) * foil;
+    const set = (c && c.set) || 'Unknown'; setCounts[set] = (setCounts[set] || 0) + std + foil;
+    const els = ((c && c.element) || '').split(',').map(s => s.trim()).filter(Boolean);
     els.forEach(el => { elemCounts[el] = (elemCounts[el] || 0) + std + foil; });
-  });
+  };
+  if (view === 'all') {
+    // Vault Stats = loose cards + vault binders + owned decks (the whole hoard).
+    const { std, foil } = vaultQtyMaps();
+    new Set([...Object.keys(std), ...Object.keys(foil)]).forEach(n => tally(n, std[n] || 0, foil[n] || 0));
+  } else {
+    const flag = view === 'want' ? 'want' : 'trade';
+    const foilFlag = flag + 'Foil';
+    allCards.forEach(c => { const e = col[c.id]; if (!e) return; tally(c.id, e[flag] || 0, e[foilFlag] || 0); });
+  }
   const totalCards = stdCount + foilCount;
 
   const sectionName = view === 'want' ? 'Wants' : view === 'trade' ? 'Trades' : 'Vault';
@@ -2350,6 +2452,28 @@ function totalQtyMaps() {
   }));
   addCardMaps(getBinders());
   addCardMaps(getOwnedDecks());
+  return { std, foil };
+}
+// Loose cards only (bare have/haveFoil — not in any binder or owned deck).
+function looseQtyMaps() {
+  const col = getCollection();
+  const std = {}, foil = {};
+  for (const [k, e] of Object.entries(col)) {
+    if (k === BINDERS_KEY || k === OWNED_DECKS_KEY || !e || typeof e !== 'object') continue;
+    if (e.have) std[k] = (std[k] || 0) + e.have;
+    if (e.haveFoil) foil[k] = (foil[k] || 0) + e.haveFoil;
+  }
+  return { std, foil };
+}
+// The whole Vault: loose cards + vault binders + owned decks (excludes Trades).
+function vaultQtyMaps() {
+  const { std, foil } = looseQtyMaps();
+  const add = src => src.forEach(o => Object.entries(o.cards || {}).forEach(([n, q]) => {
+    if (q.std) std[n] = (std[n] || 0) + q.std;
+    if (q.foil) foil[n] = (foil[n] || 0) + q.foil;
+  }));
+  add(bindersFor('vault'));
+  add(getOwnedDecks());
   return { std, foil };
 }
 async function vhFetch(names) {
@@ -2435,7 +2559,13 @@ function vhRender() {
   const cur = totalSeries.length ? totalSeries[totalSeries.length - 1].v : 0;
   let html = '<button class="vh-refresh" onclick="vhRefresh()">↻ Refresh</button>';
   html += `<div class="vh-current"><span>Current total</span> <b>$${cur.toFixed(2)}</b></div>`;
-  html += vhRenderChart([{ label: 'Total', color: 'var(--gold)', points: totalSeries }]);
+  // Main chart: overall Total + a Loose Cards line (cards not yet in a binder).
+  const loose = looseQtyMaps();
+  const looseSeries = vhSeriesFrom(vhRows, loose.std, loose.foil);
+  const mainSeries = [{ label: 'Total', color: 'var(--gold)', points: totalSeries }];
+  if (looseSeries.length) mainSeries.push({ label: 'Loose Cards', color: 'var(--arcane)', points: looseSeries });
+  html += vhRenderChart(mainSeries);
+  if (mainSeries.length > 1) html += vhLegend(mainSeries);
   // One line per binder / per owned deck, valued at each recorded snapshot.
   const seriesFromCardMaps = (items) => items.map((o, i) => {
     const s = {}, fl = {};
@@ -2463,7 +2593,7 @@ async function vhOpen() {
   if (vhRows === null) {
     if (vhLoading) return;
     const names = ownedCardNames();
-    if (!names.length) { body.innerHTML = '<div class="pc-status">Add cards to your Vault to track its value over time.</div>'; return; }
+    if (!names.length) { body.innerHTML = '<div class="pc-status">Add cards to your collection to track its value over time.</div>'; return; }
     vhLoading = true;
     body.innerHTML = '<div class="pc-status">Loading value history…</div>';
     try { vhRows = await vhFetch(names); }
@@ -3123,7 +3253,7 @@ loadCards();
 
 // ── AUTH + CLOUD SYNC INIT ──
 async function initCollectionSync() {
-  if (!window.CR) { collectionCache = getLocalCollection(); updateGuestBanner(); return; }
+  if (!window.CR) { collectionCache = getLocalCollection(); ensureDefaultBinder(); updateStats(); renderBinders(); renderLoosePrompt(); updateGuestBanner(); return; }
   CR.onAuthChange = handleAuthChange;
   await CR.refreshUser();
   CR.renderAuthBar('auth-bar');
@@ -3180,6 +3310,7 @@ async function hydrateCollection() {
   } else {
     collectionCache = getLocalCollection();
   }
+  ensureDefaultBinder();
   updateStats(); renderBinders(); filterCards();
   if (currentView === 'all' || currentView === 'decks') renderOwnedDecks();
 }
