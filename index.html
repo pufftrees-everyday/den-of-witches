@@ -1339,7 +1339,7 @@ function cardDisplaySet(card) {
 // ── HOVER PREVIEW (desktop, list view only) ──
 let _hpEl, _hpImg, _hpVisible = false;
 function hpShow(id, x, y) {
-  if (viewMode !== 'list') return;            // only in text/list view
+  if (viewMode !== 'list' && viewMode !== 'details') return; // text + detailed rows
   const card = getCard(id);
   if (!card) return;
   if (!_hpEl) { _hpEl = document.getElementById('hover-preview'); _hpImg = document.getElementById('hover-preview-img'); }
