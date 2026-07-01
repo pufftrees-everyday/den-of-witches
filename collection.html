@@ -1954,6 +1954,8 @@ function updateStats() {
 // ── LOAD CARDS ──
 let prices = {};
 let foilPrices = {};
+let priceBySet = {};   // card name → { [setName]: { standard?, foil? } } (per-printing prices)
+let pricePromos = {};  // card name → { [qualifier]: { standard?, foil? } } (special/promo printings)
 let finishMode = 'standard'; // 'standard' | 'foil'
 let priceSource = null;
 let priceDate = null;
@@ -1974,6 +1976,16 @@ async function loadCards() {
       const variants = firstSet ? (firstSet.variants || []) : [];
       const firstVariant = variants.find(v => v.finish === 'Standard' && v.product === 'Booster') || variants[0];
       const foilVariant = variants.find(v => v.finish === 'Foil') || variants.find(v => (v.finish||'').toLowerCase().includes('foil'));
+      // Per-set printings (Beta → Alpha → other → promo last), each with its own
+      // standard + foil art slug. Lets a Set filter (e.g. Promotional) show that
+      // printing's art + price; default rendering still uses the Beta/Gothic one.
+      const _rank = nm => /beta/i.test(nm) ? 0 : /alpha/i.test(nm) ? 1 : /promo/i.test(nm) ? 9 : 5;
+      const printings = sets.map(s => {
+        const vs = s.variants || [];
+        const std = vs.find(v => v.finish === 'Standard' && v.product === 'Booster') || vs.find(v => v.finish === 'Standard') || vs[0];
+        const fl = vs.find(v => v.finish === 'Foil') || vs.find(v => (v.finish||'').toLowerCase().includes('foil'));
+        return { set: s.name, slug: std ? std.slug : null, foilSlug: fl ? fl.slug : null };
+      }).sort((a, b) => _rank(a.set) - _rank(b.set));
       return {
         id: card.name, name: card.name,
         type: g.type || '', rarity: g.rarity || '',
@@ -1986,6 +1998,7 @@ async function loadCards() {
         setNames: sets.map(s => s.name).filter(Boolean),
         slug: firstVariant ? firstVariant.slug : null,
         foilSlug: foilVariant ? foilVariant.slug : null,
+        printings,
         artists: (() => { const a = new Set(); sets.forEach(s => (s.variants || []).forEach(v => { if (v.artist && v.artist.trim()) a.add(v.artist.trim()); })); return [...a]; })(),
       };
     }).sort((a, b) => a.name.localeCompare(b.name));
@@ -2000,6 +2013,8 @@ async function loadCards() {
         const pdata = await pres.json();
         prices = pdata.prices || {};
         foilPrices = pdata.foils || {};
+        priceBySet = pdata.bySet || {};
+        pricePromos = pdata.promos || {};
         priceSource = pdata.source || 'JustTCG';
         priceDate = pdata.generated ? new Date(pdata.generated).toLocaleDateString() : null;
         // Always-visible price attribution line
@@ -2027,6 +2042,50 @@ function getImageUrl(card) {
   return `${IMAGE_BASE}${(card.name||'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'')}.png`;
 }
 
+// ── PRINTING-AWARE DISPLAY (Card Search only) ──
+// When browsing Card Search with a Set filter active, show that printing's art +
+// price (e.g. the Promotional filter shows the promo printing). Everywhere else —
+// the Vault, Trades, Wants, binders, decks and all value totals — keeps using the
+// default headline price, which is Beta/Gothic-preferred and never a promo.
+function activePrinting(card) {
+  if (currentView !== 'search') return null;              // only in the browse/search view
+  if (!activeFilters.set.size || !card || !card.printings) return null;
+  return card.printings.find(p => activeFilters.set.has(p.set)) || null;
+}
+// Price for a card in a specific set + finish (bySet), falling back to headline.
+// For the Promotional set, special printings are keyed by qualifier in the promos
+// bucket (not bySet), so fall back to the cheapest promo price before headline —
+// that way filtering Promotional shows the actual promo printing's price.
+function setPrice(name, setName, foil) {
+  const bs = priceBySet[name] && priceBySet[name][setName];
+  if (bs) { const v = foil ? bs.foil : bs.standard; if (v != null) return v; }
+  if (/promo/i.test(setName)) {
+    const byQual = pricePromos[name];
+    if (byQual) {
+      let min = null;
+      for (const q of Object.values(byQual)) { const v = foil ? q.foil : q.standard; if (v != null && (min == null || v < min)) min = v; }
+      if (min != null) return min;
+    }
+  }
+  const hp = (foil ? foilPrices[name] : prices[name]);
+  return hp && hp.market != null ? hp.market : null;
+}
+// Displayed price honoring the active browse printing (promo-aware in Card Search).
+function displayPrice(card, foil) {
+  const p = activePrinting(card);
+  if (p) return setPrice(card.name, p.set, foil);
+  const hp = (foil ? foilPrices[card.name] : prices[card.name]);
+  return hp && hp.market != null ? hp.market : null;
+}
+// Displayed art URL honoring the active browse printing + finish.
+function displayArt(card, foil) {
+  const p = activePrinting(card);
+  if (p) { const s = (foil && p.foilSlug) ? p.foilSlug : p.slug; if (s) return `${IMAGE_BASE}${s}.png`; }
+  return (foil && card.foilSlug) ? `${IMAGE_BASE}${card.foilSlug}.png` : getImageUrl(card);
+}
+// Displayed set name honoring the active browse printing.
+function displaySet(card) { const p = activePrinting(card); return p ? p.set : card.set; }
+
 // ── HOVER PREVIEW (desktop, list view only) ──
 let _hpEl, _hpImg, _hpVisible = false;
 function hpShow(id, x, y) {
@@ -2034,9 +2093,10 @@ function hpShow(id, x, y) {
   const card = allCards.find(c => c.id === id || c.name === id);
   if (!card) return;
   if (!_hpEl) { _hpEl = document.getElementById('hover-preview'); _hpImg = document.getElementById('hover-preview-img'); }
-  // Respect the current finish (foil image when in foil mode, if available)
-  const url = (finishMode === 'foil' && card.foilSlug) ? `${IMAGE_BASE}${card.foilSlug}.png` : getImageUrl(card);
-  const fk = id + (finishMode==='foil'?'-f':'');
+  // Respect the current finish + active printing (promo art when filtered)
+  const foil = finishMode === 'foil';
+  const url = displayArt(card, foil);
+  const fk = id + (foil?'-f':'') + '|' + url;
   if (_hpImg.dataset.for !== fk) { _hpImg.src = url; _hpImg.dataset.for = fk; }
   _hpEl.classList.toggle('is-site', card.type === 'Site');
   hpMove(x, y);
@@ -2091,10 +2151,10 @@ function openCardModal(id) {
   modal.classList.toggle('site-modal', isSite);
   imgWrap.classList.toggle('site-img', isSite);
   img.style.opacity = '1';
-  img.src = (finishMode === 'foil' && card.foilSlug) ? `${IMAGE_BASE}${card.foilSlug}.png` : getImageUrl(card);
+  img.src = displayArt(card, finishMode === 'foil');
   img.alt = card.name;
   document.getElementById('cm-name').textContent = card.name;
-  document.getElementById('cm-type').textContent = [card.type, card.set].filter(Boolean).join(' · ');
+  document.getElementById('cm-type').textContent = [card.type, displaySet(card)].filter(Boolean).join(' · ');
   const textEl = document.getElementById('cm-text');
   textEl.textContent = card.rules_text || '';
   textEl.style.display = card.rules_text ? '' : 'none';
@@ -2142,7 +2202,7 @@ function renderModalControls() {
   const have = (foil ? e.haveFoil : e.have) || 0;
   const trade = (foil ? e.tradeFoil : e.trade) || 0;
   const want = (foil ? e.wantFoil : e.want) || 0;
-  const price = (foil ? foilPrices[card.name] : prices[card.name])?.market;
+  const price = displayPrice(card, foil);
   const escId = _modalCardId.replace(/'/g, "\\'");
   const flagRow = (flag, label, icon, qty) => `
     <div class="cm-row">
@@ -2177,7 +2237,7 @@ function modalSetFinish(mode) {
   if (card) {
     const img = document.getElementById('cm-img-el');
     img.style.opacity = '1';
-    img.src = (mode === 'foil' && card.foilSlug) ? `${IMAGE_BASE}${card.foilSlug}.png` : getImageUrl(card);
+    img.src = displayArt(card, mode === 'foil');
   }
   renderModalControls();
 }
@@ -2256,12 +2316,13 @@ function renderCardThumb(card, col) {
   const want = (finishMode === 'foil' ? entry.wantFoil : entry.want) || 0;
   const trade = (finishMode === 'foil' ? entry.tradeFoil : entry.trade) || 0;
   const flagClass = (have > 0 ? ' flag-have' : '') + (want > 0 ? ' flag-want' : '') + (trade > 0 ? ' flag-trade' : '');
-  const price = (finishMode === 'foil' ? foilPrices[card.name] : prices[card.name]);
-  const priceHtml = price?.market != null
-    ? `<div class="card-price"><span class="price-market">$${price.market.toFixed(2)}</span></div>`
+  const foil = finishMode === 'foil';
+  const priceVal = displayPrice(card, foil);
+  const priceHtml = priceVal != null
+    ? `<div class="card-price"><span class="price-market">$${priceVal.toFixed(2)}</span></div>`
     : '';
   const escId = card.id.replace(/'/g, "\\'");
-  const imgUrl = (finishMode === 'foil' && card.foilSlug) ? `${IMAGE_BASE}${card.foilSlug}.png` : getImageUrl(card);
+  const imgUrl = displayArt(card, foil);
   return `<div class="card-thumb${flagClass}" data-id="${card.id}" onclick="void(0)">
     <img src="${imgUrl}" alt="${card.name}" loading="lazy" onerror="this.style.opacity='0.2'">
     <div class="flag-badge">
@@ -2287,7 +2348,7 @@ function renderCardThumb(card, col) {
       </div>
     </div>
     <div class="card-thumb-name">${card.name}</div>
-    <div class="card-thumb-meta">${[card.type, card.rarity, card.set].filter(Boolean).join(' · ')}</div>
+    <div class="card-thumb-meta">${[card.type, card.rarity, displaySet(card)].filter(Boolean).join(' · ')}</div>
     ${priceHtml}
   </div>`;
 }
@@ -2322,7 +2383,7 @@ function textRowFlag() {
 function renderCardTextRow(card, col) {
   const cost = (card.cost != null && card.cost !== '') ? card.cost : '';
   const qty = textRowQty(card, col);
-  const price = (finishMode === 'foil' ? foilPrices[card.name] : prices[card.name])?.market;
+  const price = displayPrice(card, finishMode === 'foil');
   const priceHtml = price != null ? `$${price.toFixed(2)}` : '';
   const flag = textRowFlag();
   const escId = card.id.replace(/'/g, "\\'");
@@ -2354,8 +2415,8 @@ function renderCardRow(card, col) {
   const want = (finishMode === 'foil' ? entry.wantFoil : entry.want) || 0;
   const trade = (finishMode === 'foil' ? entry.tradeFoil : entry.trade) || 0;
   const flagClass = (have > 0 ? ' flag-have' : '') + (want > 0 ? ' flag-want' : '') + (trade > 0 ? ' flag-trade' : '');
-  const price = (finishMode === 'foil' ? foilPrices[card.name] : prices[card.name]);
-  const priceHtml = price?.market != null ? `$${price.market.toFixed(2)}` : '';
+  const priceVal = displayPrice(card, finishMode === 'foil');
+  const priceHtml = priceVal != null ? `$${priceVal.toFixed(2)}` : '';
   const rarity = card.rarity || '';
   const rarityClass = rarity.toLowerCase();
   const cost = (card.cost != null && card.cost !== '') ? card.cost : '';
@@ -2363,7 +2424,7 @@ function renderCardRow(card, col) {
   return `<div class="card-row${flagClass}" data-id="${card.id}">
     <span class="cr-mana${cost===''?' empty':''}">${cost}</span>
     <div class="row-name">${card.name}</div>
-    <div class="row-set-wrap col-set"><span class="row-meta set">${setBadge(card.set)}</span></div>
+    <div class="row-set-wrap col-set"><span class="row-meta set">${setBadge(displaySet(card))}</span></div>
     <span class="row-rarity ${rarityClass}">${rarityAbbr(rarity)}</span>
     <span class="row-meta col-type">${card.type || ''}</span>
     <span class="row-price col-price">${priceHtml}</span>
@@ -2929,7 +2990,7 @@ function sortVaultCards(cards) {
       return ca - cb || a.name.localeCompare(b.name);
     });
   } else if (vaultSort === 'price') {
-    const pof = (c) => (finishMode === 'foil' ? foilPrices[c.name]?.market : prices[c.name]?.market) || 0;
+    const pof = (c) => displayPrice(c, finishMode === 'foil') || 0;
     sorted.sort((a, b) => (pof(b) - pof(a)) || a.name.localeCompare(b.name)); // high → low by default
   } else {
     sorted.sort((a, b) => a.name.localeCompare(b.name));

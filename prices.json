@@ -3426,6 +3426,12 @@
     },
     "Undesirables": {
       "market": 0.04
+    },
+    "Spellslinger": {
+      "market": 55.85
+    },
+    "Skeleton": {
+      "market": 36.51
     }
   },
   "foils": {

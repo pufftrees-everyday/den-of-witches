@@ -107,12 +107,26 @@ function preferredPrice(setMap, finish) {
 // Rewrite the name-keyed headline maps (cards/foils) from bySet using the
 // preference above. Names absent from bySet (e.g. empty set_name) or available
 // ONLY as a promo are left as the loop collected them, so nothing loses a price.
-function applyPrintingPreference(cards, foils, bySet) {
+function applyPrintingPreference(cards, foils, bySet, promos) {
   for (const [name, setMap] of Object.entries(bySet || {})) {
     const std = preferredPrice(setMap, 'standard');
     if (std != null) cards[name] = { market: std };
     const fl = preferredPrice(setMap, 'foil');
     if (fl != null) foils[name] = { market: fl };
+  }
+  // Promo-only cards — those whose ONLY printing is promotional (the promo lives
+  // in the card *name*, so there's no booster/standard entry in bySet). Fall back
+  // to the cheapest promo price so the card still has a headline value in decks,
+  // trades and the Vault. Real dual-printing cards already have a non-promo
+  // headline above and are left untouched ("unless promo is the only printing").
+  for (const [name, byQual] of Object.entries(promos || {})) {
+    let minStd = null, minFoil = null;
+    for (const q of Object.values(byQual)) {
+      if (q.standard != null && (minStd == null || q.standard < minStd)) minStd = q.standard;
+      if (q.foil != null && (minFoil == null || q.foil < minFoil)) minFoil = q.foil;
+    }
+    if (!cards[name] && minStd != null) cards[name] = { market: minStd };
+    if (!foils[name] && minFoil != null) foils[name] = { market: minFoil };
   }
 }
 
@@ -321,7 +335,7 @@ function buildOutput(cards, foils, sealed, promos, bySet) {
   // Finalize each card's headline price as Beta-preferred / non-promo (see
   // applyPrintingPreference). Done here so both the normal and rate-limit save
   // paths produce consistent defaults.
-  applyPrintingPreference(cards, foils, bySet);
+  applyPrintingPreference(cards, foils, bySet, promos);
   return {
     generated: new Date().toISOString(),
     source: 'JustTCG (justtcg.com)',

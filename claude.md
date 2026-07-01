@@ -361,17 +361,27 @@ NO blur/glow. Element symbols + moon are loaded as real PNGs from the site.
   keyword-based (promo / team covenant / box topper / prerelease / borderless / etc.) and deliberately
   does **not** match the few real card names whose parenthetical is part of the name (`Frog (Blue)`,
   `Foot Soldier (English)`, …) — those stay as normal cards. The fetch run logs the distinct promo
-  qualifiers it detected (self-validating, since the parser is keyword-based). Currently **capture-only**:
-  promos are stored + charted in history, not yet surfaced in the collection/deck UI (a follow-up).
+  qualifiers it detected (self-validating, since the parser is keyword-based). **Surfaced in the UI:**
+  when the **Vault Card Search** has the **Promotional** set filter active, each card's price + art
+  switch to the promo printing (`collection.html` `activePrinting`/`setPrice`/`displayPrice`/`displayArt`,
+  gated to `currentView==='search'`); `setPrice` reads `bySet[name]["Promotional"]` and falls back to the
+  cheapest `promos[name]` qualifier. Any other Set filter (Alpha/Beta/…) likewise shows that printing's
+  `bySet` price. Everywhere else — the Vault/Trades/Wants lists, binders, owned decks and all value
+  totals — stays on the headline (Beta/Gothic) price. index.html already swaps promo **art** on the same
+  filter (it shows no prices). Deck value (deck.html/deckbuilder.html) uses the non-promo headline.
 - **Headline (default) price selection — Beta-preferred, non-promo:** the name-keyed `prices`/`foils`
   maps (what the whole site shows for deck value, imports, the Vault) are finalized by
   `applyPrintingPreference()` in `fetch-prices.js` from the `bySet` data: **Beta first, then Alpha, then
   the cheapest remaining non-promo set**; a `Promotional` printing is **never** the default. So a deck
   import/value defaults to the cheaper, non-promo (Beta) printing, matching the Beta-preferred slug logic.
   Alpha/promo prices stay available per-printing in `bySet`/`promos` for when a specific printing is
-  selected (the future per-printing Vault UI). Promo-**only** cards with no booster printing (e.g. the
-  draft sites Spire/Wasteland, Foot Soldier (Forest/Mountain/River)) keep their promo price as the only
-  option. Mirrors the same preference as the image slug logic.
+  selected (the Promotional Card Search filter, and the future per-printing Vault UI). Promo-**only**
+  cards keep their promo price as the only headline: `applyPrintingPreference()` now also scans the
+  `promos` bucket and fills any card missing from `cards`/`foils` with its cheapest promo price (covers
+  name-parenthetical promo-only cards like Skeleton/Spellslinger that never produce a `bySet` entry; the
+  draft sites Spire/Wasteland and Foot Soldier (Forest/Mountain/River) come through their `Promotional`
+  set_name). Real dual-printing cards already have a non-promo headline and are left untouched. Mirrors
+  the same preference as the image slug logic.
 
 ## Open / future ideas
 - ✅ **Daily price-history capture — DONE.** `record-price-history.js` appends a snapshot to the
