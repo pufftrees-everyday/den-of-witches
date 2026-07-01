@@ -602,7 +602,11 @@
   .sort-btn.active { background: var(--rune); border-color: var(--arcane); color: #fff; }
   .sort-dir { font-size: 0.8rem; }
 
-  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+  /* Card view: cap cell width at 380px — the native width of the low-res sets
+     (Alpha/Beta/Promo/Dragonlord). A 1fr max let cells grow to ~400-450px at
+     2-column widths, upscaling those scans into a blur. Min 240 keeps it denser
+     than the Large view (min 300) so the two remain distinct. */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 380px)); justify-content: center; gap: 14px; }
 
   .card-thumb { cursor: pointer; border-radius: 6px; border: 1px solid var(--border); overflow: hidden; background: var(--dusk); transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s; position: relative; }
   .card-thumb:hover { border-color: var(--arcane); transform: translateY(-2px); box-shadow: var(--glow-strong); }
