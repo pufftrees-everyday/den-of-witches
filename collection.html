@@ -762,6 +762,13 @@
   .cimport-msg .ok { color: var(--sage); }
   .cimport-msg .warn { color: var(--gold); }
 
+  /* Binder export modal */
+  .bexport-formats { display: flex; flex-wrap: wrap; gap: 8px; }
+  .bexport-fmt { font-family: 'Cinzel', serif; font-size: 0.6rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 8px 12px; border-radius: 6px; cursor: pointer; border: 1px solid var(--border-strong); background: var(--abyss); color: var(--shimmer); transition: border-color 0.15s, color 0.15s, background 0.15s; }
+  .bexport-fmt:hover { border-color: var(--arcane); color: var(--gold); }
+  .bexport-fmt.active { background: var(--rune); border-color: var(--rune); color: #fff; }
+  .bexport-preview { min-height: 180px; font-family: 'Courier New', monospace; font-size: 0.82rem; white-space: pre; overflow-wrap: normal; overflow-x: auto; }
+
   /* ── CARD DETAIL MODAL ── */
   .cm-overlay { display: none; position: fixed; inset: 0; background: rgba(11,10,15,0.85); z-index: 1200; align-items: center; justify-content: center; backdrop-filter: blur(4px); padding: 20px; }
   .cm-overlay.open { display: flex; }
@@ -1207,6 +1214,32 @@
   </div>
 </div>
 
+<!-- BINDER EXPORT MODAL -->
+<div class="cimport-overlay" id="bexport-overlay" onclick="if(event.target===this)closeBinderExport()">
+  <div class="cimport-modal">
+    <button class="cimport-close" onclick="closeBinderExport()">✕</button>
+    <h2 id="bexport-title">Export Binder</h2>
+    <p class="cimport-sub">Copy the contents to your clipboard (great for pasting into <b>Discord</b>) or download a file. Pick a format below.</p>
+
+    <label class="cimport-label">Format</label>
+    <div class="bexport-formats" id="bexport-formats">
+      <button class="bexport-fmt" data-fmt="discord"  onclick="setBinderExportFormat('discord')">Discord</button>
+      <button class="bexport-fmt" data-fmt="text"     onclick="setBinderExportFormat('text')">Plain text</button>
+      <button class="bexport-fmt" data-fmt="prices"   onclick="setBinderExportFormat('prices')">With prices</button>
+      <button class="bexport-fmt" data-fmt="detailed" onclick="setBinderExportFormat('detailed')">Detailed</button>
+      <button class="bexport-fmt" data-fmt="csv"      onclick="setBinderExportFormat('csv')">CSV</button>
+    </div>
+
+    <label class="cimport-label" style="margin-top:14px;">Preview</label>
+    <textarea id="bexport-preview" class="cimport-textarea bexport-preview" readonly onclick="this.select()"></textarea>
+
+    <div class="cimport-actions">
+      <button class="btn btn-primary" onclick="copyBinderExport()">📋 Copy</button>
+      <button class="btn btn-ghost" onclick="downloadBinderExport()">⬇ Download</button>
+    </div>
+  </div>
+</div>
+
 <!-- CARD DETAIL MODAL -->
 <div class="cm-overlay" id="cm-overlay" onclick="closeCardModal(event)">
   <div class="cm-modal" id="cm-modal">
@@ -1340,11 +1373,14 @@ const MASTER_COUNTS = { Unique: 1, Elite: 2, Exceptional: 3, Ordinary: 4 };
 function renderBinders() {
   const panel = document.getElementById('binders-panel');
   if (!panel) return;
-  if (currentView !== 'binders' && currentView !== 'vault') { panel.style.display = 'none'; panel.innerHTML = ''; return; }
+  const isTW = (currentView === 'trade' || currentView === 'want');
+  if (currentView !== 'binders' && currentView !== 'vault' && !isTW) { panel.style.display = 'none'; panel.innerHTML = ''; return; }
   panel.style.display = '';
-  panel.innerHTML = renderBinderSection('vault')
-    + '<div style="height:22px"></div>'
-    + renderBinderSection('trade');
+  // On the Trades & Wants tab only the trade binders are relevant; the Binders
+  // tab and My Vault overview show both vault + trade binders.
+  panel.innerHTML = isTW
+    ? renderBinderSection('trade')
+    : renderBinderSection('vault') + '<div style="height:22px"></div>' + renderBinderSection('trade');
 }
 function renderBinderSection(parent) {
   const list = bindersFor(parent);
@@ -1419,6 +1455,7 @@ function renderBinderCard(b) {
       <span class="binder-name">${bEsc(b.name)}</span>
       <span class="binder-meta"><b>${count}</b> card${count===1?'':'s'} · <b>${val>0?'$'+val.toFixed(2):'$0.00'}</b></span>
       <span class="binder-head-actions">
+        <button class="binder-icon-btn" title="Export / copy this binder" onclick="event.stopPropagation();openBinderExport('${b.id}')">⬇</button>
         <button class="binder-icon-btn" title="Rename" onclick="event.stopPropagation();renameBinder('${b.id}')">✎</button>
         <button class="binder-icon-btn danger" title="Delete binder" onclick="event.stopPropagation();deleteBinder('${b.id}')">🗑</button>
       </span>
@@ -2466,10 +2503,15 @@ function renderSectionStats(view) {
     // Loose Cards = just the loose (have) cards.
     const { std, foil } = (view === 'vault') ? vaultQtyMaps() : looseQtyMaps();
     new Set([...Object.keys(std), ...Object.keys(foil)]).forEach(n => tally(n, std[n] || 0, foil[n] || 0));
+  } else if (view === 'trade') {
+    // Trades = loose trade cards + everything in the Trade Binders, merged per
+    // card so quantities (and the total value) roll up together.
+    const std = {}, foil = {};
+    allCards.forEach(c => { const e = col[c.id]; if (!e) return; if (e.trade) std[c.id] = (std[c.id] || 0) + e.trade; if (e.tradeFoil) foil[c.id] = (foil[c.id] || 0) + e.tradeFoil; });
+    bindersFor('trade').forEach(b => Object.entries(b.cards || {}).forEach(([n, q]) => { if (q.std) std[n] = (std[n] || 0) + q.std; if (q.foil) foil[n] = (foil[n] || 0) + q.foil; }));
+    new Set([...Object.keys(std), ...Object.keys(foil)]).forEach(n => tally(n, std[n] || 0, foil[n] || 0));
   } else {
-    const flag = view === 'want' ? 'want' : 'trade';
-    const foilFlag = flag + 'Foil';
-    allCards.forEach(c => { const e = col[c.id]; if (!e) return; tally(c.id, e[flag] || 0, e[foilFlag] || 0); });
+    allCards.forEach(c => { const e = col[c.id]; if (!e) return; tally(c.id, e.want || 0, e.wantFoil || 0); });
   }
   const totalCards = stdCount + foilCount;
 
@@ -2484,7 +2526,8 @@ function renderSectionStats(view) {
 
   const headNote = view === 'vault'
     ? 'Loose cards + binders + owned decks'
-    : view === 'all' ? 'Loose cards only — not yet in a binder' : '';
+    : view === 'all' ? 'Loose cards only — not yet in a binder'
+    : (view === 'trade' && bindersFor('trade').length) ? 'Loose trades + trade binders' : '';
 
   // My Vault: break the total value down by source (loose / binders / owned decks)
   let breakdownHtml = '';
@@ -2498,6 +2541,16 @@ function renderSectionStats(view) {
     const decksVal = ownedDecksTotalValue();
     const parts = [['Loose Cards', looseVal], ['Binders', binderVal], ['Owned Decks', decksVal]].filter(([, v]) => v > 0);
     if (parts.length) {
+      breakdownHtml = `<div class="ss-breakdown">` + parts.map(([l, v]) =>
+        `<span class="ss-bd"><span class="ss-bd-lbl">${l}</span><span class="ss-bd-val">$${v.toFixed(2)}</span></span>`).join('') + `</div>`;
+    }
+  } else if (view === 'trade') {
+    // Trades: split the value into loose trade cards vs trade binders.
+    let looseVal = 0;
+    allCards.forEach(c => { const e = col[c.id]; if (!e) return; looseVal += (prices[c.id]?.market || 0) * (e.trade || 0) + (foilPrices[c.id]?.market || 0) * (e.tradeFoil || 0); });
+    const tbVal = bindersFor('trade').reduce((s, b) => s + binderValue(b), 0);
+    const parts = [['Loose Trades', looseVal], ['Trade Binders', tbVal]].filter(([, v]) => v > 0);
+    if (tbVal > 0 && parts.length) {
       breakdownHtml = `<div class="ss-breakdown">` + parts.map(([l, v]) =>
         `<span class="ss-bd"><span class="ss-bd-lbl">${l}</span><span class="ss-bd-val">$${v.toFixed(2)}</span></span>`).join('') + `</div>`;
     }
@@ -3041,6 +3094,87 @@ function doExport(format) {
   toast(`Exported ${totalQty} cards (${entries.length} unique)`);
 }
 
+// ── PER-BINDER EXPORT ──
+// Any binder (Vault or Trade) can be exported/copied on its own so its contents
+// are easy to drop into a file, a message, or Discord.
+const binderExportState = { id: null, format: 'discord' };
+// A binder's cards as {card, std, foil} entries (reuses the section-export builders).
+function binderEntries(binder) {
+  const out = [];
+  Object.entries(binder.cards || {}).forEach(([n, q]) => {
+    const std = q.std || 0, foil = q.foil || 0;
+    if (std <= 0 && foil <= 0) return;
+    const card = allCards.find(c => c.id === n) || { name: n, set: '', rarity: '', type: '', element: '' };
+    out.push({ card, std, foil });
+  });
+  return out.sort((a, b) => a.card.name.localeCompare(b.card.name));
+}
+// Discord-friendly: a bold title + summary line, then the list inside a code block.
+function buildDiscordText(entries, name) {
+  let total = 0, qty = 0;
+  const body = [];
+  entries.forEach(e => {
+    const sp = _stdPrice(e.card.name), fp = _foilPrice(e.card.name);
+    if (e.std > 0)  { qty += e.std;  if (sp != null) total += sp * e.std;  body.push(`${e.std}x ${e.card.name}${sp != null ? ` — ${_money(sp * e.std)}` : ''}`); }
+    if (e.foil > 0) { qty += e.foil; if (fp != null) total += fp * e.foil; body.push(`${e.foil}x ${e.card.name} (Foil)${fp != null ? ` — ${_money(fp * e.foil)}` : ''}`); }
+  });
+  const head = [
+    `**${name}** — Sorcery: Contested Realm`,
+    `${qty} cards · ${entries.length} unique${total > 0 ? ` · ~${_money(total)} TCG market` : ''}`,
+    '```',
+  ];
+  return head.concat(body, ['```']).join('\n');
+}
+function _binderFromExportId(id) {
+  return findBinder(id) || getOwnedDecks().find(d => d.id === id) || null;
+}
+function openBinderExport(id) {
+  const b = _binderFromExportId(id);
+  if (!b) return;
+  binderExportState.id = id;
+  document.getElementById('bexport-title').textContent = `Export “${b.name}”`;
+  document.getElementById('bexport-overlay').classList.add('open');
+  renderBinderExport();
+}
+function closeBinderExport() { document.getElementById('bexport-overlay').classList.remove('open'); }
+function setBinderExportFormat(fmt) { binderExportState.format = fmt; renderBinderExport(); }
+function binderExportText() {
+  const b = _binderFromExportId(binderExportState.id);
+  if (!b) return '';
+  const entries = binderEntries(b);
+  if (!entries.length) return '(This binder is empty.)';
+  switch (binderExportState.format) {
+    case 'text':     return buildPlainText(entries);
+    case 'prices':   return buildPricedText(entries, b.name);
+    case 'detailed': return buildDetailedText(entries, b.name);
+    case 'csv':      return buildCSV(entries);
+    case 'discord':
+    default:         return buildDiscordText(entries, b.name);
+  }
+}
+function renderBinderExport() {
+  document.querySelectorAll('#bexport-formats .bexport-fmt').forEach(el =>
+    el.classList.toggle('active', el.dataset.fmt === binderExportState.format));
+  document.getElementById('bexport-preview').value = binderExportText();
+}
+function copyBinderExport() {
+  const ta = document.getElementById('bexport-preview');
+  const text = ta.value;
+  const done = () => toast('Copied to clipboard');
+  const fallback = () => { ta.focus(); ta.select(); try { document.execCommand('copy'); done(); } catch (e) { toast('Copy failed — select and copy manually'); } };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(fallback);
+  else fallback();
+}
+function downloadBinderExport() {
+  const b = _binderFromExportId(binderExportState.id);
+  if (!b) return;
+  const csv = binderExportState.format === 'csv';
+  const slug = (b.name || 'binder').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'binder';
+  const stamp = new Date().toISOString().slice(0, 10);
+  downloadFile(binderExportText(), `cursed-realm-${slug}-${stamp}.${csv ? 'csv' : 'txt'}`, csv ? 'text/csv' : 'text/plain');
+  toast('Downloaded');
+}
+
 // ── OWNED DECKS — render ──
 // Cache of the user's saved Workshop decks, for the in-page quick-add dropdown.
 let workshopDecks = null;
@@ -3157,6 +3291,7 @@ function renderOwnedDeckCard(d) {
       <span class="binder-name">${bEsc(d.name || 'Untitled Deck')}</span>
       <span class="binder-meta"><b>${count}</b> card${count === 1 ? '' : 's'} · <b>${val > 0 ? '$' + val.toFixed(2) : '$0.00'}</b></span>
       <span class="binder-head-actions">
+        <button class="binder-icon-btn" title="Export / copy this deck" onclick="event.stopPropagation();openBinderExport('${d.id}')">⬇</button>
         ${d.code ? `<a class="binder-icon-btn" title="View deck" href="deck.html?d=${encodeURIComponent(d.code)}" onclick="event.stopPropagation()">↗</a>` : ''}
         <button class="binder-icon-btn danger" title="Remove from collection" onclick="event.stopPropagation();removeOwnedDeck('${d.id}')">🗑</button>
       </span>
