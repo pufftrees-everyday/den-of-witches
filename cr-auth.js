@@ -256,6 +256,32 @@
     } catch (e) { console.warn('fetchCloudDecks', e); return []; }
   };
 
+  // ── DECK SHORT CODES ──
+  // Canonical short-code generator: 5 chars, no ambiguous l/0/1/o.
+  CR.genShortCode = function () {
+    const chars = 'abcdefghijkmnpqrstuvwxyz23456789';
+    let s = '';
+    for (let i = 0; i < 5; i++) s += chars[Math.floor(Math.random() * chars.length)];
+    return s;
+  };
+
+  // Insert a row into `decks` with a freshly generated unique short_code, retrying
+  // up to 5 times on a 23505 unique-violation (code already taken). `row` is the
+  // deck row WITHOUT short_code. Returns the successful short_code. Throws on any
+  // non-collision error, or after 5 collisions in a row.
+  CR.insertDeck = async function (row) {
+    if (!supa) throw new Error('No Supabase connection');
+    let lastErr = null;
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const code = CR.genShortCode();
+      const { error } = await supa.from('decks').insert(Object.assign({}, row, { short_code: code }));
+      if (!error) return code;
+      lastErr = error;
+      if (error.code !== '23505') throw error; // not a code collision — a real error
+    }
+    throw lastErr || new Error('Could not generate a unique deck code');
+  };
+
   // ── TOAST (self-contained, fixed-position, brand-styled) ──
   CR.toast = function (text, opts) {
     opts = opts || {};

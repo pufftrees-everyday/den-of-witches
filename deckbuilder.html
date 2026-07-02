@@ -1053,7 +1053,7 @@
   .mobile-discord { color: #b9c0ff !important; font-weight: 600; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="cr-auth.js?v=13"></script>
+<script src="cr-auth.js?v=14"></script>
 </head>
 <body>
 
@@ -3135,17 +3135,10 @@ async function saveDeck() {
           .eq('short_code', code).eq('owner_id', currentUser.id);
         if (error) throw error;
       } else {
-        let saved = false;
-        for (let attempt = 0; attempt < 5; attempt++) {
-          code = genShortCode();
-          const { error } = await supa.from('decks').insert({
-            short_code: code, name, deck_data: payload,
-            owner_id: currentUser.id, is_saved: true, is_public: false
-          });
-          if (!error) { activeDeckCode = code; saved = true; break; }
-          if (error.code !== '23505') throw error;
-        }
-        if (!saved) throw new Error('Could not generate a unique code');
+        activeDeckCode = await CR.insertDeck({
+          name, deck_data: payload,
+          owner_id: currentUser.id, is_saved: true, is_public: false
+        });
       }
       deckDirty = false;
       toast(`"${name}" saved to your account`);
@@ -3275,13 +3268,6 @@ function encodeDeck() {
 }
 
 // Generate a 5-char short code (lowercase letters + digits)
-function genShortCode() {
-  const chars = 'abcdefghijkmnpqrstuvwxyz23456789'; // no l/0/1/o to avoid confusion
-  let s = '';
-  for (let i = 0; i < 5; i++) s += chars[Math.floor(Math.random() * chars.length)];
-  return s;
-}
-
 async function shareDeck() {
   const total = getDeckCounts().total;
   if (total === 0) { toast('Add some cards first'); return; }
@@ -3315,29 +3301,19 @@ async function shareDeck() {
         // if update failed (e.g. not actually owned), fall through to creating a new one
       }
 
-      // Try a few times in case of a code collision
-      for (let attempt = 0; attempt < 5; attempt++) {
-        const code = genShortCode();
-        const row = {
-          short_code: code,
-          name: payload.n,
-          deck_data: payload,
-          is_public: false
-        };
-        // Stamp ownership if logged in (lets them manage/publish it later)
-        if (currentUser) { row.owner_id = currentUser.id; row.is_saved = true; }
-        const { error } = await supa.from('decks').insert(row);
-        if (!error) {
-          textEl.value = `${base}?d=${code}`;
-          lastSharedCode = code;
-          if (currentUser) activeDeckCode = code; // remember so future shares reuse it
-          updatePublishSection();
-          return;
-        }
-        // 23505 = unique violation (code already taken) → retry with a new code
-        if (error.code !== '23505') throw error;
-      }
-      throw new Error('Could not generate a unique code');
+      const row = {
+        name: payload.n,
+        deck_data: payload,
+        is_public: false
+      };
+      // Stamp ownership if logged in (lets them manage/publish it later)
+      if (currentUser) { row.owner_id = currentUser.id; row.is_saved = true; }
+      const code = await CR.insertDeck(row);
+      textEl.value = `${base}?d=${code}`;
+      lastSharedCode = code;
+      if (currentUser) activeDeckCode = code; // remember so future shares reuse it
+      updatePublishSection();
+      return;
     } catch (e) {
       console.warn('Supabase share failed, falling back to long link', e);
       // fall through to legacy long link
@@ -3404,17 +3380,10 @@ async function publishCurrentDeck() {
     if (existing && existing.owner_id && existing.owner_id !== currentUser.id) {
       // Someone else owns it — make a fresh owned copy instead of hijacking theirs
       const payload = buildDeckPayload();
-      let code = null;
-      for (let attempt = 0; attempt < 5; attempt++) {
-        const c = genShortCode();
-        const { error } = await supa.from('decks').insert({
-          short_code: c, name: payload.n, deck_data: payload,
-          owner_id: currentUser.id, is_saved: true, is_public: true
-        });
-        if (!error) { code = c; break; }
-        if (error.code !== '23505') throw error;
-      }
-      if (!code) throw new Error('Could not create your copy');
+      const code = await CR.insertDeck({
+        name: payload.n, deck_data: payload,
+        owner_id: currentUser.id, is_saved: true, is_public: true
+      });
       lastSharedCode = code; activeDeckCode = code; activeDeckPublic = true;
     } else {
       // Unowned (null) or already ours → claim + publish in one update.
@@ -3428,17 +3397,10 @@ async function publishCurrentDeck() {
       if (!updated || updated.length === 0) {
         // RLS blocked it (orphaned deck) — create a fresh owned, public copy
         const payload = buildDeckPayload();
-        let code = null;
-        for (let attempt = 0; attempt < 5; attempt++) {
-          const c = genShortCode();
-          const { error: insErr } = await supa.from('decks').insert({
-            short_code: c, name: payload.n, deck_data: payload,
-            owner_id: currentUser.id, is_saved: true, is_public: true
-          });
-          if (!insErr) { code = c; break; }
-          if (insErr.code !== '23505') throw insErr;
-        }
-        if (!code) throw new Error('Could not publish');
+        const code = await CR.insertDeck({
+          name: payload.n, deck_data: payload,
+          owner_id: currentUser.id, is_saved: true, is_public: true
+        });
         lastSharedCode = code; activeDeckCode = code; activeDeckPublic = true;
       } else {
         activeDeckCode = lastSharedCode; activeDeckPublic = true;
@@ -3573,15 +3535,13 @@ async function maybeMigrateDecks() {
     for (const id of ids) {
       const entry = local[id];
       const payload = deckToPayload(entry.deck, entry.name, entry.scroll);
-      for (let attempt = 0; attempt < 5; attempt++) {
-        const code = genShortCode();
-        const { error } = await supa.from('decks').insert({
-          short_code: code, name: entry.name || 'Unnamed Deck',
+      try {
+        await CR.insertDeck({
+          name: entry.name || 'Unnamed Deck',
           deck_data: payload, owner_id: currentUser.id, is_saved: true, is_public: false
         });
-        if (!error) { migrated++; break; }
-        if (error.code !== '23505') break;
-      }
+        migrated++;
+      } catch (e) { /* skip this deck, keep migrating the rest */ }
     }
     toast(`Migrated ${migrated} deck(s) to your account`);
   }

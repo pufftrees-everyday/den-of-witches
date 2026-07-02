@@ -237,7 +237,7 @@
   .ci-status{margin-top:9px;font-size:.85rem;color:var(--arcane);min-height:1em;}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="cr-auth.js?v=13"></script>
+<script src="cr-auth.js?v=14"></script>
 </head>
 <body>
 
@@ -978,13 +978,6 @@ function ciResolveName(entry) {            // entry = {slug,name,type,qty}
 }
 
 // Mirrors the deckbuilder's short-code generator (no l/0/1/o to avoid confusion)
-function genShortCode() {
-  const chars = 'abcdefghijkmnpqrstuvwxyz23456789';
-  let s = '';
-  for (let i = 0; i < 5; i++) s += chars[Math.floor(Math.random() * chars.length)];
-  return s;
-}
-
 function ciSetStatus(msg) {
   const el = document.getElementById('curiosa-status');
   if (el) el.textContent = msg || '';
@@ -1027,19 +1020,11 @@ async function importFromCuriosa() {
     }
 
     // Save via the same path the deckbuilder uses: a private, owned deck with a
-    // unique short_code (retry on collision). Schema matches decks.html exactly.
-    let saved = false, lastErr = null;
-    for (let attempt = 0; attempt < 5; attempt++) {
-      const code = genShortCode();
-      const { error } = await supa.from('decks').insert({
-        short_code: code, name: deck_data.n, deck_data,
-        owner_id: currentUser.id, is_saved: true, is_public: false
-      });
-      if (!error) { saved = true; break; }
-      lastErr = error;
-      if (error.code !== '23505') throw error; // not a short_code collision
-    }
-    if (!saved) throw new Error((lastErr && lastErr.message) || 'Could not save the deck.');
+    // unique short_code (retry on collision, shared CR.insertDeck helper).
+    await CR.insertDeck({
+      name: deck_data.n, deck_data,
+      owner_id: currentUser.id, is_saved: true, is_public: false
+    });
 
     const total = ['a','t','s'].reduce((sum, k) => sum + deck_data[k].reduce((s, [, q]) => s + (q || 0), 0), 0);
     let msg = `Imported “${deck_data.n}” — ${total} cards.`;

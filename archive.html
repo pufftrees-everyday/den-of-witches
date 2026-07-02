@@ -271,7 +271,7 @@
   .mobile-discord { color: #b9c0ff !important; font-weight: 600; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="cr-auth.js?v=13"></script>
+<script src="cr-auth.js?v=14"></script>
 </head>
 <body>
 
@@ -1013,11 +1013,6 @@ function bringToWorkshop(shortCode, name) {
   document.getElementById('bring-overlay').classList.add('open');
 }
 function closeBring() { pendingCopyCode = null; document.getElementById('bring-overlay').classList.remove('open'); }
-function genShortCode() {
-  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-  let s = ''; for (let i=0;i<7;i++) s += chars[Math.floor(Math.random()*chars.length)];
-  return s;
-}
 async function confirmBring() {
   if (!pendingCopyCode || !currentUser || !supa) { closeBring(); return; }
   const btn = document.getElementById('bring-confirm-btn');
@@ -1028,11 +1023,10 @@ async function confirmBring() {
     const newData = JSON.parse(JSON.stringify(src.deck_data || {}));
     const newName = (src.name || 'Deck') + ' (copy)';
     newData.n = newName;
-    const { error: e2 } = await supa.from('decks').insert({
-      short_code: genShortCode(), name: newName, deck_data: newData,
+    await CR.insertDeck({
+      name: newName, deck_data: newData,
       owner_id: currentUser.id, is_public: false, is_saved: true
     });
-    if (e2) throw e2;
     closeBring();
     toast('Brought to your Workshop!');
     setTimeout(() => { window.location.href = 'decks.html'; }, 1000);

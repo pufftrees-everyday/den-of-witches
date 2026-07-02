@@ -561,7 +561,7 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="cr-auth.js?v=13"></script>
+<script src="cr-auth.js?v=14"></script>
 <script>
   // Shared Supabase client from cr-auth.js (window.CR.supa)
   const supa = (window.CR && window.CR.supa) || null;
@@ -1353,12 +1353,6 @@
   }
   function closeCopyConfirm() { document.getElementById('copy-overlay').classList.remove('open'); }
 
-  function genShortCode() {
-    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    let s = ''; for (let i=0;i<7;i++) s += chars[Math.floor(Math.random()*chars.length)];
-    return s;
-  }
-
   async function confirmBringToWorkshop() {
     if (!currentUser || !supa) return;
     const btn = document.getElementById('copy-confirm-btn');
@@ -1367,16 +1361,13 @@
       const newData = JSON.parse(JSON.stringify(currentDeck.deck_data || {}));
       const newName = (currentDeck.name || 'Deck') + ' (copy)';
       newData.n = newName;
-      const row = {
-        short_code: genShortCode(),
+      await CR.insertDeck({
         name: newName,
         deck_data: newData,
         owner_id: currentUser.id,
         is_public: false,
         is_saved: true
-      };
-      const { error } = await supa.from('decks').insert(row);
-      if (error) throw error;
+      });
       closeCopyConfirm();
       toast('Brought to your Workshop!');
       setTimeout(() => { window.location.href = 'decks.html'; }, 1000);
