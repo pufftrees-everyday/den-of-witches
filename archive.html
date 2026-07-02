@@ -271,6 +271,7 @@
   .mobile-discord { color: #b9c0ff !important; font-weight: 600; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="cr-auth.js?v=13"></script>
 </head>
 <body>
 
@@ -437,10 +438,8 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const SUPABASE_URL = 'https://nuizkjkcephopnbcmtlz.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_9er9B3YGFuvNO8Y8W6yr2g_sR5tXvKH';
-let supa = null;
-try { if (window.supabase) supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e) {}
+// Shared Supabase client from cr-auth.js (window.CR.supa)
+const supa = (window.CR && window.CR.supa) || null;
 
 let currentUser = null;
 let authMode = 'login'; // login | signup

@@ -151,12 +151,11 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="cr-auth.js?v=13"></script>
 <script>
-  const SUPABASE_URL = 'https://nuizkjkcephopnbcmtlz.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_9er9B3YGFuvNO8Y8W6yr2g_sR5tXvKH';
   const IMAGE_BASE = 'https://pub-5999238092ad418ca60e7a9ad641cf57.r2.dev/';
-  let supa = null;
-  try { if (window.supabase) supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e) {}
+  // Shared Supabase client from cr-auth.js (window.CR.supa)
+  const supa = (window.CR && window.CR.supa) || null;
 
   let currentUser = null;     // logged-in viewer
   let profile = null;         // the profile being viewed
